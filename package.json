@@ -1,0 +1,38 @@
+{
+  "name": "copy-of-copy-of-connectup",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx server.ts",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google/genai": "^1.30.0",
+    "@supabase/supabase-js": "^2.84.0",
+    "@tailwindcss/vite": "^4.2.1",
+    "axios": "^1.13.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "gsap": "^3.14.2",
+    "hugeicons-react": "^0.4.0",
+    "lucide-react": "^0.554.0",
+    "motion": "^12.35.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-paystack": "^6.0.0",
+    "react-player": "^3.4.0",
+    "recharts": "^3.5.0",
+    "tailwindcss": "^4.2.1",
+    "terser": "^5.46.0",
+    "tsx": "^4.21.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}
