@@ -1,5 +1,5 @@
 {
-  "name": "copy-of-copy-of-connectup",
+  "name": "connectup",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -29,7 +29,7 @@
     "tsx": "^4.21.0"
   },
   "overrides": {
-    "glob": "^11.0.1",
+    "glob": "^1.0.1",
     "rimraf": "^6.0.1"
   },
   "devDependencies": {
