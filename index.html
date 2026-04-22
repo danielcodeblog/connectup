@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>ConnectUp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <style>
+      html {
+        background-color: #f8f8f8;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background: #FFFCF0;
+        color: #18181b; /* Zinc 900 */
+        -webkit-tap-highlight-color: transparent;
+        overscroll-behavior-y: none;
+      }
+      
+      h1, h2, h3, h4, h5, h6, .font-display {
+        font-family: 'Space Grotesk', sans-serif;
+      }
+
+      /* Sleek Scrollbar */
+      ::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+      }
+      
+      .safe-area-bottom {
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      .safe-area-top {
+        padding-top: env(safe-area-inset-top);
+      }
+
+      /* Selection Color */
+      ::selection {
+        background-color: #FFC800;
+        color: #ffffff;
+      }
+    </style>
+    <link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
