@@ -28,13 +28,17 @@
     "terser": "^5.46.1",
     "tsx": "^4.21.0"
   },
+  "overrides": {
+    "glob": "^11.0.1",
+    "rimraf": "^6.0.1"
+  },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
-    "typescript": "~6.0.3",
+    "typescript": "^6.0.3",
     "vite": "^8.0.9"
   }
 }
