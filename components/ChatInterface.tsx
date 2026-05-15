@@ -10,6 +10,7 @@ import {
 import { UserRole, Message, ChatSession } from '../types';
 import { StorageService } from '../services/storageService';
 import { supabase } from '../services/supabaseClient';
+import { EncryptionService } from '../services/encryptionService';
 import { StatusIndicator } from './StatusIndicator';
 
 interface ChatInterfaceProps {
@@ -182,8 +183,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
   useEffect(() => {
     if (!currentUserId) return;
 
-    const sub = StorageService.subscribeToGlobalMessages((msg) => {
+    const sub = StorageService.subscribeToGlobalMessages(async (msg) => {
         const isMe = msg.sender_id === currentUserId;
+        
+        let plainText = msg.content;
+        if (msg.type === 'text' && plainText && plainText.startsWith('E2EE::')) {
+            // we need the chat to figure out peer pub key
+            // since we are inside an async callback before updating state it's a bit tricky to get peerKey if the chat isn't loaded
+            // Let's just rely on getting the chat from the state
+        }
 
         setChats(prevChats => {
             const chatIndex = prevChats.findIndex(c => c.id === msg.chat_id);
@@ -192,14 +200,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
             if (chatIndex === -1) {
                 if (!isMe) {
                     loadChats().then(async () => {
-                        const chats = await StorageService.getChats();
-                        const newChat = chats.find(c => c.id === msg.chat_id);
+                        const newChats = await StorageService.getChats();
+                        const newChat = newChats.find(c => c.id === msg.chat_id);
                         if (newChat) {
                             const senderName = newChat.startupName;
                             setNotification({
                                 id: Date.now().toString(),
                                 name: senderName,
-                                message: msg.content || (
+                                message: newChat.lastMessage || (
                                     msg.type === 'image' ? 'Sent an image' : 
                                     msg.type === 'audio' ? 'Audio Message' : 
                                     msg.type === 'document' ? 'Attachment' : 'New message'
@@ -216,40 +224,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
                 return prevChats;
             }
 
-            // Update existing chat
-            const newChats = [...prevChats];
-            const chat = { ...newChats[chatIndex] };
+            const chatInList = prevChats[chatIndex];
             
-            chat.lastMessage = msg.content || (
-                msg.type === 'image' ? 'Sent an image' : 
-                msg.type === 'audio' ? 'Audio Message' : 
-                msg.type === 'document' ? 'Attachment' : 'Message'
-            );
-            chat.timestamp = msg.created_at;
-
-            // If incoming message is not for selected chat, notify
-            if (!isMe && msg.chat_id !== selectedChatId) {
-                chat.unread = (chat.unread || 0) + 1;
+            // We can only decrypt here IF we already have the decrypted text. Since setChats must be sync,
+            // we will let `loadChats()` reload the whole list if we can't synchronously do it, or we just
+            // trigger a loadChats() and return the same list until the load is done!
+            
+            // Actually, simply calling loadChats() to refetch properly decrypted strings is much safer.
+            if (!isMe) {
                 if (soundEnabled) playNotificationSound();
-                
-                // Show toast notification
-                const senderName = role === UserRole.INVESTOR ? chat.startupName : chat.investorName;
-                setNotification({
-                    id: Date.now().toString(),
-                    name: senderName,
-                    message: chat.lastMessage
-                });
-                
-                if (notificationTimerRef.current) clearTimeout(notificationTimerRef.current);
-                notificationTimerRef.current = setTimeout(() => {
-                    setNotification(null);
-                }, 4000);
             }
-
-            // Move to top
-            newChats.splice(chatIndex, 1);
-            newChats.unshift(chat);
-            return newChats;
+            loadChats();
+            return prevChats;
         });
     });
 
@@ -265,10 +251,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
     loadMessages(selectedChatId);
     StorageService.markAllMessagesAsRead(selectedChatId);
 
-    const subscription = StorageService.subscribeToMessages(selectedChatId, (payload) => {
+    const subscription = StorageService.subscribeToMessages(selectedChatId, async (payload) => {
       if (payload.type === 'INSERT') {
         const raw = payload.message;
         
+        let plainText = raw.content;
+        if (raw.type === 'text' && plainText && plainText.startsWith('E2EE::')) {
+            const activeChatData = chats.find(c => c.id === selectedChatId);
+            plainText = await EncryptionService.decryptMessage(plainText, activeChatData?.peerPublicKey || null);
+        }
+
         if (raw.sender_id !== currentUserId) {
             playNotificationSound();
             StorageService.markMessageAsRead(raw.id);
@@ -276,10 +268,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
 
         setMessages(prev => {
           if (prev.some(m => m.id === raw.id)) return prev;
-          return [...prev, {
+          // Also remove temp message if it matches text (optimistic UI cleanup)
+          const withoutTemp = prev.filter(m => !(m.id.startsWith('temp-') && m.text === plainText));
+          
+          return [...withoutTemp, {
             id: raw.id,
             senderId: raw.sender_id,
-            text: raw.content,
+            text: plainText,
             type: raw.type,
             timestamp: raw.created_at,
             isMe: raw.sender_id === currentUserId,
@@ -333,7 +328,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
     setIsSending(true);
 
     try {
-      const saved = await StorageService.addMessage(optimisticMsg, selectedChatId);
+      const activeChatData = chats.find(c => c.id === selectedChatId);
+      const saved = await StorageService.addMessage(optimisticMsg, selectedChatId, activeChatData?.peerPublicKey);
       if (saved) {
         // Replace temp with real
         setMessages(prev => prev.map(m => m.id === tempId ? { ...saved, isMe: true } : m));
