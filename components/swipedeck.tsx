@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   X, ScrollText, Scan, Check, MessageCircle, Flame, User, RefreshCcw
@@ -24,7 +22,7 @@ const SwipeDeck: React.FC<SwipeDeckProps> = React.memo(({ onMatch, userProfile }
   const [memoCard, setMemoCard] = useState<Startup | null>(null); 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [matchedStartup, setMatchedStartup] = useState<Startup | null>(null);
-  consxxt [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
 
   // Initial Load
   useEffect(() => {
