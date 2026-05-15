@@ -10,6 +10,7 @@ import { SplashScreen } from './components/SplashScreen';
 import { Button } from './components/Button';
 import { StorageService } from './services/storageService';
 import { supabase } from './services/supabaseClient';
+import { EncryptionService } from './services/encryptionService';
 import LandingSite from './components/LandingSite';
 import FounderDashboard from './components/founderdashboard';
 import SwipeDeck from './components/swipedeck';
@@ -418,6 +419,10 @@ const App = () => {
 
         const userRole = await StorageService.checkUserRole(sessionData.session.user.id);
         if (userRole) {
+          await EncryptionService.init(sessionData.session.user.id);
+          const pubkey = EncryptionService.getMyPublicKey();
+          if (pubkey) await StorageService.updateUserProfile({ encryption_public_key: pubkey });
+
           setRole(userRole);
           if (sessionData.session.user.email) {
             setUserProfile(prev => ({ ...prev, email: sessionData.session.user.email }));
@@ -443,11 +448,21 @@ const App = () => {
     setCurrentView('home');
   }, []);
 
-  const handleAuthComplete = useCallback((selectedRole: UserRole, email?: string) => {
+  const handleAuthComplete = useCallback(async (selectedRole: UserRole, email?: string) => {
     setRole(selectedRole);
     if (email) {
       setUserProfile(prev => ({ ...prev, email }));
     }
+    
+    // Init encryption for the new session
+    const { data: sessionData } = await supabase.auth.getSession();
+    if (sessionData?.session) {
+      setCurrentUserId(sessionData.session.user.id);
+      await EncryptionService.init(sessionData.session.user.id);
+      const pubkey = EncryptionService.getMyPublicKey();
+      if (pubkey) await StorageService.updateUserProfile({ encryption_public_key: pubkey });
+    }
+
     setAppState('MAIN_APP');
     setCurrentView('home');
   }, []);
