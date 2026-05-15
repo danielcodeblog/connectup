@@ -1,0 +1,8 @@
+{
+  "name": "Connect Up",
+  "description": "The fluid ecosystem for visionaries. Raise faster. Build better.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
