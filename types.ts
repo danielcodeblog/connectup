@@ -87,6 +87,7 @@ export interface ChatSession {
   avatarUrl: string;
   founderAvatarUrl?: string;
   lastMessage: string;
+  peerPublicKey?: string;
   timestamp: Date | string;
   unread: number;
   lastSeen?: string;
