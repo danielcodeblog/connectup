@@ -1,5 +1,6 @@
 import { Startup, ChatSession, Message, UserRole, CommunityPost, CommunityComment, Reaction, Meeting } from '../types';
 import { supabase, isSupabaseConfigured } from './supabaseClient';
+import { EncryptionService } from './encryptionService';
 
 // Helper for UUIDs
 const generateUUID = () => {
@@ -1553,7 +1554,7 @@ export const StorageService = {
           const allProfileIds = [...new Set([...investorIds, ...startupIds])];
           const chatIds = rawChats.map(c => c.id);
           const [profilesResult, startupsResult, lastMsgsResult, unreadResult] = await Promise.all([
-             supabase.from('profiles').select('id, full_name, avatar_url, title, role, email').in('id', allProfileIds),
+             supabase.from('profiles').select('id, full_name, avatar_url, title, role, email, encryption_public_key').in('id', allProfileIds),
              supabase.from('startups').select('id, name').in('id', startupIds),
              supabase.from('messages').select('chat_id, content, type, created_at').in('chat_id', chatIds).order('created_at', { ascending: false }),
              supabase.from('messages').select('chat_id').in('chat_id', chatIds).neq('sender_id', user.id).neq('status', 'read')
@@ -1593,7 +1594,7 @@ export const StorageService = {
             }
           };
 
-          return rawChats.map((c: any) => {
+          return await Promise.all(rawChats.map(async (c: any) => {
               const partnerId = c.investor_id === user.id ? c.startup_id : c.investor_id;
               const partnerProfile = profileMap.get(partnerId);
               const partnerStartup = startupMap.get(partnerId);
@@ -1621,6 +1622,12 @@ export const StorageService = {
                   // Only have startup info
                   displaySubtitle = 'Startup';
               }
+              
+              const peerKey = partnerProfile?.encryption_public_key;
+              let plainLastMsg = lastMsgMap.get(c.id) || 'Matched! Say hello.';
+              if (plainLastMsg.startsWith('E2EE::')) {
+                  plainLastMsg = await EncryptionService.decryptMessage(plainLastMsg, peerKey);
+              }
 
               return { 
                   id: c.id, 
@@ -1630,16 +1637,17 @@ export const StorageService = {
                   subtitle: displaySubtitle || 'Active now', 
                   avatarUrl: realAvatar, 
                   founderAvatarUrl: getAvatarUrl(partnerProfile?.avatar_url) || realAvatar,
-                  lastMessage: lastMsgMap.get(c.id) || 'Matched! Say hello.', 
+                  lastMessage: plainLastMsg, 
+                  peerPublicKey: peerKey,
                   timestamp: c.updated_at, 
                   unread: unreadMap.get(c.id) || 0,
                   lastSeen: partnerProfile?.last_seen
               };
-          });
+          }));
       } catch (e) { return []; }
   },
 
-  getMessages: async (chatId: string): Promise<Message[]> => {
+  getMessages: async (chatId: string, peerPublicKey?: string): Promise<Message[]> => {
       await StorageService.init();
       if (_isMock) {
           // Filter mock messages by chatId
@@ -1654,18 +1662,25 @@ export const StorageService = {
               return [];
           }
 
-          return (data || []).map((m: any) => ({ 
-              id: m.id, 
-              senderId: m.sender_id, 
-              text: m.content, 
-              type: m.type || 'text', 
-              timestamp: m.created_at, 
-              isMe: m.sender_id === user?.id, 
-              reactions: m.reactions || [], 
-              fileName: m.file_name, 
-              fileSize: m.file_size, 
-              duration: m.duration,
-              status: m.status
+          return await Promise.all((data || []).map(async (m: any) => {
+              let plainText = m.content;
+              if (m.type === 'text' && plainText && plainText.startsWith('E2EE::')) {
+                  plainText = await EncryptionService.decryptMessage(plainText, peerPublicKey || null);
+              }
+
+              return { 
+                  id: m.id, 
+                  senderId: m.sender_id, 
+                  text: plainText, 
+                  type: m.type || 'text', 
+                  timestamp: m.created_at, 
+                  isMe: m.sender_id === user?.id, 
+                  reactions: m.reactions || [], 
+                  fileName: m.file_name, 
+                  fileSize: m.file_size, 
+                  duration: m.duration,
+                  status: m.status
+              };
           }));
       } catch (e) { return []; }
   },
@@ -1680,7 +1695,7 @@ export const StorageService = {
       return supabase.channel('global-messages').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, (payload) => { callback(payload.new); }).subscribe();
   },
 
-  addMessage: async (message: Message, chatId: string): Promise<Message | null> => {
+  addMessage: async (message: Message, chatId: string, peerPublicKey?: string): Promise<Message | null> => {
       await StorageService.init();
       if (_isMock) { 
           const newMsg = { ...message, id: `mock_msg_${Date.now()}`, chatId }; 
@@ -1695,11 +1710,16 @@ export const StorageService = {
           }
           const userId = user.id;
           
+          let encryptedContent = message.text;
+          if (message.type === 'text' && message.text) {
+              encryptedContent = await EncryptionService.encryptMessage(message.text, peerPublicKey || null);
+          }
+
           const payload: any = { 
               id: generateUUID(), 
               chat_id: chatId, 
               sender_id: userId, 
-              content: message.text, 
+              content: encryptedContent, 
               type: message.type, 
               file_name: message.fileName, 
               file_size: message.fileSize, 
@@ -1743,7 +1763,7 @@ export const StorageService = {
           return { 
               id: data.id, 
               senderId: data.sender_id, 
-              text: data.content, 
+              text: message.text, 
               type: data.type, 
               timestamp: data.created_at, 
               isMe: true, 
