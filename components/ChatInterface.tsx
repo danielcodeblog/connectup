@@ -146,6 +146,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
 
   // Cleanup & Resize Handler
   useEffect(() => {
+    // Preserve original backgrounds
+    const originalBodyBg = document.body.style.backgroundColor;
+    const originalHtmlBg = document.documentElement.style.backgroundColor;
+
+    // Apply chat light gray background to prevent black rubber-band gap
+    document.body.style.backgroundColor = '#F9FAFB';
+    document.documentElement.style.backgroundColor = '#F9FAFB';
+
     // Resize Handler
     const handleResize = () => {
       if (window.visualViewport) {
@@ -161,6 +169,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
     }
 
     return () => {
+        // Restore background styles
+        document.body.style.backgroundColor = originalBodyBg;
+        document.documentElement.style.backgroundColor = originalHtmlBg;
+
         // Restore body scroll when chat interface is unmounted
         if (notificationTimerRef.current) clearTimeout(notificationTimerRef.current);
         if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
@@ -978,7 +990,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                     onFocus={() => {
-                      setTimeout(scrollToBottom, 200);
+                      window.scrollTo(0, 0);
+                      setTimeout(() => {
+                        window.scrollTo(0, 0);
+                        scrollToBottom();
+                      }, 100);
                     }}
                     placeholder="Type a message..."
                     className="flex-1 bg-transparent text-[15px] text-zinc-900 placeholder-zinc-400 focus:outline-none py-1"
