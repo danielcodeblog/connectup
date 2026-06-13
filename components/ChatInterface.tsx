@@ -135,6 +135,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
 
   // Refs
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const soundRef = useRef<boolean>(soundEnabled);
   const scrollTimeoutRef = useRef<any>(null);
@@ -159,6 +160,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
       if (window.visualViewport) {
           const vh = window.visualViewport.height;
           document.documentElement.style.setProperty('--vh', `${vh}px`);
+          
+          // Force scroll adjustment immediately on resize to keep pace with keyboard
+          if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+          }
       }
     };
     
@@ -409,9 +415,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
 
   const scrollToBottom = () => {
     if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    
+    // Immediate scroll to bottom without waiting for smooth transition
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
+    
     scrollTimeoutRef.current = setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
+      if (messagesContainerRef.current) {
+        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      }
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 50);
   };
 
   // --- Actions ---
@@ -766,6 +781,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
 
             {/* Messages Area */}
             <div 
+              ref={messagesContainerRef}
               className="flex-1 min-h-0 overflow-y-auto px-4 py-3 sm:px-6 space-y-1.5 scroll-smooth bg-[#F9FAFB] overscroll-contain"
               style={{ WebkitOverflowScrolling: 'touch' }}
             >
@@ -896,7 +912,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
                     );
                   })
                )}
-               <div className="h-16 w-full shrink-0" />
+               <div className="h-32 sm:h-16 w-full shrink-0" />
                <div ref={messagesEndRef} />
             </div>
 
@@ -1004,10 +1020,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
                     onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                     onFocus={() => {
                       window.scrollTo(0, 0);
-                      setTimeout(() => {
-                        window.scrollTo(0, 0);
-                        scrollToBottom();
-                      }, 100);
+                      scrollToBottom();
+                      // Staggered triggers to scroll exactly as the virtual keyboard transitions on iOS/Android
+                      setTimeout(() => { scrollToBottom(); }, 50);
+                      setTimeout(() => { scrollToBottom(); }, 150);
+                      setTimeout(() => { scrollToBottom(); }, 300);
+                      setTimeout(() => { scrollToBottom(); }, 600);
+                    }}
+                    onClick={() => {
+                      scrollToBottom();
+                      setTimeout(() => { scrollToBottom(); }, 150);
                     }}
                     placeholder="Type a message..."
                     className="flex-1 bg-transparent text-[15px] text-zinc-900 placeholder-zinc-400 focus:outline-none py-1"
