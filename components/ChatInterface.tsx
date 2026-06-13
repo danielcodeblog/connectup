@@ -670,7 +670,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
                        </span>
                      </div>
                      <p className={`text-xs sm:text-[13px] leading-relaxed truncate mt-0.5 ${chat.unread > 0 ? 'font-semibold text-zinc-800' : 'text-zinc-500'}`}>
-                       {chat.lastMessage}
+                       {chat.lastMessage?.startsWith('http') && (chat.lastMessage.includes('giphy') || chat.lastMessage.includes('gif')) ? 'GIF' : chat.lastMessage}
                      </p>
                    </div>
                    
