@@ -14,8 +14,8 @@ async function startServer() {
   app.use(express.json());
 
   // Setup basic supabase client for auth verification
-  const supabaseUrl = process.env.VITE_SUPABASE_URL || '';
-  const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || '';
+  const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || '';
+  const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_KEY || '';
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   // Middleware to verify simple auth for backend endpoints
@@ -147,27 +147,56 @@ async function startServer() {
     }
   });
 
-  // Giphy proxy endpoint to secure API keys
+  // Giphy proxy endpoint to secure API keys with robust cascade and fallback
   app.get('/api/gifs', requireAuth, async (req, res) => {
-    try {
-      const { q } = req.query;
-      const apiKey = process.env.GIPHY_API_KEY || 'dc6zaTOxFJmzC';
-      
-      let url = `https://api.giphy.com/v1/gifs/trending?api_key=${apiKey}&limit=20&rating=g`;
-      if (q && typeof q === 'string' && q.trim()) {
-        url = `https://api.giphy.com/v1/gifs/search?api_key=${apiKey}&q=${encodeURIComponent(q)}&limit=20&rating=g`;
-      }
-
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Giphy API responded with status ${response.status}`);
-      }
-      const data = await response.json();
-      res.json(data);
-    } catch (error: any) {
-      console.error('Error fetching GIFs from proxy:', error);
-      res.status(500).json({ error: error.message || 'Failed to fetch GIFs' });
+    const { q } = req.query;
+    
+    // Build array of keys to try starting with user-provided config, cascading to public beta fallbacks
+    const candidates: string[] = [];
+    if (process.env.GIPHY_API_KEY && process.env.GIPHY_API_KEY.trim()) {
+      candidates.push(process.env.GIPHY_API_KEY.trim());
     }
+    if (process.env['GIPHY_API_KEY='] && process.env['GIPHY_API_KEY='].trim()) {
+      candidates.push(process.env['GIPHY_API_KEY='].trim());
+    }
+    
+    // Add known public development/beta test keys
+    const fallbackKeys = ['dc6zaTOxFJmzC'];
+    for (const k of fallbackKeys) {
+      if (!candidates.includes(k)) {
+        candidates.push(k);
+      }
+    }
+
+    let lastError: any = null;
+
+    for (const key of candidates) {
+      try {
+        let url = `https://api.giphy.com/v1/gifs/trending?api_key=${key}&limit=20&rating=g`;
+        if (q && typeof q === 'string' && q.trim()) {
+          url = `https://api.giphy.com/v1/gifs/search?api_key=${key}&q=${encodeURIComponent(q)}&limit=20&rating=g`;
+        }
+
+        const response = await fetch(url);
+        if (response.ok) {
+          const data = await response.json();
+          // Verify that Giphy returned valid array data
+          if (data && Array.isArray(data.data)) {
+            return res.json(data);
+          }
+        }
+        
+        console.warn(`Giphy API key ending in ...${key.slice(-4)} failed with status: ${response.status}`);
+        lastError = new Error(`Giphy API responded with status ${response.status}`);
+      } catch (err: any) {
+        console.warn(`Error attempting Giphy key ending in ...${key.slice(-4)}:`, err.message || err);
+        lastError = err;
+      }
+    }
+
+    // If we exhausted all options without success, return 502 to trigger client-side fallback GIF mechanism
+    console.error('All Giphy API key options failed or returned invalid response structures. Triggering client fallback.');
+    return res.status(502).json({ error: lastError?.message || 'All GIF search keys failed. Using fallback client-side GIFs.' });
   });
 
   // Vite middleware for development
