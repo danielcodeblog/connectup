@@ -151,22 +151,45 @@ async function startServer() {
   app.get('/api/gifs', requireAuth, async (req, res) => {
     const { q } = req.query;
     
-    // Build array of keys to try starting with user-provided config, cascading to public beta fallbacks
+    // Scan all environment variables to find any Giphy API keys
     const candidates: string[] = [];
-    if (process.env.GIPHY_API_KEY && process.env.GIPHY_API_KEY.trim()) {
-      candidates.push(process.env.GIPHY_API_KEY.trim());
-    }
-    if (process.env['GIPHY_API_KEY='] && process.env['GIPHY_API_KEY='].trim()) {
-      candidates.push(process.env['GIPHY_API_KEY='].trim());
-    }
     
-    // Add known public development/beta test keys
-    const fallbackKeys = ['dc6zaTOxFJmzC'];
-    for (const k of fallbackKeys) {
-      if (!candidates.includes(k)) {
-        candidates.push(k);
+    const addCleanKey = (val: string | undefined) => {
+      if (!val) return;
+      // Thorough cleanup of trailing carriage returns, whitespace, quotes, and leading '=' signs
+      let s = val.replace(/[\r\n]/g, '').trim();
+      
+      // Clean quotes
+      if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
+        s = s.slice(1, -1).trim();
+      }
+      
+      // Clean leading '='
+      if (s.startsWith('=')) {
+        s = s.slice(1).trim();
+      }
+      
+      // Clean again after removal
+      s = s.replace(/[\r\n]/g, '').trim();
+      
+      if (s && !candidates.includes(s)) {
+        candidates.push(s);
+      }
+    };
+
+    // 1. Scan environment keys dynamically (extremely robust to different variable naming/typos)
+    for (const [envKey, envVal] of Object.entries(process.env)) {
+      if (envKey.toUpperCase().includes('GIPHY') && envVal) {
+        addCleanKey(envVal);
       }
     }
+
+    // 2. Fallback check for explicitly known environment vars (just in case they are not enumerable on Object.entries)
+    addCleanKey(process.env.GIPHY_API_KEY);
+    addCleanKey(process.env['GIPHY_API_KEY=']);
+
+    // 3. Known beta fallback
+    addCleanKey('dc6zaTOxFJmzC');
 
     let lastError: any = null;
 
@@ -177,7 +200,20 @@ async function startServer() {
           url = `https://api.giphy.com/v1/gifs/search?api_key=${key}&q=${encodeURIComponent(q)}&limit=20&rating=g`;
         }
 
-        const response = await fetch(url);
+        // Forward matching origin, referer, and user-agent in case the API key is restricted by domain
+        const headers: Record<string, string> = {
+          'Accept': 'application/json',
+          'User-Agent': (req.headers['user-agent'] as string) || 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        };
+
+        if (req.headers.origin) {
+          headers['Origin'] = req.headers.origin as string;
+        }
+        if (req.headers.referer) {
+          headers['Referer'] = req.headers.referer as string;
+        }
+
+        const response = await fetch(url, { headers });
         if (response.ok) {
           const data = await response.json();
           // Verify that Giphy returned valid array data
