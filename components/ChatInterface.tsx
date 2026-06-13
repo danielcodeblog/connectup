@@ -850,18 +850,30 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
 
                               {/* Document Content */}
                               {msg.type === 'document' && (
-                                <div className="flex items-center gap-3 pr-2">
-                                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isMe ? 'bg-black/10 text-black' : 'bg-zinc-100 text-zinc-500'}`}>
+                                <a 
+                                  href={msg.text} 
+                                  download={msg.fileName || 'document'} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className={`flex items-center gap-3 pr-2 cursor-pointer no-underline focus:outline-none rounded-xl p-1 -m-1 transition-all ${isMe ? 'hover:bg-black/5' : 'hover:bg-zinc-50'}`}
+                                  onClick={(e) => {
+                                    if (!msg.text || (!msg.text.startsWith('http') && !msg.text.startsWith('blob:') && !msg.text.startsWith('data:'))) {
+                                      e.preventDefault();
+                                      alert("The document URL is still generating or invalid.");
+                                    }
+                                  }}
+                                >
+                                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${isMe ? 'bg-black/10 text-black' : 'bg-zinc-100 text-zinc-500'}`}>
                                     <FileText size={20} />
                                   </div>
-                                  <div className="flex flex-col overflow-hidden">
-                                    <span className="font-bold text-sm truncate max-w-[150px]">{msg.fileName}</span>
-                                    <span className={`text-xs ${isMe ? 'text-black/60' : 'text-zinc-500'}`}>{msg.fileSize}</span>
+                                  <div className="flex flex-col overflow-hidden flex-1 text-left min-w-0">
+                                    <span className="font-bold text-sm truncate max-w-[150px] block">{msg.fileName || 'Document'}</span>
+                                    <span className={`text-xs ${isMe ? 'text-black/60' : 'text-zinc-500'}`}>{msg.fileSize || 'Unknown size'}</span>
                                   </div>
-                                  <button className={`p-2 rounded-full ml-1 ${isMe ? 'hover:bg-black/10 text-black' : 'hover:bg-zinc-200 text-zinc-500'}`}>
+                                  <div className={`p-2 rounded-full ml-1 shrink-0 ${isMe ? 'hover:bg-black/10 text-black' : 'hover:bg-zinc-200 text-zinc-500'}`}>
                                     <Download size={16} />
-                                  </button>
-                                </div>
+                                  </div>
+                                </a>
                               )}
                               
                                 <div className={`flex items-center justify-end gap-1 mt-0.5 select-none ${isMe ? 'text-black/55' : 'text-zinc-400'}`}>
@@ -884,6 +896,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
                     );
                   })
                )}
+               <div className="h-16 w-full shrink-0" />
                <div ref={messagesEndRef} />
             </div>
 
