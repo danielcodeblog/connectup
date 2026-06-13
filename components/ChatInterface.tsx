@@ -971,17 +971,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
                 </button>
                 <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
 
-                <button 
-                  onClick={() => setShowGifPicker(!showGifPicker)}
-                  className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all shrink-0 active:scale-95 shadow-xs font-bold text-xs select-none
-                    ${showGifPicker 
-                      ? 'bg-amber-100 border-amber-300 text-amber-700 font-extrabold shadow-inner' 
-                      : 'bg-zinc-50 border-zinc-200 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-800'}`}
-                  title="Send GIF"
-                >
-                  <GifIcon size={18} />
-                </button>
-
                 <div className="flex-1 bg-zinc-50 border border-zinc-200 rounded-2xl px-3.5 py-1.5 md:py-2 flex items-center gap-2 focus-within:ring-1 focus-within:ring-[#EAB308]/30 focus-within:bg-white focus-within:border-zinc-300 transition-all shadow-inner">
                   <input 
                     type="text" 
