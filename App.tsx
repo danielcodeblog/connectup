@@ -1324,7 +1324,7 @@ const App = () => {
               </button>
             }
           >
-             <div className="max-w-4xl mx-auto w-full space-y-12">
+             <div className="max-w-xl md:max-w-4xl mx-auto w-full space-y-12">
                <div className="flex flex-col items-center">
                   <div className="relative group">
                     <div 
@@ -1364,7 +1364,7 @@ const App = () => {
                </div>
 
                <form onSubmit={handleSaveProfile} className="space-y-12">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 w-full">
                     {[
                       { label: "Identity", sub: "Legal or professional name", icon: User, val: userProfile.name, set: (v: string) => setUserProfile({...userProfile, name: v}), placeholder: "John Doe" }, 
                       { label: role === UserRole.FOUNDER ? "Professional Title" : "Designation", sub: "Displayed in community", icon: Award, val: userProfile.title, set: (v: string) => setUserProfile({...userProfile, title: v}), placeholder: "e.g. Lead Technologist" },
@@ -1376,14 +1376,16 @@ const App = () => {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.1 }}
-                        className="space-y-4"
+                        className="space-y-3 w-full flex flex-col items-center md:items-start"
                       >
-                        <div className="flex flex-col ml-1">
-                          <label className="text-xs sm:text-sm font-black text-zinc-950 uppercase tracking-[0.2em]">{field.label}</label>
-                          <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">{field.sub}</span>
+                        <div className="flex flex-col items-center md:items-start text-center md:text-left w-full ml-1">
+                          <label className="text-xs sm:text-sm font-black text-zinc-950 uppercase tracking-[0.2em] flex items-center gap-2">
+                            <field.icon size={16} strokeWidth={2.5} className="text-zinc-400 md:hidden" />
+                            {field.label}
+                          </label>
                         </div>
-                        <div className="relative group">
-                          <div className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 text-zinc-300 group-focus-within:text-brand-primary transition-colors">
+                        <div className="relative group w-full max-w-xs sm:max-w-md md:max-w-none mx-auto">
+                          <div className="absolute left-4 lg:left-6 top-1/2 -translate-y-1/2 text-zinc-300 group-focus-within:text-brand-primary transition-colors hidden md:block">
                             <field.icon size={20} strokeWidth={2.5} />
                           </div>
                           <input 
@@ -1392,7 +1394,7 @@ const App = () => {
                             value={field.val} 
                             placeholder={field.placeholder}
                             onChange={e => field.set(e.target.value)} 
-                            className="w-full bg-white border-2 border-zinc-100 rounded-2xl sm:rounded-3xl pl-12 sm:pl-16 pr-4 sm:pr-8 py-3.5 sm:py-5 text-sm sm:text-lg font-bold text-zinc-950 placeholder:text-zinc-200 outline-none focus:border-zinc-950 focus:shadow-xl focus:shadow-zinc-200/50 transition-all disabled:opacity-50 disabled:bg-zinc-50" 
+                            className="w-full text-center md:text-left bg-white border-2 border-zinc-100 rounded-2xl sm:rounded-3xl px-6 md:pl-12 lg:pl-16 md:pr-4 lg:pr-8 py-3.5 sm:py-5 text-sm sm:text-lg font-bold text-zinc-950 placeholder:text-zinc-200 outline-none focus:border-zinc-950 focus:shadow-xl focus:shadow-zinc-200/50 transition-all disabled:opacity-50 disabled:bg-zinc-50" 
                           />
                         </div>
                       </motion.div>
@@ -1454,9 +1456,6 @@ const App = () => {
                             <BadgeCheck className="text-brand-primary flex-shrink-0 mt-1 sm:mt-2" size={32} strokeWidth={2.5} />
                           )}
                         </div>
-                        {userProfile.plan === 'pro' && (
-                          <div className="px-4 py-1 sm:px-5 sm:py-2 bg-brand-primary text-black text-[9px] sm:text-[10px] font-black uppercase rounded-full sm:rounded-2xl shadow-lg shadow-brand-primary/20 border border-black/5 shrink-0 mt-1 sm:mt-2">PRO</div>
-                        )}
                       </div>
                       <p className="text-zinc-400 font-black text-xs sm:text-sm tracking-[0.3em] uppercase mb-5 sm:mb-8">{userProfile.title || 'Perspective Visionary'}</p>
                       
