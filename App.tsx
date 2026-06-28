@@ -1659,7 +1659,7 @@ const App = () => {
 
 
   return (
-    <div className={`bg-white flex selection:bg-brand-primary selection:text-zinc-900 ${appState === 'LANDING' ? 'min-h-screen' : 'h-screen w-full overflow-hidden'}`}>
+     <div className={`${appState === 'LANDING' || appState === 'AUTH' || appState === 'SPLASH' || appState === 'INITIALIZING' ? 'bg-white' : 'bg-[#FFFCF0]'} flex selection:bg-brand-primary selection:text-zinc-900 ${appState === 'LANDING' ? 'min-h-screen' : 'h-screen w-full overflow-hidden'}`}>
       {appState !== 'LANDING' && appState !== 'AUTH' && appState !== 'SPLASH' && appState !== 'INITIALIZING' && (
         <SideNav 
           currentView={currentView} 
