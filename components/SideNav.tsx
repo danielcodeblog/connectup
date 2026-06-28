@@ -24,7 +24,7 @@ export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange }) =
   ];
 
   return (
-    <div className={`hidden lg:flex flex-col bg-white/60 border-r border-white/20 h-screen sticky top-0 left-0 z-50 transition-all duration-500 ease-in-out backdrop-blur-3xl ${isCollapsed ? 'w-20' : 'w-24 xl:w-72'}`}>
+    <div className={`hidden lg:flex flex-col bg-white/20 border-r border-white/30 h-screen sticky top-0 left-0 z-50 transition-all duration-500 ease-in-out backdrop-blur-2xl shadow-sm ${isCollapsed ? 'w-20' : 'w-24 xl:w-72'}`}>
       {/* Toggle Area */}
       <div className={`h-20 xl:h-24 shrink-0 flex items-center justify-center pt-4 transition-all duration-300`}>
         <button 
