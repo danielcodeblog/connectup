@@ -25,26 +25,14 @@ export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange }) =
 
   return (
     <div className={`hidden lg:flex flex-col bg-white/60 border-r border-white/20 h-screen sticky top-0 left-0 z-50 transition-all duration-500 ease-in-out backdrop-blur-3xl ${isCollapsed ? 'w-20' : 'w-24 xl:w-72'}`}>
-      {/* Logo Toggle Area */}
-      <div className={`h-20 xl:h-24 shrink-0 flex items-center px-4 pt-4 transition-all duration-300 ${isCollapsed ? 'justify-center' : 'justify-start ml-2'}`}>
+      {/* Toggle Area */}
+      <div className={`h-20 xl:h-24 shrink-0 flex items-center justify-center pt-4 transition-all duration-300`}>
         <button 
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="group relative flex items-center gap-3 transition-all duration-300 active:scale-95"
+          className="p-3 bg-zinc-50 hover:bg-zinc-100 border border-zinc-200/60 rounded-2xl flex items-center justify-center text-zinc-500 hover:text-zinc-900 transition-all duration-300 active:scale-95 cursor-pointer"
+          title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
         >
-          <div className="w-12 h-12 bg-black rounded-2xl flex items-center justify-center shrink-0 shadow-xl shadow-black/20 group-hover:shadow-brand-primary/20 transition-all duration-300">
-            <div className="w-4 h-4 bg-brand-primary rounded-full shadow-[0_0_15px_rgba(234,179,8,0.4)]" />
-          </div>
-          
-          {!isCollapsed && (
-            <span className="font-display font-black text-2xl tracking-tighter text-zinc-900 hidden xl:block animate-in fade-in slide-in-from-left-2 duration-500">
-              Connect<span className="text-brand-primary">Up</span>
-            </span>
-          )}
-          
-          {/* Subtle indicator */}
-          <div className={`absolute top-1/2 -translate-y-1/2 p-1.5 bg-white/90 backdrop-blur-md border border-white/60 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-300 ${isCollapsed ? '-right-3 translate-x-[-10px] group-hover:translate-x-0' : 'right-[-20px] xl:right-[-40px] translate-x-[-10px] group-hover:translate-x-0'}`}>
-             {isCollapsed ? <ArrowRight01Icon size={12} className="text-zinc-900" /> : <ArrowLeft01Icon size={12} className="text-zinc-900" />}
-          </div>
+          {isCollapsed ? <ArrowRight01Icon size={20} /> : <ArrowLeft01Icon size={20} />}
         </button>
       </div>
 
