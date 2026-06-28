@@ -433,6 +433,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
         if (raw.type === 'text' && plainText && plainText.startsWith('E2EE::')) {
             const activeChatData = chats.find(c => c.id === selectedChatId);
             let peerKey = activeChatData?.peerPublicKey || null;
+            if (!peerKey) {
+                peerKey = await StorageService.getPeerPublicKeyForChat(selectedChatId);
+            }
             plainText = await EncryptionService.decryptMessage(plainText, peerKey);
         }
 
@@ -467,8 +470,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
       }
     });
 
+    const pollInterval = setInterval(() => {
+      loadMessages(selectedChatId);
+    }, 10000);
+
     return () => {
       subscription.unsubscribe();
+      clearInterval(pollInterval);
     };
   }, [selectedChatId, currentUserId]);
 
@@ -692,16 +700,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = React.memo(({
         >
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1">
-              {onClose && (
-                <button 
-                  onClick={onClose}
-                  className="p-1 -ml-1 rounded-full hover:bg-zinc-100 text-zinc-500 hover:text-zinc-900 transition-all min-w-[36px] min-h-[36px] flex items-center justify-center active:scale-95"
-                  aria-label="Go back"
-                  id="chat-back-button"
-                >
-                  <ChevronLeft size={18} />
-                </button>
-              )}
               <h1 className="text-lg font-display font-bold tracking-tight text-zinc-900" id="chat-messages-header">Messages</h1>
             </div>
           </div>
