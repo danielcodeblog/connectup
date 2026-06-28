@@ -113,18 +113,30 @@ const PitchSimulator: React.FC = () => {
   const [currentTime, setCurrentTime] = useState(0); // in seconds
   const [isEditing, setIsEditing] = useState(false);
   
-  const [hookText, setHookText] = useState(pitchFormulas[0].hook);
-  const [solutionText, setSolutionText] = useState(pitchFormulas[0].solution);
-  const [askText, setAskText] = useState(pitchFormulas[0].ask);
+  const [formulas, setFormulas] = useState(() => {
+    try {
+      const saved = localStorage.getItem('connectup_pitch_formulas_v2');
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    } catch (e) {
+      console.error("Failed to load pitch formulas:", e);
+    }
+    return pitchFormulas;
+  });
+  
+  const [hookText, setHookText] = useState(formulas[0].hook);
+  const [solutionText, setSolutionText] = useState(formulas[0].solution);
+  const [askText, setAskText] = useState(formulas[0].ask);
 
   // Sync state if template changes (and we're not custom editing or during playback)
   useEffect(() => {
     if (!isEditing && !isPlaying) {
-      setHookText(pitchFormulas[activeIdx].hook);
-      setSolutionText(pitchFormulas[activeIdx].solution);
-      setAskText(pitchFormulas[activeIdx].ask);
+      setHookText(formulas[activeIdx].hook);
+      setSolutionText(formulas[activeIdx].solution);
+      setAskText(formulas[activeIdx].ask);
     }
-  }, [activeIdx, isEditing, isPlaying]);
+  }, [activeIdx, isEditing, isPlaying, formulas]);
 
   useEffect(() => {
     let interval: any = null;
@@ -172,6 +184,25 @@ const PitchSimulator: React.FC = () => {
     return 'ask';
   };
 
+  const handleToggleEdit = () => {
+    if (isEditing) {
+      const updatedFormulas = [...formulas];
+      updatedFormulas[activeIdx] = {
+        ...updatedFormulas[activeIdx],
+        hook: hookText,
+        solution: solutionText,
+        ask: askText
+      };
+      setFormulas(updatedFormulas);
+      try {
+        localStorage.setItem('connectup_pitch_formulas_v2', JSON.stringify(updatedFormulas));
+      } catch (e) {
+        console.error("Failed to save to localStorage", e);
+      }
+    }
+    setIsEditing(!isEditing);
+  };
+
   const currentSection = getActiveSection();
   const progressPercent = (currentTime / 30) * 100;
 
@@ -186,7 +217,7 @@ const PitchSimulator: React.FC = () => {
         <div className="flex items-center gap-2">
           {!isEditing && (
             <div className="flex bg-white/5 p-1 rounded-full border border-white/5">
-              {pitchFormulas.map((f, i) => (
+              {formulas.map((f, i) => (
                 <button
                   key={i}
                   onClick={() => {
@@ -207,7 +238,7 @@ const PitchSimulator: React.FC = () => {
           )}
 
           <button
-            onClick={() => setIsEditing(!isEditing)}
+            onClick={handleToggleEdit}
             disabled={isPlaying}
             className={cn(
               "px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wider rounded-full border transition-all cursor-pointer disabled:opacity-30",
