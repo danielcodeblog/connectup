@@ -229,8 +229,16 @@ const FounderDashboard: React.FC<FounderDashboardProps> = React.memo(({ userProf
       <div className="relative z-10 flex flex-col h-full overflow-hidden">
           {/* Header */}
           <div className={`sticky top-0 left-0 right-0 px-4 py-3 sm:px-6 sm:py-4 safe-area-top z-[40] transition-all duration-200 backdrop-blur-md bg-white/70 border-b border-zinc-100 ${isEditingDeck ? '-translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'}`}>
-              <div className="flex items-center justify-end">
-                  <div className="flex items-center space-x-3">
+              <div className="flex items-center justify-between w-full">
+                  {/* ConnectUp Brand Logo on the left */}
+                  <div className="flex items-center select-none">
+                      <span className="font-display font-black text-lg sm:text-2xl tracking-tighter text-zinc-900">
+                          Connect<span className="text-brand-primary">Up</span>
+                      </span>
+                  </div>
+
+                  {/* Right side profile */}
+                  <div className="flex items-center space-x-3 shrink-0">
                      {userProfile?.avatarUrl ? (
                          <img 
                             src={userProfile.avatarUrl} 
@@ -242,7 +250,7 @@ const FounderDashboard: React.FC<FounderDashboardProps> = React.memo(({ userProf
                          <div 
                             className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-zinc-200 flex items-center justify-center text-zinc-500 border-2 border-white shadow-sm cursor-pointer hover:opacity-80 transition-opacity"
                             onClick={() => setSelectedProfileId('me')}
-                         >
+                          >
                              <IconWrapper icon={UserIcon} size={20} />
                          </div>
                      )}
