@@ -1659,12 +1659,19 @@ const App = () => {
 
 
   return (
-     <div className={`${appState === 'LANDING' || appState === 'AUTH' || appState === 'SPLASH' || appState === 'INITIALIZING' ? 'bg-white' : 'bg-[#FFFCF0]'} flex selection:bg-brand-primary selection:text-zinc-900 ${appState === 'LANDING' ? 'min-h-screen' : 'h-screen w-full overflow-hidden'}`}>
+    <div className={`${appState === 'LANDING' || appState === 'AUTH' || appState === 'SPLASH' || appState === 'INITIALIZING' ? 'bg-white' : 'bg-[#FFFCF0]'} flex selection:bg-brand-primary selection:text-zinc-900 ${appState === 'LANDING' ? 'min-h-screen' : 'h-screen w-full overflow-hidden'} relative`}>
       {appState !== 'LANDING' && appState !== 'AUTH' && appState !== 'SPLASH' && appState !== 'INITIALIZING' && (
-        <SideNav 
-          currentView={currentView} 
-          onViewChange={setCurrentView} 
-        />
+        <>
+          {/* Ambient glassmorphic glowing spheres to elevate the sidebar's glass reflection */}
+          <div className="absolute top-12 left-[-180px] w-[400px] h-[400px] bg-brand-primary/15 rounded-full blur-[110px] pointer-events-none z-0" />
+          <div className="absolute bottom-12 left-[-150px] w-[350px] h-[350px] bg-[#EAB308]/15 rounded-full blur-[100px] pointer-events-none z-0" />
+          
+          <SideNav 
+            currentView={currentView} 
+            onViewChange={setCurrentView} 
+            onPostClick={() => setIsCreatingPost(true)}
+          />
+        </>
       )}
       <div className={`w-full bg-transparent relative flex flex-col font-sans ${appState === 'LANDING' ? 'min-h-screen' : 'h-screen overflow-y-auto no-scrollbar'}`}>
         {appState === 'INITIALIZING' ? (
