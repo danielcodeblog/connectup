@@ -168,10 +168,10 @@ export const BlogSection: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.08, duration: 0.6 }}
-                className="group cursor-pointer flex flex-col h-full rounded-[2rem] bg-[#161618] border border-white/5 hover:border-white/10 transition-all hover:bg-[#1A1A1D] overflow-hidden"
+                className="group cursor-pointer flex flex-col h-[460px] rounded-[2rem] bg-[#161618] border border-white/5 hover:border-white/10 transition-all hover:bg-[#1A1A1D] overflow-hidden"
                 onClick={() => setSelectedBlog(blog)}
               >
-                <div className="relative aspect-[16/10] overflow-hidden w-full">
+                <div className="relative h-1/2 overflow-hidden w-full">
                   <img
                     src={blog.image}
                     alt={blog.title}
@@ -185,16 +185,18 @@ export const BlogSection: React.FC = () => {
                   </div>
                 </div>
                 
-                <div className="p-6 sm:p-7 flex flex-col flex-grow">
-                  <h3 className="font-serif text-2xl font-normal text-white mb-4 leading-snug group-hover:text-white transition-colors">
-                    {blog.title}
-                  </h3>
-                  
-                  <p className="text-zinc-400 text-sm mb-6 flex-grow font-light leading-relaxed">
-                    {blog.excerpt}
-                  </p>
+                <div className="p-6 sm:p-7 flex flex-col h-1/2 justify-between">
+                  <div>
+                    <h3 className="font-serif text-xl sm:text-2xl font-normal text-white mb-2 leading-snug group-hover:text-[#EAB308] transition-colors line-clamp-2">
+                      {blog.title}
+                    </h3>
+                    
+                    <p className="text-zinc-400 text-xs sm:text-sm font-light leading-relaxed line-clamp-2 sm:line-clamp-3">
+                      {blog.excerpt}
+                    </p>
+                  </div>
 
-                  <div className="flex items-center gap-2 text-white/80 group-hover:text-white text-sm font-semibold mt-auto group-hover:gap-3.5 transition-all w-fit">
+                  <div className="flex items-center gap-2 text-white/80 group-hover:text-white text-sm font-semibold group-hover:gap-3.5 transition-all w-fit">
                     Read Article
                     <ArrowRight size={16} />
                   </div>
