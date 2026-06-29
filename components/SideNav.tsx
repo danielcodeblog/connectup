@@ -95,17 +95,21 @@ export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onP
               }`}
             >
               <div className={`p-1 rounded-lg shrink-0 flex items-center justify-center ${isCollapsed ? 'm-0.5' : ''} ${isPro ? 'bg-white/25' : 'bg-yellow-500/10'}`}>
-                {isPro ? (
-                  <PlusSignIcon 
-                    size={18} 
-                    className="shrink-0 text-zinc-900 font-bold" 
-                  />
-                ) : (
-                  <Lock 
-                    size={15} 
-                    className="shrink-0 text-[#EAB308]" 
-                  />
-                )}
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="18" 
+                  height="18" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2.5" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  className={`shrink-0 ${isPro ? 'text-zinc-900' : 'text-[#EAB308]'}`}
+                >
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
               </div>
               
               {!isCollapsed && (
