@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   X, FileText, RefreshCcw, Check, MessageCircle, Flame, User, Flag, Volume2, VolumeX, AlertTriangle, Play, Pause
@@ -118,41 +116,39 @@ const SwipeDeck: React.FC<SwipeDeckProps> = React.memo(({ onMatch, userProfile }
           </div>
         </div>
       ) : (
-        <div className="flex-1 relative w-full h-full bg-transparent overflow-hidden flex items-center justify-center p-2 sm:p-4 md:p-6">
-          <div className="relative w-full h-full sm:max-w-[430px] sm:h-[82dvh] sm:max-h-[820px] sm:aspect-[9/16] flex items-center justify-center">
-            {cards.length === 0 && !isRefreshing && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-6 text-center animate-in fade-in duration-500">
-                <RefreshCcw 
-                  size={78} 
-                  className="p-6 text-brand-primary bg-white border border-zinc-200/60 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.05)] hover:shadow-[0_16px_48px_rgba(234,179,8,0.22)] hover:border-brand-primary/45 hover:scale-110 active:scale-95 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] cursor-pointer mb-8 hover:rotate-180" 
-                  onClick={() => refreshData(true)}
-                />
-                <h2 className="text-3xl sm:text-4xl font-display font-[950] tracking-tight text-zinc-900 mb-3 leading-none transition-all duration-300 pointer-events-none select-none">All Caught Up</h2>
-                <p className="text-zinc-500/90 text-sm sm:text-base max-w-sm mx-auto mb-10 leading-relaxed font-sans font-medium px-4 tracking-tight select-none">You've curated your feed perfectly. We will notify you dynamic new opportunities matching your profile go active.</p>
-              </div>
-            )}
+        <div className="flex-1 relative w-full h-full bg-transparent overflow-hidden">
+          {cards.length === 0 && !isRefreshing && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-6 text-center animate-in fade-in duration-500">
+              <RefreshCcw 
+                size={78} 
+                className="p-6 text-brand-primary bg-white border border-zinc-200/60 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.05)] hover:shadow-[0_16px_48px_rgba(234,179,8,0.22)] hover:border-brand-primary/45 hover:scale-110 active:scale-95 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] cursor-pointer mb-8 hover:rotate-180" 
+                onClick={() => refreshData(true)}
+              />
+              <h2 className="text-3xl sm:text-4xl font-display font-[950] tracking-tight text-zinc-900 mb-3 leading-none transition-all duration-300 pointer-events-none select-none">All Caught Up</h2>
+              <p className="text-zinc-500/90 text-sm sm:text-base max-w-sm mx-auto mb-10 leading-relaxed font-sans font-medium px-4 tracking-tight select-none">You've curated your feed perfectly. We will notify you dynamic new opportunities matching your profile go active.</p>
+            </div>
+          )}
 
-            <AnimatePresence>
-              {cards.map((card, index) => {
-                const isTop = index === cards.length - 1;
-                const isSecond = index === cards.length - 2;
-                if (!isTop && !isSecond) return null;
-                
-                return (
-                  <SwipeCard 
-                    key={card.id} 
-                    card={card} 
-                    isTop={isTop} 
-                    isMuted={isMuted}
-                    onToggleMute={() => setIsMuted(prev => !prev)}
-                    onSwipe={(dir) => handleSwipe(dir, card)}
-                    onOpenMemo={() => handleOpenMemo(card)}
-                    onReport={() => handleOpenReport(card)}
-                  />
-                );
-              })}
-            </AnimatePresence>
-          </div>
+          <AnimatePresence>
+            {cards.map((card, index) => {
+              const isTop = index === cards.length - 1;
+              const isSecond = index === cards.length - 2;
+              if (!isTop && !isSecond) return null;
+              
+              return (
+                <SwipeCard 
+                  key={card.id} 
+                  card={card} 
+                  isTop={isTop} 
+                  isMuted={isMuted}
+                  onToggleMute={() => setIsMuted(prev => !prev)}
+                  onSwipe={(dir) => handleSwipe(dir, card)}
+                  onOpenMemo={() => handleOpenMemo(card)}
+                  onReport={() => handleOpenReport(card)}
+                />
+              );
+            })}
+          </AnimatePresence>
         </div>
       )}
 
@@ -475,7 +471,7 @@ const SwipeCard = ({ card, isTop, isMuted, onToggleMute, onSwipe, onOpenMemo, on
       onPointerLeave={isTop ? cancelHold : undefined}
       onPointerCancel={isTop ? cancelHold : undefined}
       onPointerMove={isTop ? handlePointerMove : undefined}
-      className={`absolute inset-0 w-full h-full bg-zinc-900 overflow-hidden select-none rounded-none sm:rounded-[2rem] sm:border sm:border-zinc-800/80 ${
+      className={`absolute inset-0 w-full h-full bg-zinc-900 overflow-hidden select-none ${
         isTop ? 'cursor-grab active:cursor-grabbing touch-none z-20' : 'pointer-events-none z-10'
       }`}
     >
