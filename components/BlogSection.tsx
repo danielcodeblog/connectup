@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight, Calendar, User, Clock } from 'lucide-react';
 import regeneratedImage from '@/src/assets/images/regenerated_image_1782595459649.jpg';
+import blogArtOfSwipe from '@/src/assets/images/blog_art_of_swipe_1782696240936.jpg';
+import blogMatchDeckPitch from '@/src/assets/images/blog_match_deck_pitch_1782696256365.jpg';
+import blogAlgorithmicPrecision from '@/src/assets/images/blog_algorithmic_precision_1782696272353.jpg';
 
 const blogs = [
   {
@@ -21,7 +24,7 @@ const blogs = [
     author: "Elena Rodriguez",
     date: "May 12, 2026",
     readTime: "6 min read",
-    image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=60&w=800&auto=format&fit=crop&sat=-100"
+    image: blogArtOfSwipe
   },
   {
     id: 2,
@@ -40,7 +43,7 @@ const blogs = [
     author: "Marcus Chen",
     date: "May 08, 2026",
     readTime: "8 min read",
-    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=60&w=800&auto=format&fit=crop&sat=-100"
+    image: blogMatchDeckPitch
   },
   {
     id: 3,
@@ -59,7 +62,7 @@ const blogs = [
     author: "Sophia Patel",
     date: "June 27, 2026",
     readTime: "6 min read",
-    image: "https://images.unsplash.com/photo-1506784983877-45594efa4cbe?q=60&w=800&auto=format&fit=crop&sat=-100"
+    image: blogAlgorithmicPrecision
   },
   {
     id: 4,
