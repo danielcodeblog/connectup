@@ -97,8 +97,8 @@ export default function LandingSite({ onLoginClick, onLegalView }: LandingSitePr
     useEffect(() => {
       if (contentRef.current) {
         gsap.fromTo(contentRef.current,
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }
+          { opacity: 0, y: 5 },
+          { opacity: 1, y: 0, duration: 0.15, ease: 'power2.out' }
         );
       }
     }, []);
