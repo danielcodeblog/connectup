@@ -219,6 +219,25 @@ const App = () => {
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Wrapped create post callback to enforce Pro membership
+  const handleOpenCreatePost = useCallback((quotePost: any = null) => {
+    if (userProfile?.plan === 'pro') {
+      if (quotePost) {
+        setPostToQuote(quotePost);
+      } else {
+        setPostToQuote(null);
+      }
+      setIsCreatingPost(true);
+    } else {
+      setNotification({
+        sender: "Premium Feature",
+        message: "Creating new posts is exclusive to Pro members. Upgrade to unlock!",
+        userId: "sys",
+        type: 'system'
+      });
+    }
+  }, [userProfile, setNotification]);
+
   // Initialize Storage and Check Connection
   useEffect(() => {
     const init = async () => {
@@ -877,11 +896,8 @@ const App = () => {
               onMessage={handleCommunityMessage} 
               onViewProfile={setSelectedCommunityProfileId} 
               refreshTrigger={communityRefreshTrigger}
-              onAddPost={() => setIsCreatingPost(true)}
-              onQuotePost={(post) => {
-                setPostToQuote(post);
-                setIsCreatingPost(true);
-              }}
+              onAddPost={() => handleOpenCreatePost()}
+              onQuotePost={(post) => handleOpenCreatePost(post)}
           />
       );
     }
@@ -1669,7 +1685,8 @@ const App = () => {
           <SideNav 
             currentView={currentView} 
             onViewChange={setCurrentView} 
-            onPostClick={() => setIsCreatingPost(true)}
+            userProfile={userProfile}
+            onPostClick={() => handleOpenCreatePost()}
           />
         </>
       )}
@@ -1804,7 +1821,7 @@ const App = () => {
                         id: 'plus', 
                         icon: <Plus className={userProfile?.plan === 'pro' ? 'text-brand-primary' : 'opacity-20'} />, 
                         label: 'Create', 
-                        onClick: () => userProfile?.plan === 'pro' && setIsCreatingPost(true) 
+                        onClick: () => handleOpenCreatePost() 
                       },
                       { id: 'community', icon: <Users />, label: 'Community', onClick: () => handleNavClick('community') },
                       { id: 'settings', icon: <Settings />, label: 'Settings', onClick: () => handleNavClick('settings') },
