@@ -183,7 +183,11 @@ export default function LandingSite({ onLoginClick, onLegalView }: LandingSitePr
       
       {/* Mobile Menu Overlay */}
       <div
-        className="fixed inset-0 z-[100] bg-[#0D0D0F]/95 backdrop-blur-3xl transition-all duration-700 ease-[cubic-bezier(0.85,0,0.15,1)] flex flex-col pt-4 px-4 md:px-16 md:pt-8 pb-8 overflow-y-auto lg:hidden"
+        className={`fixed inset-0 z-[100] bg-[#0D0D0F]/95 backdrop-blur-3xl transition-all flex flex-col pt-4 px-4 md:px-16 md:pt-8 pb-8 overflow-y-auto lg:hidden ${
+          isMobileMenuOpen 
+            ? "duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" 
+            : "duration-300 ease-[cubic-bezier(0.7,0,0.84,0)]"
+        }`}
         style={{
           clipPath: isMobileMenuOpen ? "circle(150% at calc(100% - 2rem) 2rem)" : "circle(0% at calc(100% - 2rem) 2rem)",
           visibility: isMobileMenuOpen ? "visible" : "hidden",
@@ -216,12 +220,11 @@ export default function LandingSite({ onLoginClick, onLegalView }: LandingSitePr
                 navigateTo(page);
               }}
               className={`block w-full text-center text-4xl sm:text-5xl md:text-7xl font-sans font-black text-white hover:text-[#EAB308] transition-all tracking-tighter leading-none uppercase
-                ${isMobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"}
-                ${(currentPage === page && page !== 'founders') ? 'text-[#EAB308]' : ''}
+                ${isMobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}
               `}
               style={{
-                transitionDelay: `${idx * 100}ms`,
-                transitionDuration: "800ms",
+                transitionDelay: isMobileMenuOpen ? `${idx * 40}ms` : '0ms',
+                transitionDuration: isMobileMenuOpen ? "400ms" : "150ms",
               }}
             >
               {page}.
@@ -231,8 +234,10 @@ export default function LandingSite({ onLoginClick, onLegalView }: LandingSitePr
 
         {/* Action Button at bottom */}
         <div
-          className={`pt-10 flex justify-center w-full transition-all duration-1000 delay-500 pb-12 ${
-            isMobileMenuOpen ? "opacity-100 scale-100" : "opacity-0 scale-90"
+          className={`pt-10 flex justify-center w-full transition-all pb-12 ${
+            isMobileMenuOpen 
+              ? "opacity-100 scale-100 duration-400 delay-200" 
+              : "opacity-0 scale-95 duration-150 delay-0"
           }`}
         >
           <button
