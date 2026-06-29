@@ -15,8 +15,8 @@ export const LandingHome = ({ onNavigate, onLoginClick, showVideo }: HomeViewPro
   useEffect(() => {
     const elements = document.querySelectorAll('.hero-anim');
     gsap.fromTo(elements, 
-      { opacity: 0, y: 40, filter: 'blur(10px)' },
-      { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1, stagger: 0.15, ease: 'expo.out', delay: 0.8 }
+      { opacity: 0, y: 20, filter: 'blur(10px)' },
+      { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.4, stagger: 0.05, ease: 'expo.out', delay: 0.1 }
     );
   }, []);
 
