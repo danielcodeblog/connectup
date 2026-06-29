@@ -29,13 +29,6 @@ export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onP
     <div className={`hidden lg:flex flex-col bg-white/5 border-r border-white/20 h-screen sticky top-0 left-0 z-50 transition-all duration-500 ease-in-out backdrop-blur-3xl shadow-sm ${isCollapsed ? 'w-20' : 'w-24 xl:w-72'}`}>
       {/* Toggle Area */}
       <div className={`h-20 xl:h-24 shrink-0 flex items-center justify-center pt-4 transition-all duration-300`}>
-        <button 
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-3 bg-white/40 hover:bg-white/60 border border-white/40 rounded-2xl flex items-center justify-center text-zinc-600 hover:text-zinc-900 shadow-sm backdrop-blur-md transition-all duration-300 active:scale-95 cursor-pointer"
-          title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-        >
-          {isCollapsed ? <ArrowRight01Icon size={20} /> : <ArrowLeft01Icon size={20} />}
-        </button>
       </div>
 
       {/* Nav Items */}
