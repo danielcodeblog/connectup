@@ -965,8 +965,9 @@ const App = () => {
                       {[
                         { text: 'Full Community Feed Access', checked: true },
                         { text: 'Direct Messaging & Networking', checked: true },
-                        { text: 'Periodic Strategy Guide', checked: false },
-                        { text: 'Priority Founder Support', checked: false }
+                        { text: 'Verified Pro badge (Founder/Investor)', checked: true },
+                        { text: 'Periodic Strategy Guide', checked: true },
+                        { text: 'Priority Founder Support', checked: true }
                       ].map((feature, i) => (
                          <div key={i} className="flex items-center gap-4">
                             <div className={`w-5 h-5 rounded-full border ${feature.checked ? 'border-zinc-600 bg-zinc-700 text-white' : 'border-zinc-700 bg-zinc-800 text-transparent'} flex items-center justify-center shrink-0`}>
@@ -991,6 +992,7 @@ const App = () => {
                       {[
                         { text: 'Full Community Feed Access', checked: true },
                         { text: 'Direct Messaging & Networking', checked: true },
+                        { text: 'Verified Pro badge (Founder/Investor)', checked: true },
                         { text: 'Periodic Strategy Guide', checked: true },
                         { text: 'Priority Founder Support', checked: true }
                       ].map((feature, i) => (
