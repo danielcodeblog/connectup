@@ -402,28 +402,30 @@ const CommunityFeed: React.FC<CommunityFeedProps> = React.memo(({
                 Connect<span className="text-brand-primary">Up.</span>
               </h1>
             </div>
-            <div className="flex items-center w-full">
+            <div className="flex items-center w-full bg-zinc-100/90 p-1 rounded-2xl mb-3 relative border border-zinc-200/20">
               <button 
                 onClick={() => setActiveTab('for-you')}
-                className="flex-1 h-12 relative flex items-center justify-center text-sm font-bold transition-colors group"
+                className="flex-1 py-3 text-xs font-black uppercase tracking-wider relative flex items-center justify-center select-none cursor-pointer"
               >
-                <span className={activeTab === 'for-you' ? 'text-zinc-900' : 'text-zinc-400 group-hover:text-zinc-600'}>For You</span>
+                <span className={`relative z-20 transition-colors duration-200 ${activeTab === 'for-you' ? 'text-white' : 'text-zinc-500 hover:text-zinc-800'}`}>For You</span>
                 {activeTab === 'for-you' && (
                   <motion.div 
-                    layoutId="activeTabIndicator"
-                    className="absolute bottom-0 h-[4px] w-1/2 bg-yellow-400 rounded-full"
+                    layoutId="activeTabPill"
+                    className="absolute inset-0 bg-zinc-950 rounded-xl shadow-md shadow-black/15"
+                    transition={{ type: "spring", stiffness: 380, damping: 28 }}
                   />
                 )}
               </button>
               <button 
                 onClick={() => setActiveTab('following')}
-                className="flex-1 h-12 relative flex items-center justify-center text-sm font-bold transition-colors group"
+                className="flex-1 py-3 text-xs font-black uppercase tracking-wider relative flex items-center justify-center select-none cursor-pointer"
               >
-                <span className={activeTab === 'following' ? 'text-zinc-900' : 'text-zinc-400 group-hover:text-zinc-600'}>Following</span>
+                <span className={`relative z-20 transition-colors duration-200 ${activeTab === 'following' ? 'text-white' : 'text-zinc-500 hover:text-zinc-800'}`}>Following</span>
                 {activeTab === 'following' && (
                   <motion.div 
-                    layoutId="activeTabIndicator"
-                    className="absolute bottom-0 h-[4px] w-1/2 bg-yellow-400 rounded-full"
+                    layoutId="activeTabPill"
+                    className="absolute inset-0 bg-zinc-950 rounded-xl shadow-md shadow-black/15"
+                    transition={{ type: "spring", stiffness: 380, damping: 28 }}
                   />
                 )}
               </button>
