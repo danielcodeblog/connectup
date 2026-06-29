@@ -182,75 +182,80 @@ export default function LandingSite({ onLoginClick, onLegalView }: LandingSitePr
     <ShaderBackground paused={isMobileMenuOpen} className="font-poppins bg-[#0D0D0F] text-white min-h-screen flex flex-col relative selection:bg-[#EAB308] selection:text-black overflow-x-hidden max-w-full">
       
       {/* Mobile Menu Overlay */}
-      <div
-        className={`fixed inset-0 z-[100] bg-[#0D0D0F]/95 backdrop-blur-3xl transition-all flex flex-col pt-4 px-4 md:px-16 md:pt-8 pb-8 overflow-y-auto lg:hidden ${
-          isMobileMenuOpen 
-            ? "duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" 
-            : "duration-300 ease-[cubic-bezier(0.7,0,0.84,0)]"
-        }`}
-        style={{
-          clipPath: isMobileMenuOpen ? "circle(150% at calc(100% - 2rem) 2rem)" : "circle(0% at calc(100% - 2rem) 2rem)",
-          visibility: isMobileMenuOpen ? "visible" : "hidden",
-          pointerEvents: isMobileMenuOpen ? "auto" : "none",
-        }}
-      >
-        {/* Header in mobile menu */}
-        <div className="flex items-center justify-between mb-4 pb-2 border-b border-white/5 md:mb-12 md:pb-8">
-          <div 
-            className="flex items-center gap-2 cursor-pointer p-0"
-            onClick={() => {
-              setIsMobileMenuOpen(false);
-              navigateTo('home');
-            }}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20, transition: { duration: 0.15, ease: "easeIn" } }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed inset-0 z-[100] bg-[#0D0D0F]/95 backdrop-blur-3xl flex flex-col pt-4 px-4 md:px-16 md:pt-8 pb-8 overflow-y-auto lg:hidden"
           >
-            <span className="font-[800] text-2xl md:text-3xl tracking-tighter">
-              <span className="text-white inline">connect</span>
-              <span className="text-[#EAB308]">up</span>
-            </span>
-          </div>
-          <AnimatedHamburger isOpen={isMobileMenuOpen} toggle={() => setIsMobileMenuOpen(false)} />
-        </div>
+            {/* Header in mobile menu */}
+            <div className="flex items-center justify-between mb-4 pb-2 border-b border-white/5 md:mb-12 md:pb-8">
+              <div 
+                className="flex items-center gap-2 cursor-pointer p-0"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  navigateTo('home');
+                }}
+              >
+                <span className="font-[800] text-2xl md:text-3xl tracking-tighter">
+                  <span className="text-white inline">connect</span>
+                  <span className="text-[#EAB308]">up</span>
+                </span>
+              </div>
+              <AnimatedHamburger isOpen={isMobileMenuOpen} toggle={() => setIsMobileMenuOpen(false)} />
+            </div>
 
-        {/* Navigation Links */}
-        <nav className="flex flex-col items-center justify-start sm:justify-center flex-1 gap-4 mt-6 px-2 md:gap-8 md:mt-8 md:px-12 pt-2 sm:pt-6 md:pt-0">
-          {(['home', 'about', 'blog', 'founders', 'pricing', 'contact'] as const).map((page, idx) => (
-            <button
-              key={page}
-              onClick={() => {
-                navigateTo(page);
+            {/* Navigation Links with fluid stagger */}
+            <motion.nav 
+              variants={{
+                show: { transition: { staggerChildren: 0.03, delayChildren: 0.05 } },
+                hide: { transition: { staggerChildren: 0.02, staggerDirection: -1 } }
               }}
-              className={`block w-full text-center text-4xl sm:text-5xl md:text-7xl font-sans font-black text-white hover:text-[#EAB308] transition-all tracking-tighter leading-none uppercase
-                ${isMobileMenuOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"}
-              `}
-              style={{
-                transitionDelay: isMobileMenuOpen ? `${idx * 40}ms` : '0ms',
-                transitionDuration: isMobileMenuOpen ? "400ms" : "150ms",
-              }}
+              initial="hide"
+              animate="show"
+              exit="hide"
+              className="flex flex-col items-center justify-start sm:justify-center flex-1 gap-4 mt-6 px-2 md:gap-8 md:mt-8 md:px-12 pt-2 sm:pt-6 md:pt-0"
             >
-              {page}.
-            </button>
-          ))}
-        </nav>
+              {(['home', 'about', 'blog', 'founders', 'pricing', 'contact'] as const).map((page) => (
+                <motion.button
+                  key={page}
+                  variants={{
+                    hide: { opacity: 0, y: 15 },
+                    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 350, damping: 28 } }
+                  }}
+                  onClick={() => {
+                    navigateTo(page);
+                  }}
+                  className="block w-full text-center text-4xl sm:text-5xl md:text-7xl font-sans font-black text-white hover:text-[#EAB308] active:scale-95 transition-colors tracking-tighter leading-none uppercase"
+                >
+                  {page}.
+                </motion.button>
+              ))}
+            </motion.nav>
 
-        {/* Action Button at bottom */}
-        <div
-          className={`pt-10 flex justify-center w-full transition-all pb-12 ${
-            isMobileMenuOpen 
-              ? "opacity-100 scale-100 duration-400 delay-200" 
-              : "opacity-0 scale-95 duration-150 delay-0"
-          }`}
-        >
-          <button
-            onClick={() => {
-              setIsMobileMenuOpen(false);
-              onLoginClick();
-            }}
-            className="inline-block px-14 py-6 bg-[#EAB308] text-black rounded-full font-black uppercase tracking-[0.2em] text-sm hover:scale-110 active:scale-95 transition-transform shadow-[0_20px_50px_rgba(234,179,8,0.3)] cursor-pointer"
-          >
-            Get Started
-          </button>
-        </div>
-      </div>
+            {/* Action Button at bottom */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1, transition: { delay: 0.2, duration: 0.3 } }}
+              exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.1 } }}
+              className="pt-10 flex justify-center w-full pb-12"
+            >
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  onLoginClick();
+                }}
+                className="inline-block px-14 py-6 bg-[#EAB308] text-black rounded-full font-black uppercase tracking-[0.2em] text-sm hover:scale-110 active:scale-95 transition-transform shadow-[0_20px_50px_rgba(234,179,8,0.3)] cursor-pointer"
+              >
+                Get Started
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Navbar */}
       {!isMobileMenuOpen && (
