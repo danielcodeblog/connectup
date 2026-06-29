@@ -15,14 +15,16 @@ export const LandingAbout = () => {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.3 }}
             className="text-xs tracking-[0.25em] font-bold uppercase text-[#EAB308] mb-5"
           >
             Our Mission
           </motion.span>
           <motion.h2 
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.3 }}
             className="text-5xl sm:text-7xl md:text-8xl font-black text-white leading-[1.0] tracking-tight font-sans"
           >
             Pitching, <span className="italic font-serif font-light text-[#EAB308]">Evolved.</span>
@@ -34,9 +36,10 @@ export const LandingAbout = () => {
           
           {/* Main Prop */}
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.3 }}
             className="lg:col-span-2 p-6 sm:p-10 md:p-14 bg-[#161618] rounded-[2rem] border border-white/5 flex flex-col justify-between min-h-[240px] sm:min-h-[320px] lg:min-h-[380px]"
           >
             <p className="font-serif text-xl sm:text-3xl md:text-5xl font-light text-white leading-[1.15] tracking-tight mb-6 sm:mb-12">
@@ -47,9 +50,10 @@ export const LandingAbout = () => {
 
           {/* Aesthetic Element */}
           <motion.div 
-             initial={{ opacity: 0, scale: 0.98 }}
+             initial={{ opacity: 0, scale: 0.99 }}
              whileInView={{ opacity: 1, scale: 1 }}
              viewport={{ once: true }}
+             transition={{ duration: 0.3 }}
              className="relative aspect-[16/10] sm:aspect-video lg:aspect-auto lg:h-full bg-[#161618] rounded-[2rem] overflow-hidden border border-white/5 min-h-[200px] sm:min-h-[280px] lg:min-h-[380px]"
            >
              <img 
@@ -70,10 +74,10 @@ export const LandingAbout = () => {
                 { title: "Smart Matching", desc: "By instantly matching check sizes, sector expertise, and operational needs, we ensure that every swipe is a potential breakthrough." }
               ].map((item, i) => (
                 <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: 0.1 + i * 0.08 }}
+                  transition={{ duration: 0.3 }}
                   key={i}
                   className={`p-10 rounded-[2rem] border transition-all duration-300 ${i === 1 ? 'bg-[#EAB308] border-transparent text-black' : 'bg-[#161618] border-white/5 text-white'}`}
                 >
