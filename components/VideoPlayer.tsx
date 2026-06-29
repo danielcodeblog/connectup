@@ -418,7 +418,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = React.memo(({
 
       {controls && (
         <div 
-            className={`absolute top-0 left-0 right-0 bg-gradient-to-b from-black/90 via-black/40 to-transparent pt-4 pb-12 px-4 transition-all duration-300 flex items-center gap-3 z-20 pointer-events-auto ${
+            className={`absolute top-0 left-0 right-0 bg-gradient-to-b from-black/90 via-black/40 to-transparent pt-14 pb-12 px-4 transition-all duration-300 flex items-center gap-3 z-20 pointer-events-auto ${
               showControls ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
             }`}
             onClick={(e) => {
