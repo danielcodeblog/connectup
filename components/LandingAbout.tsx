@@ -78,7 +78,7 @@ export const LandingAbout = () => {
                   className={`p-10 rounded-[2rem] border transition-all duration-300 ${i === 1 ? 'bg-[#EAB308] border-transparent text-black' : 'bg-[#161618] border-white/5 text-white'}`}
                 >
                   <h3 className={`font-serif text-2xl font-normal mb-4 ${i === 1 ? 'text-black' : 'text-white'}`}>{item.title}</h3>
-                  <p className={`leading-relaxed font-light text-sm ${i === 1 ? 'text-black/80' : 'text-zinc-400'}`}>{item.desc}</p>
+                  <p className={`leading-relaxed font-light text-sm ${i === 1 ? 'text-white' : 'text-zinc-400'}`}>{item.desc}</p>
                 </motion.div>
               ))}
            </div>
