@@ -1692,7 +1692,13 @@ const App = () => {
           />
         </>
       )}
-      <div className={`w-full bg-transparent relative flex flex-col font-sans ${appState === 'LANDING' ? 'min-h-screen' : 'h-screen overflow-y-auto no-scrollbar'}`}>
+      <div className={`w-full bg-transparent relative flex flex-col font-sans ${
+        appState === 'LANDING' 
+          ? 'min-h-screen' 
+          : (currentView === 'home' && role === UserRole.INVESTOR)
+            ? 'h-screen overflow-hidden' 
+            : 'h-screen overflow-y-auto no-scrollbar'
+      }`}>
         {appState === 'INITIALIZING' ? (
           <div className="fixed inset-0 bg-[#0D0D0F] flex items-center justify-center">
              <div className="w-12 h-12 border-4 border-white/5 border-t-[#EAB308] rounded-full animate-spin" />
