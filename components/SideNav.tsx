@@ -8,15 +8,18 @@ import {
   ArrowRight01Icon,
   PlusSignIcon
 } from 'hugeicons-react';
+import { Lock } from 'lucide-react';
 
 interface SideNavProps {
   currentView: string;
   onViewChange: (view: any) => void;
   onPostClick?: () => void;
+  userProfile?: any;
 }
 
-export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onPostClick }) => {
+export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onPostClick, userProfile }) => {
   const isCollapsed = true;
+  const isPro = userProfile?.plan === 'pro';
 
   const navItems = [
     { id: 'home', icon: Home01Icon, label: 'Dashboard' },
@@ -25,7 +28,7 @@ export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onP
     { id: 'settings', icon: Settings02Icon, label: 'Settings' },
   ];
 
-  return ( 
+  return (
     <div className={`hidden lg:flex flex-col bg-white/5 border-r border-white/20 h-screen sticky top-0 left-0 z-50 transition-all duration-500 ease-in-out backdrop-blur-3xl shadow-sm ${isCollapsed ? 'w-20' : 'w-24 xl:w-72'}`}>
       {/* Toggle Area */}
       <div className={`h-20 xl:h-24 shrink-0 flex items-center justify-center pt-4 transition-all duration-300`}>
@@ -81,21 +84,32 @@ export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onP
           <div className="pt-6 border-t border-white/10 mt-6 px-1.5 shrink-0">
             <button
               onClick={onPostClick}
-              className={`w-full flex items-center justify-center gap-3.5 rounded-2xl transition-all duration-300 group relative active:scale-95 shadow-lg shadow-[#EAB308]/20 cursor-pointer ${
+              className={`w-full flex items-center justify-center gap-3.5 rounded-2xl transition-all duration-300 group relative active:scale-95 shadow-lg cursor-pointer ${
+                isPro 
+                  ? 'bg-[#EAB308] text-zinc-900 hover:bg-yellow-400 shadow-[#EAB308]/20' 
+                  : 'bg-zinc-850 border border-yellow-500/20 text-zinc-400 hover:bg-zinc-800 shadow-black/20'
+              } ${
                 isCollapsed 
-                  ? 'p-3 bg-[#EAB308] text-zinc-900 hover:bg-yellow-400' 
-                  : 'p-3 bg-[#EAB308] text-zinc-900 hover:bg-yellow-400 xl:p-3.5 xl:px-5'
+                  ? 'p-3' 
+                  : 'p-3 xl:p-3.5 xl:px-5'
               }`}
             >
-              <div className={`p-1 bg-white/25 rounded-lg shrink-0 flex items-center justify-center ${isCollapsed ? 'm-0.5' : ''}`}>
-                <PlusSignIcon 
-                  size={18} 
-                  className="shrink-0 text-zinc-900" 
-                />
+              <div className={`p-1 rounded-lg shrink-0 flex items-center justify-center ${isCollapsed ? 'm-0.5' : ''} ${isPro ? 'bg-white/25' : 'bg-yellow-500/10'}`}>
+                {isPro ? (
+                  <PlusSignIcon 
+                    size={18} 
+                    className="shrink-0 text-zinc-900 font-bold" 
+                  />
+                ) : (
+                  <Lock 
+                    size={15} 
+                    className="shrink-0 text-[#EAB308]" 
+                  />
+                )}
               </div>
               
               {!isCollapsed && (
-                <span className="font-bold text-sm hidden xl:block tracking-tight text-zinc-900">
+                <span className={`font-bold text-sm hidden xl:block tracking-tight ${isPro ? 'text-zinc-900' : 'text-zinc-300'}`}>
                   Create Post
                 </span>
               )}
@@ -103,7 +117,7 @@ export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onP
               {/* Tooltip for collapsed view */}
               {isCollapsed && (
                 <div className="absolute left-full ml-6 px-3 py-2 bg-zinc-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 whitespace-nowrap z-50 translate-x-[-10px] group-hover:translate-x-0 shadow-xl">
-                  Create Post
+                  {isPro ? 'Create Post' : 'Create Post (Pro)'}
                   <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-zinc-900 rotate-45" />
                 </div>
               )}
