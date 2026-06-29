@@ -16,7 +16,7 @@ interface SideNavProps {
 }
 
 export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onPostClick }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const isCollapsed = true;
 
   const navItems = [
     { id: 'home', icon: Home01Icon, label: 'Dashboard' },
@@ -25,7 +25,7 @@ export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onP
     { id: 'settings', icon: Settings02Icon, label: 'Settings' },
   ];
 
-  return (
+  return ( 
     <div className={`hidden lg:flex flex-col bg-white/5 border-r border-white/20 h-screen sticky top-0 left-0 z-50 transition-all duration-500 ease-in-out backdrop-blur-3xl shadow-sm ${isCollapsed ? 'w-20' : 'w-24 xl:w-72'}`}>
       {/* Toggle Area */}
       <div className={`h-20 xl:h-24 shrink-0 flex items-center justify-center pt-4 transition-all duration-300`}>
