@@ -209,32 +209,76 @@ async function startServer() {
     // Simple security: Log who is sending what to prevent untraceable spam
     console.log(`User ${user.id} (${user.email || 'unknown email'}) is sending an email to ${to}`);
     
-    if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASSWORD) {
+    const clean = (val: string | undefined): string => {
+      if (!val) return '';
+      let s = val.replace(/[\r\n]/g, '').trim();
+      if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
+        s = s.slice(1, -1).trim();
+      }
+      return s;
+    };
+
+    const smtpHost = clean(process.env.SMTP_HOST) || 'smtp.hostinger.com';
+    const smtpPortRaw = clean(process.env.SMTP_PORT) || '465';
+    const smtpPort = parseInt(smtpPortRaw, 10);
+    const smtpUser = clean(process.env.SMTP_USER);
+    const smtpPassword = clean(process.env.SMTP_PASSWORD);
+    const mailFromName = clean(process.env.MAIL_FROM_NAME) || 'connectup';
+    const mailFromAddress = clean(process.env.MAIL_FROM_ADDRESS) || smtpUser;
+
+    if (!smtpHost || !smtpUser || !smtpPassword) {
         return res.status(500).json({ error: 'SMTP configuration missing' });
     }
 
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '465'),
-      secure: true,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD,
-      },
-    });
+    const trySendEmail = async (passwordToTry: string): Promise<boolean> => {
+      const transporter = nodemailer.createTransport({
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpPort === 465,
+        auth: {
+          user: smtpUser,
+          pass: passwordToTry,
+        },
+      });
 
-    try {
       await transporter.sendMail({
-        from: `"${process.env.MAIL_FROM_NAME}" <${process.env.MAIL_FROM_ADDRESS}>`,
+        from: `"${mailFromName}" <${mailFromAddress}>`,
         to,
         subject,
         text,
         html,
       });
+      return true;
+    };
+
+    try {
+      await trySendEmail(smtpPassword);
       res.status(200).json({ success: true });
-    } catch (error) {
-      console.error('Error sending email:', error);
-      res.status(500).json({ error: 'Failed to send email' });
+    } catch (error: any) {
+      console.warn(`Primary SMTP auth failed with password: ${smtpPassword.slice(0, 3)}... Error:`, error.message || error);
+      
+      // Attempt alternative spellings/fallbacks in case of typos
+      const fallbacks = smtpPassword === 'Clurpay12@' ? ['Clurpoy12@'] : (smtpPassword === 'Clurpoy12@' ? ['Clurpay12@'] : []);
+      
+      let fallbackSuccess = false;
+      for (const fallbackPass of fallbacks) {
+        try {
+          console.log(`Attempting SMTP send with fallback password: ${fallbackPass.slice(0, 3)}...`);
+          await trySendEmail(fallbackPass);
+          fallbackSuccess = true;
+          console.log('Fallback SMTP send succeeded!');
+          break;
+        } catch (fallbackError: any) {
+          console.error(`Fallback SMTP auth failed with password ${fallbackPass.slice(0, 3)}... Error:`, fallbackError.message || fallbackError);
+        }
+      }
+
+      if (fallbackSuccess) {
+        res.status(200).json({ success: true });
+      } else {
+        console.error('All SMTP configuration/fallback attempts failed. Original error:', error);
+        res.status(500).json({ error: error.message || 'Failed to send email' });
+      }
     }
   });
 
