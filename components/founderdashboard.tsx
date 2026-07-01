@@ -520,9 +520,23 @@ const FounderDashboard: React.FC<FounderDashboardProps> = React.memo(({ userProf
                                     </div>
                                     <input 
                                         type="datetime-local" 
-                                        value={meetingForm.date ? new Date(meetingForm.date).toISOString().slice(0, 16) : ''} 
-                                        onChange={(e) => setMeetingForm(prev => ({ ...prev, date: new Date(e.target.value).toISOString() }))} 
-                                        className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl pl-14 pr-6 py-4 text-sm font-bold text-zinc-900 focus:outline-none focus:bg-white transition-all shadow-sm" 
+                                        value={(() => {
+                                            if (!meetingForm.date) return '';
+                                            const d = new Date(meetingForm.date);
+                                            if (isNaN(d.getTime())) return '';
+                                            const offset = d.getTimezoneOffset();
+                                            const localDate = new Date(d.getTime() - (offset * 60 * 1000));
+                                            return localDate.toISOString().slice(0, 16);
+                                        })()} 
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            if (val) {
+                                                setMeetingForm(prev => ({ ...prev, date: new Date(val).toISOString() }));
+                                            } else {
+                                                setMeetingForm(prev => ({ ...prev, date: undefined }));
+                                            }
+                                        }} 
+                                        className="w-full h-16 bg-zinc-50 border border-zinc-100 rounded-2xl pl-14 pr-6 py-4 text-sm font-bold text-zinc-900 focus:outline-none focus:bg-white transition-all shadow-sm" 
                                     />
                                 </div>
                             </div>
