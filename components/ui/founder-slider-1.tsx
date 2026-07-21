@@ -97,7 +97,7 @@ export const FounderSlider = ({
   return (
     <div
       className={cn(
-        "relative w-full min-h-[650px] md:min-h-[600px] overflow-hidden bg-white text-zinc-950 p-8 md:p-12",
+        "relative w-full min-h-[650px] md:min-h-[600px] overflow-hidden bg-zinc-950 text-white p-8 md:p-12",
         className
       )}
     >
@@ -106,12 +106,12 @@ export const FounderSlider = ({
         <div className="md:col-span-3 flex flex-col justify-between order-2 md:order-1">
           <div className="flex flex-row md:flex-col justify-between md:justify-start space-x-4 md:space-x-0 md:space-y-4">
             {/* Pagination */}
-            <span className="text-sm text-zinc-950 font-mono font-medium">
+            <span className="text-sm text-zinc-400 font-mono font-medium">
               {String(currentIndex + 1).padStart(2, "0")} /{" "}
               {String(founders.length).padStart(2, "0")}
             </span>
             {/* Vertical "Founders' Comments" Text */}
-            <h2 className="text-sm font-semibold tracking-widest uppercase [writing-mode:vertical-rl] md:rotate-180 hidden md:block text-zinc-950">
+            <h2 className="text-sm font-semibold tracking-widest uppercase [writing-mode:vertical-rl] md:rotate-180 hidden md:block text-zinc-400">
               Founders
             </h2>
           </div>
@@ -127,7 +127,7 @@ export const FounderSlider = ({
                 <button
                   key={founder.id}
                   onClick={() => handleThumbnailClick(originalIndex)}
-                  className="overflow-hidden rounded-md w-16 h-20 md:w-20 md:h-24 opacity-50 hover:opacity-100 transition-opacity duration-300 focus:outline-none focus:ring-2 focus:ring-[#EAB308] focus:ring-offset-2 focus:ring-offset-white border border-zinc-200"
+                  className="overflow-hidden rounded-md w-16 h-20 md:w-20 md:h-24 opacity-60 hover:opacity-100 transition-opacity duration-300 focus:outline-none focus:ring-2 focus:ring-[#EAB308] focus:ring-offset-2 focus:ring-offset-zinc-950 border border-zinc-800"
                   aria-label={`View comment from ${founder.name}`}
                 >
                   <img
@@ -154,7 +154,7 @@ export const FounderSlider = ({
               animate="center"
               exit="exit"
               transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }} // Cubic bezier for smooth ease
-              className="absolute inset-0 w-full h-full object-cover rounded-2xl transition-all border border-zinc-100/80 shadow-[0_12px_30px_rgba(0,0,0,0.04)]"
+              className="absolute inset-0 w-full h-full object-cover rounded-2xl transition-all border border-zinc-800/80 shadow-[0_12px_30px_rgba(0,0,0,0.5)]"
             />
           </AnimatePresence>
         </div>
@@ -176,10 +176,10 @@ export const FounderSlider = ({
                 <p className="text-sm font-semibold tracking-wider uppercase text-[#EAB308]">
                   {activeFounder.affiliation}
                 </p>
-                <h3 className="text-2xl font-bold mt-1 text-zinc-950 font-serif">
+                <h3 className="text-2xl font-bold mt-1 text-white font-serif">
                   {activeFounder.name}
                 </h3>
-                <blockquote className="mt-6 text-2xl md:text-3xl font-medium leading-snug text-zinc-800 font-serif">
+                <blockquote className="mt-6 text-2xl md:text-3xl font-medium leading-snug text-zinc-200 font-serif">
                   "{activeFounder.quote}"
                 </blockquote>
               </motion.div>
@@ -189,7 +189,7 @@ export const FounderSlider = ({
           {/* Navigation Buttons */}
           <div className="flex items-center space-x-2 mt-8 md:mt-0">
             <button
-              className="inline-flex items-center justify-center rounded-full w-12 h-12 border border-zinc-200 text-zinc-700 bg-white hover:bg-zinc-50 hover:text-zinc-950 hover:border-zinc-300 transition-colors cursor-pointer active:scale-95 shadow-sm"
+              className="inline-flex items-center justify-center rounded-full w-12 h-12 border border-zinc-800 text-zinc-300 bg-zinc-900 hover:bg-zinc-800 hover:text-white hover:border-zinc-700 transition-colors cursor-pointer active:scale-95 shadow-sm"
               onClick={handlePrev}
               aria-label="Previous Founder"
             >
