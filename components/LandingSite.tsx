@@ -318,7 +318,7 @@ export default function LandingSite({ onLoginClick, onLegalView }: LandingSitePr
         <section id="why" className="w-full">
             <LandingWhy />
         </section>
-        <section id="founders" className="w-full min-h-screen flex items-center justify-center relative z-10 px-4 sm:px-6 py-16 md:py-32 overflow-hidden bg-[#FDF8E7] border-t border-amber-200/40">
+        <section id="founders" className="w-full min-h-screen flex items-center justify-center relative z-10 px-4 sm:px-6 py-16 md:py-32 overflow-hidden bg-[#EAB308] border-t border-amber-500/40">
           <div className="max-w-7xl mx-auto w-full">
             <FounderSlider founders={reviews} className="rounded-[2.5rem] border-amber-400/25 shadow-[0_20px_50px_rgba(234,179,8,0.15)]" />
           </div>
