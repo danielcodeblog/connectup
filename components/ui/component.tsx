@@ -2,13 +2,13 @@ import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from '@studio-freight/lenis';
+import { TypewriterSequence } from '../TypewriterSequence';
 
 export function ParallaxComponent() {
   const parallaxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
-
     const triggerElement = parallaxRef.current?.querySelector('[data-parallax-layers]');
 
     if (triggerElement) {
@@ -39,8 +39,6 @@ export function ParallaxComponent() {
         );
       });
     }
-
-    // Smooth scroll removed for "no slow loading"
     
     return () => {
       ScrollTrigger.getAll().forEach(st => st.kill());
@@ -71,7 +69,12 @@ export function ParallaxComponent() {
             
             <div data-parallax-layer="3" className="absolute top-[40%] sm:top-[42%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-40 flex flex-col items-center justify-center w-full px-4 text-center">
               <h2 className="text-white text-[3.25rem] leading-[0.9] sm:text-7xl md:text-[8rem] lg:text-[10rem] font-black tracking-tighter drop-shadow-[0_20px_50px_rgba(0,0,0,0.9)] opacity-100 text-center">
-                Fundraise. <br/><span className="font-display font-light text-[#EAB308]">without the</span> <br/>friction.
+                Fundraise. <br/>
+                <TypewriterSequence 
+                  segments={[{ text: "without the", className: "font-display font-light text-[#EAB308]" }]} 
+                  speed={60} 
+                  delay={300} 
+                /> <br/>friction.
               </h2>
             </div>
             
