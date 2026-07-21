@@ -97,27 +97,27 @@ export const FounderSlider = ({
   return (
     <div
       className={cn(
-        "relative w-full min-h-[650px] md:min-h-[600px] overflow-hidden bg-zinc-950 text-white p-8 md:p-12",
+        "relative w-full min-h-[750px] md:min-h-[720px] overflow-hidden bg-[#EAB308] text-zinc-950 p-10 md:p-16",
         className
       )}
     >
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 h-full">
         {/* === Left Column: Meta and Thumbnails === */}
-        <div className="md:col-span-3 flex flex-col justify-between order-2 md:order-1">
+        <div className="md:col-span-2 flex flex-col justify-between order-2 md:order-1">
           <div className="flex flex-row md:flex-col justify-between md:justify-start space-x-4 md:space-x-0 md:space-y-4">
             {/* Pagination */}
-            <span className="text-sm text-zinc-400 font-mono font-medium">
+            <span className="text-base text-white font-mono font-bold">
               {String(currentIndex + 1).padStart(2, "0")} /{" "}
               {String(founders.length).padStart(2, "0")}
             </span>
             {/* Vertical "Founders' Comments" Text */}
-            <h2 className="text-sm font-semibold tracking-widest uppercase [writing-mode:vertical-rl] md:rotate-180 hidden md:block text-zinc-400">
+            <h2 className="text-base font-bold tracking-widest uppercase [writing-mode:vertical-rl] md:rotate-180 hidden md:block text-white">
               Founders
             </h2>
           </div>
- 
+
           {/* Thumbnail Navigation */}
-          <div className="flex space-x-2 mt-8 md:mt-0">
+          <div className="flex space-x-3 mt-8 md:mt-0">
             {thumbnailFounders.map((founder) => {
               // Find the original index to navigate to
               const originalIndex = founders.findIndex(
@@ -127,7 +127,7 @@ export const FounderSlider = ({
                 <button
                   key={founder.id}
                   onClick={() => handleThumbnailClick(originalIndex)}
-                  className="overflow-hidden rounded-md w-16 h-20 md:w-20 md:h-24 opacity-60 hover:opacity-100 transition-opacity duration-300 focus:outline-none focus:ring-2 focus:ring-[#EAB308] focus:ring-offset-2 focus:ring-offset-zinc-950 border border-zinc-800"
+                  className="overflow-hidden rounded-lg w-20 h-24 md:w-24 md:h-28 opacity-70 hover:opacity-100 transition-opacity duration-300 focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2 focus:ring-offset-[#EAB308] border border-zinc-900/20"
                   aria-label={`View comment from ${founder.name}`}
                 >
                   <img
@@ -140,9 +140,9 @@ export const FounderSlider = ({
             })}
           </div>
         </div>
- 
+
         {/* === Center Column: Main Image === */}
-        <div className="md:col-span-4 relative h-80 min-h-[400px] md:min-h-[500px] order-1 md:order-2">
+        <div className="md:col-span-5 relative h-96 min-h-[450px] md:min-h-[580px] order-1 md:order-2">
           <AnimatePresence initial={false} custom={direction}>
               <motion.img
               key={currentIndex}
@@ -154,15 +154,15 @@ export const FounderSlider = ({
               animate="center"
               exit="exit"
               transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }} // Cubic bezier for smooth ease
-              className="absolute inset-0 w-full h-full object-cover rounded-2xl transition-all border border-zinc-800/80 shadow-[0_12px_30px_rgba(0,0,0,0.5)]"
+              className="absolute inset-0 w-full h-full object-cover rounded-2xl transition-all border border-zinc-900/10 shadow-[0_12px_30px_rgba(0,0,0,0.15)]"
             />
           </AnimatePresence>
         </div>
- 
+
         {/* === Right Column: Text and Navigation === */}
         <div className="md:col-span-5 flex flex-col justify-between md:pl-8 order-3 md:order-3">
           {/* Text Content */}
-          <div className="relative overflow-hidden pt-4 md:pt-24 min-h-[200px]">
+          <div className="relative overflow-hidden pt-4 md:pt-16 min-h-[240px]">
             <AnimatePresence initial={false} custom={direction} mode="wait">
               <motion.div
                 key={currentIndex}
@@ -173,34 +173,34 @@ export const FounderSlider = ({
                 exit="exit"
                 transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
               >
-                <p className="text-sm font-semibold tracking-wider uppercase text-[#EAB308]">
+                <p className="text-base font-extrabold tracking-wider uppercase text-white/90">
                   {activeFounder.affiliation}
                 </p>
-                <h3 className="text-2xl font-bold mt-1 text-white font-serif">
+                <h3 className="text-3xl md:text-4xl font-bold mt-2 text-white font-serif">
                   {activeFounder.name}
                 </h3>
-                <blockquote className="mt-6 text-2xl md:text-3xl font-medium leading-snug text-zinc-200 font-serif">
+                <blockquote className="mt-6 text-3xl md:text-4xl lg:text-5xl font-medium leading-tight text-white font-serif">
                   "{activeFounder.quote}"
                 </blockquote>
               </motion.div>
             </AnimatePresence>
           </div>
- 
+
           {/* Navigation Buttons */}
-          <div className="flex items-center space-x-2 mt-8 md:mt-0">
+          <div className="flex items-center space-x-3 mt-8 md:mt-0">
             <button
-              className="inline-flex items-center justify-center rounded-full w-12 h-12 border border-zinc-800 text-zinc-300 bg-zinc-900 hover:bg-zinc-800 hover:text-white hover:border-zinc-700 transition-colors cursor-pointer active:scale-95 shadow-sm"
+              className="inline-flex items-center justify-center rounded-full w-14 h-14 border border-zinc-950/20 text-zinc-950 bg-white/40 hover:bg-white/80 hover:text-zinc-950 transition-colors cursor-pointer active:scale-95 shadow-sm"
               onClick={handlePrev}
               aria-label="Previous Founder"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-6 h-6" />
             </button>
             <button
-              className="inline-flex items-center justify-center rounded-full w-12 h-12 bg-[#EAB308] text-zinc-950 hover:bg-[#FACC15] hover:scale-105 shadow-[0_4px_12px_rgba(234,179,8,0.25)] transition-all cursor-pointer active:scale-95 font-medium"
+              className="inline-flex items-center justify-center rounded-full w-14 h-14 bg-zinc-950 text-white hover:bg-zinc-900 hover:scale-105 shadow-[0_4px_12px_rgba(0,0,0,0.15)] transition-all cursor-pointer active:scale-95 font-medium"
               onClick={handleNext}
               aria-label="Next Founder"
             >
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="w-6 h-6" />
             </button>
           </div>
         </div>
