@@ -1,7 +1,7 @@
 
 import React, { useRef } from 'react';
-import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
+import { TypewriterSequence } from './TypewriterSequence';
 
 export const LandingAbout = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -33,9 +33,16 @@ export const LandingAbout = () => {
           <div 
             className="lg:col-span-2 p-6 sm:p-10 md:p-14 bg-white/50 backdrop-blur-md border border-white/80 shadow-[0_8px_32px_0_rgba(148,163,184,0.08)] rounded-[2.5rem] flex flex-col justify-between min-h-[240px] sm:min-h-[320px] lg:min-h-[380px]"
           >
-            <p className="font-serif text-xl sm:text-3xl md:text-5xl font-light text-zinc-900 leading-[1.15] tracking-tight mb-6 sm:mb-12">
-              We believe the strongest partnerships start with <span className="text-[#EAB308] font-normal italic">instant alignment</span>, not endless cold emails. We are redefining how founders tell their stories and how investors deploy capital.
-            </p>
+            <TypewriterSequence 
+              className="font-serif text-xl sm:text-3xl md:text-5xl font-light text-zinc-900 leading-[1.15] tracking-tight mb-6 sm:mb-12 block"
+              speed={20}
+              delay={200}
+              segments={[
+                { text: "We believe the strongest partnerships start with " },
+                { text: "instant alignment", className: "text-[#EAB308] font-normal italic" },
+                { text: ", not endless cold emails. We are redefining how founders tell their stories and how investors deploy capital." }
+              ]}
+            />
             <div className="h-[1px] w-20 bg-[#EAB308]/40" />
           </div>
 
