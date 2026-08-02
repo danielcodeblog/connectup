@@ -1,0 +1,10 @@
+1-/// <reference types="vite/client" />
+2-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+3-import { 
+4-  LayoutDashboard, Users, MessageCircle, Settings, ChevronRight, 
+5:  Lock, Bell, Languages, ChevronLeft, User, KeyRound, Shield,  MapPin, Mail, Loader2, Check, Building2, Receipt, Download, Banknote, ArrowRight, Calendar, Clock, X, UserMinus, AlertTriangle, AlertCircle, Compass, Inbox, ScrollText, Home, Search, Plus, Power, Award, BellRing, Eye
+6-} from 'lucide-react';
+7-import { UserRole, AppState, Startup } from './types';
+8-import { motion, AnimatePresence } from 'motion/react';
+9-import { SplashScreen } from './components/SplashScreen';
+10-import { Button } from './components/Button';

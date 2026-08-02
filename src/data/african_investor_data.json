@@ -1,0 +1,95 @@
+{
+  "african_founders_and_investor_connections": [
+    {
+      "founder": "Olugbenga Agboola",
+      "company": "Flutterwave",
+      "website": "https://flutterwave.com",
+      "key_comments": [
+        "Build something investors can already see customers using.",
+        "Warm introductions matter more than cold emails.",
+        "International visibility helped attract U.S. investors."
+      ],
+      "how_they_connected_with_investors": [
+        "Y Combinator",
+        "Fintech conferences",
+        "Founder referrals",
+        "Startup networking events"
+      ]
+    },
+    {
+      "founder": "Shola Akinlade",
+      "company": "Paystack",
+      "website": "https://paystack.com",
+      "key_comments": [
+        "Clarity in storytelling matters.",
+        "Show traction early.",
+        "Build credibility publicly online."
+      ],
+      "how_they_connected_with_investors": [
+        "Y Combinator",
+        "Twitter/X networking",
+        "Startup communities",
+        "Demo days",
+        "Founder introductions"
+      ]
+    },
+    {
+      "founder": "Iyinoluwa Aboyeji",
+      "company": "Future Africa",
+      "website": "https://future.africa",
+      "key_comments": [
+        "Investors invest in people first before products.",
+        "Build founder reputation early.",
+        "Help others before asking for funding."
+      ],
+      "how_they_connected_with_investors": [
+        "Startup ecosystem visibility",
+        "Mentorship networks",
+        "Angel investor communities",
+        "Tech ecosystem partnerships"
+      ]
+    }
+  ],
+  "common_methods_african_founders_use": [
+    {
+      "method": "Accelerators and Incubators",
+      "examples": [
+        "Y Combinator",
+        "Techstars",
+        "Google for Startups Africa",
+        "Flat6Labs"
+      ],
+      "benefit": "Direct access to investors, mentors, and demo days."
+    },
+    {
+      "method": "Founder Referrals",
+      "benefit": "Warm introductions increase investor trust and response rates."
+    },
+    {
+      "method": "Social Media Presence",
+      "platforms": [
+        "LinkedIn",
+        "Twitter/X"
+      ],
+      "benefit": "Investors discover founders through consistent public updates and traction sharing."
+    },
+    {
+      "method": "Startup Events and Conferences",
+      "examples": [
+        "Africa Tech Summit",
+        "GITEX Africa",
+        "Lagos Startup Week",
+        "Africa Money & DeFi Summit"
+      ],
+      "benefit": "Networking opportunities with VCs, angels, and ecosystem builders."
+    }
+  ],
+  "common_investor_expectations": [
+    "Show real customer traction.",
+    "Understand your financial numbers.",
+    "Solve a clear local problem.",
+    "Explain your revenue model simply.",
+    "Demonstrate consistency and execution.",
+    "Reduce investor fear with measurable growth."
+  ]
+}
