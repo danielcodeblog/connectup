@@ -18,8 +18,8 @@ export const LandingWhy = () => {
     },
     {
       number: "03",
-      title: "African Tech Ecosystem",
-      description: "We are building the premier gateway for capital and innovation across the continent's fastest-growing tech hubs."
+      title: "Global Tech Ecosystem",
+      description: "We are building the premier gateway for capital and innovation across the world's fastest-growing tech hubs."
     }
   ];
 
@@ -32,8 +32,8 @@ export const LandingWhy = () => {
       <div className="max-w-7xl mx-auto w-full relative z-10">
         {/* Title */}
         <div className="flex justify-center mb-12 sm:mb-24">
-          <h2 className="text-5xl sm:text-7xl md:text-8xl font-display font-black text-center tracking-tighter uppercase [text-shadow:6px_6px_0px_rgba(24,24,27,1)]">
-            <span className="text-white">Why</span> <span className="text-[#FACC15]">ConnectUp</span>
+          <h2 className="text-5xl sm:text-7xl md:text-8xl font-display font-black text-center tracking-tighter uppercase mb-8">
+            <span className="text-zinc-950">Why</span> <span className="text-[#FACC15]">ConnectUp</span>
           </h2>
         </div>
 
