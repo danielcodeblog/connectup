@@ -269,7 +269,7 @@ const SwipeDeck: React.FC<SwipeDeckProps> = React.memo(({ onMatch, userProfile }
                   {memoCard.socialMediaUrl && (
                     <div className="mt-4 pt-4 border-t border-zinc-100">
                       <a href={memoCard.socialMediaUrl} target="_blank" rel="noopener noreferrer" className="text-amber-600 font-bold text-xs hover:underline flex items-center gap-1">
-                        🌐 Official Website & Pitch Links →
+                        🌐 Social media →
                       </a>
                     </div>
                   )}
