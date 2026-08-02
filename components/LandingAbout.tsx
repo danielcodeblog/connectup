@@ -14,9 +14,9 @@ export const LandingAbout = () => {
         <img 
           src={connectImg} 
           alt="" 
-          className="w-full h-full object-cover object-center opacity-25 mix-blend-multiply" 
+          className="w-full h-full object-cover object-center opacity-90" 
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#FAF6E8]/70 via-transparent to-[#FAF6E8]/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#FAF6E8]/30 via-transparent to-[#FAF6E8]/30" />
       </div>
 
       {/* Soft Mauve Golden Hour Background Glow */}
@@ -58,15 +58,15 @@ export const LandingAbout = () => {
 
           {/* Aesthetic Element */}
           <div 
-             className="relative aspect-[16/10] sm:aspect-video lg:aspect-auto lg:h-full bg-white/70 backdrop-blur-md border border-amber-200/60 shadow-[0_8px_32px_0_rgba(207,181,59,0.08)] rounded-[2.5rem] overflow-hidden min-h-[200px] sm:min-h-[280px] lg:min-h-[380px]"
+             className="relative aspect-[16/10] sm:aspect-video lg:aspect-auto lg:h-full bg-white border border-amber-200/60 shadow-[0_8px_32px_0_rgba(207,181,59,0.08)] rounded-[2.5rem] overflow-hidden min-h-[200px] sm:min-h-[280px] lg:min-h-[380px] group/img"
            >
              <img 
-               src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=500&q=60" 
-               className="w-full h-full object-cover opacity-70 hover:opacity-90 transition-all duration-1000 grayscale hover:grayscale-0"
+               src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80" 
+               className="w-full h-full object-cover opacity-95 group-hover/img:opacity-100 transition-all duration-500 group-hover/img:scale-105"
                alt="Founders Meeting"
                referrerPolicy="no-referrer"
              />
-             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 sm:p-8">
+             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent flex flex-col justify-end p-6 sm:p-8">
                <h4 className="text-lg sm:text-xl font-bold text-white leading-tight font-sans">Scale at the speed of thought.</h4>
              </div>
            </div>
@@ -77,12 +77,12 @@ export const LandingAbout = () => {
                   { 
                     title: "Founder-First Model", 
                     desc: "Designed by ex-founders, ConnectUp is built to respect your time, preserve your focus, and highlight your true potential.",
-                    bg: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=20&w=600"
+                    bg: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=800"
                   },
                   { 
                     title: "Data-Driven Decisions", 
                     desc: "No vanity metrics, no hype. Our platform uses deep qualitative alignment signals to match you with partners who share your exact thesis.",
-                    bg: "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&q=20&w=600"
+                    bg: "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&q=80&w=800"
                   }
                 ].map((item, i) => (
                   <div 
@@ -91,13 +91,13 @@ export const LandingAbout = () => {
                   >
                     {/* Background Image with opacity overlay */}
                     <div className="absolute inset-0 z-0">
-                      <img 
-                        src={item.bg} 
-                        alt="" 
-                        referrerPolicy="no-referrer"
-                        className="w-full h-full object-cover opacity-35 group-hover:scale-105 transition-transform duration-700" 
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-br from-zinc-950/80 via-zinc-950/30 to-zinc-950/80" />
+                       <img 
+                         src={item.bg} 
+                         alt="" 
+                         referrerPolicy="no-referrer"
+                         className="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" 
+                       />
+                       <div className="absolute inset-0 bg-gradient-to-br from-zinc-950/80 via-zinc-950/20 to-zinc-950/80" />
                     </div>
                     
                     <div className="relative z-10">
