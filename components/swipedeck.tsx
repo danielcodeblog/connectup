@@ -55,10 +55,8 @@ const SwipeDeck: React.FC<SwipeDeckProps> = React.memo(({ onMatch, userProfile }
     StorageService.processSwipe(startup.id, direction);
     
     if (direction === 'right') {
-      // Automatically register the connection so it registers on messages immediately in the background
-      StorageService.ensureConnection(startup.id).then((chatId) => {
-         console.log("Automatic swipe-match connection registered:", chatId);
-      });
+      // Automatically register the connection in the background
+      StorageService.ensureConnection(startup.id).catch(() => {});
       setMatchedStartup(startup);
     }
 
@@ -202,7 +200,11 @@ const SwipeDeck: React.FC<SwipeDeckProps> = React.memo(({ onMatch, userProfile }
                   <Flame size={20} className="text-white fill-brand-primary" />
                 </div>
                 <div className="w-24 h-24 rounded-full border-4 border-brand-primary shadow-2xl overflow-hidden bg-zinc-200">
-                  <img src={matchedStartup.founder.avatarUrl} className="w-full h-full object-cover" />
+                  {matchedStartup.founder?.avatarUrl ? (
+                    <img src={matchedStartup.founder.avatarUrl} className="w-full h-full object-cover" />
+                  ) : (
+                    <User size={30} className="m-auto text-zinc-900" />
+                  )}
                 </div>
               </div>
 
@@ -212,10 +214,10 @@ const SwipeDeck: React.FC<SwipeDeckProps> = React.memo(({ onMatch, userProfile }
               </div>
 
               <div className="w-full space-y-3">
-                <button onClick={handleSendMessage} className="w-full py-3 bg-zinc-900 text-white font-bold rounded-2xl flex items-center justify-center gap-2">
+                <button onClick={handleSendMessage} className="w-full py-3 bg-zinc-900 text-white font-bold rounded-2xl flex items-center justify-center gap-2 hover:bg-zinc-800 transition-colors">
                    <MessageCircle size={20} /> Send Message
                 </button>
-                <button onClick={() => setMatchedStartup(null)} className="w-full py-3 bg-zinc-100 text-zinc-600 hover:bg-zinc-200 border border-zinc-200 font-bold rounded-2xl">
+                <button onClick={() => setMatchedStartup(null)} className="w-full py-3 bg-zinc-100 text-zinc-600 hover:bg-zinc-200 border border-zinc-200 font-bold rounded-2xl transition-colors">
                   Keep Swiping
                 </button>
               </div>
@@ -232,7 +234,7 @@ const SwipeDeck: React.FC<SwipeDeckProps> = React.memo(({ onMatch, userProfile }
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="absolute inset-4 sm:inset-12 md:inset-20 z-[80] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden"
+            className="absolute inset-4 md:inset-y-12 md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-xl lg:max-w-2xl z-[80] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden"
           >
             <div className="absolute top-4 right-4 z-[90]">
               <button onClick={handleCloseMemo} className="w-10 h-10 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-900 flex items-center justify-center transition-colors">
@@ -269,7 +271,7 @@ const SwipeDeck: React.FC<SwipeDeckProps> = React.memo(({ onMatch, userProfile }
                   {memoCard.socialMediaUrl && (
                     <div className="mt-4 pt-4 border-t border-zinc-100">
                       <a href={memoCard.socialMediaUrl} target="_blank" rel="noopener noreferrer" className="text-amber-600 font-bold text-xs hover:underline flex items-center gap-1">
-                        🌐 Social media →
+                        🌐 social media →
                       </a>
                     </div>
                   )}
