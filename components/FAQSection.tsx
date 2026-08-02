@@ -29,13 +29,13 @@ export const FAQSection = () => {
     const [openIndex, setOpenIndex] = useState<number | null>(0);
 
     return (
-        <section id="faq" className="w-full py-24 md:py-32 bg-white relative z-10 px-6 border-t border-zinc-100">
+        <section id="faq" className="w-full py-24 md:py-32 bg-[#FFBF00] relative z-10 px-6 border-t border-black/10">
             <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-16">
-                    <h2 className="text-4xl sm:text-5xl md:text-6xl font-serif font-normal tracking-tight text-zinc-900 mb-4">
-                        Common <span className="italic font-light text-[#FFBF00]">Questions</span>
+                    <h2 className="text-4xl sm:text-5xl md:text-6xl font-serif font-normal tracking-tight text-zinc-950 mb-4">
+                        Common <span className="italic font-light text-white">Questions</span>
                     </h2>
-                    <p className="text-zinc-500 text-base sm:text-lg max-w-xl mx-auto font-light leading-relaxed">
+                    <p className="text-zinc-800 text-base sm:text-lg max-w-xl mx-auto font-light leading-relaxed">
                         Everything you need to know about our platform.
                     </p>
                 </div>
