@@ -1973,26 +1973,29 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ userProfile, onN
                 try {
                   const endDate = new Date();
                   endDate.setFullYear(endDate.getFullYear() + 1); // 1 year duration
-                  const { error } = await supabase.from('profiles').update({
-                    plan: 'pro',
-                    billing_cycle: 'yearly',
-                    subscription_end_date: endDate.toISOString()
-                  }).eq('id', userObj.id);
-
-                  if (error) {
-                    showToast(`Failed to update profile: ${error.message}`);
-                    return;
-                  }
-
-                  // Record transaction
-                  try {
-                    await supabase.from('subscription_transactions').insert({
-                      user_id: userObj.id,
-                      amount: 60,
-                      tier: 'pro',
+                  
+                  // Use secure admin API call to update the profile (bypassing triggers & client RLS)
+                  await adminApiCall(`/api/admin/users/${userObj.id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                      plan: 'pro',
                       billing_cycle: 'yearly',
-                      status: 'completed',
-                      created_at: new Date().toISOString()
+                      subscription_end_date: endDate.toISOString()
+                    })
+                  });
+
+                  // Record transaction using secure admin API call (bypassing client RLS)
+                  try {
+                    await adminApiCall('/api/admin/subscriptions', {
+                      method: 'POST',
+                      body: JSON.stringify({
+                        user_id: userObj.id,
+                        amount: 60,
+                        tier: 'pro',
+                        billing_cycle: 'yearly',
+                        status: 'completed',
+                        created_at: new Date().toISOString()
+                      })
                     });
                   } catch (e) {
                     console.warn("Failed to write to subscription_transactions table", e);
