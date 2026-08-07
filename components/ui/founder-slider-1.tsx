@@ -97,7 +97,7 @@ export const FounderSlider = ({
   return (
     <div
       className={cn(
-        "relative w-full min-h-[750px] md:min-h-[720px] overflow-hidden bg-white/80 backdrop-blur-2xl border border-white/80 text-zinc-950 p-10 md:p-16 shadow-2xl",
+        "relative w-full min-h-[750px] md:min-h-[720px] overflow-hidden bg-white/80 backdrop-blur-2xl border-0 text-zinc-950 p-10 md:p-16 shadow-2xl",
         className
       )}
     >
@@ -127,7 +127,7 @@ export const FounderSlider = ({
                 <button
                   key={founder.id}
                   onClick={() => handleThumbnailClick(originalIndex)}
-                  className="overflow-hidden rounded-xl w-28 h-32 md:w-36 md:h-44 opacity-80 hover:opacity-100 transition-opacity duration-300 focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2 focus:ring-offset-white border border-zinc-200 shadow-md"
+                  className="overflow-hidden rounded-xl w-28 h-32 md:w-36 md:h-44 opacity-80 hover:opacity-100 transition-opacity duration-300 focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:ring-offset-2 focus:ring-offset-white border-0 shadow-md"
                   aria-label={`View comment from ${founder.name}`}
                 >
                   <img
@@ -142,7 +142,7 @@ export const FounderSlider = ({
         </div>
 
         {/* === Center Column: Main Image === */}
-        <div className="md:col-span-6 relative h-96 min-h-[450px] md:min-h-[580px] order-1 md:order-2">
+        <div className="md:col-span-5 relative h-96 min-h-[450px] md:min-h-[580px] order-1 md:order-2">
           <AnimatePresence initial={false} custom={direction}>
               <motion.img
               key={currentIndex}
@@ -154,13 +154,13 @@ export const FounderSlider = ({
               animate="center"
               exit="exit"
               transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }} // Cubic bezier for smooth ease
-              className="absolute inset-0 w-full h-full object-cover rounded-2xl transition-all border border-zinc-200 shadow-[0_12px_30px_rgba(0,0,0,0.1)]"
+              className="absolute inset-0 w-full h-full object-cover rounded-2xl transition-all border-0 shadow-[0_12px_30px_rgba(0,0,0,0.1)]"
             />
           </AnimatePresence>
         </div>
 
         {/* === Right Column: Text and Navigation === */}
-        <div className="md:col-span-4 flex flex-col justify-between md:pl-8 order-3 md:order-3">
+        <div className="md:col-span-5 flex flex-col justify-between md:pl-8 order-3 md:order-3">
           {/* Text Content */}
           <div className="relative overflow-hidden pt-4 md:pt-16 min-h-[240px]">
             <AnimatePresence initial={false} custom={direction} mode="wait">
@@ -189,7 +189,7 @@ export const FounderSlider = ({
           {/* Navigation Buttons */}
           <div className="flex items-center space-x-3 mt-8 md:mt-0">
             <button
-              className="inline-flex items-center justify-center rounded-full w-14 h-14 border border-zinc-300 text-zinc-800 bg-white/60 hover:bg-white hover:text-zinc-950 transition-colors cursor-pointer active:scale-95 shadow-sm backdrop-blur-sm"
+              className="inline-flex items-center justify-center rounded-full w-14 h-14 border-0 text-zinc-800 bg-white/60 hover:bg-white hover:text-zinc-950 transition-colors cursor-pointer active:scale-95 shadow-sm backdrop-blur-sm"
               onClick={handlePrev}
               aria-label="Previous Founder"
             >
