@@ -58,57 +58,44 @@ export const LandingAbout = () => {
 
           {/* Aesthetic Element */}
           <div 
-             className="relative aspect-[16/10] sm:aspect-video lg:aspect-auto lg:h-full bg-white border border-amber-200/60 shadow-[0_8px_32px_0_rgba(207,181,59,0.08)] rounded-[2.5rem] overflow-hidden min-h-[200px] sm:min-h-[280px] lg:min-h-[380px] group/img"
-           >
-             <img 
-               src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80" 
-               className="w-full h-full object-cover opacity-95 group-hover/img:opacity-100 transition-all duration-500 group-hover/img:scale-105"
-               alt="Founders Meeting"
-               referrerPolicy="no-referrer"
-             />
-             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent flex flex-col justify-end p-6 sm:p-8">
-               <h4 className="text-lg sm:text-xl font-bold text-white leading-tight font-sans">Scale at the speed of thought.</h4>
-             </div>
-           </div>
+            className="relative aspect-[16/10] sm:aspect-video lg:aspect-auto lg:h-full bg-white border border-amber-200/60 shadow-[0_8px_32px_0_rgba(207,181,59,0.08)] rounded-[2.5rem] overflow-hidden min-h-[200px] sm:min-h-[280px] lg:min-h-[380px] group/img"
+          >
+            <img 
+              src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80" 
+              className="w-full h-full object-cover opacity-95 group-hover/img:opacity-100 transition-all duration-500 group-hover/img:scale-105"
+              alt="Founders Meeting"
+              referrerPolicy="no-referrer"
+            />
+          </div>
 
-             {/* Features */}
-             <div className="lg:col-span-3 grid sm:grid-cols-2 gap-6">
-                {[
-                  { 
-                    title: "Founder-First Model", 
-                    desc: "Designed by ex-founders, ConnectUp is built to respect your time, preserve your focus, and highlight your true potential.",
-                    bg: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=800"
-                  },
-                  { 
-                    title: "Data-Driven Decisions", 
-                    desc: "No vanity metrics, no hype. Our platform uses deep qualitative alignment signals to match you with partners who share your exact thesis.",
-                    bg: "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&q=80&w=800"
-                  }
-                ].map((item, i) => (
-                  <div 
-                    key={i}
-                    className="p-10 rounded-[2.5rem] border backdrop-blur-md transition-all duration-500 bg-zinc-950 border-zinc-900 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] text-white relative overflow-hidden group min-h-[220px]"
-                  >
-                    {/* Background Image with opacity overlay */}
-                    <div className="absolute inset-0 z-0">
-                       <img 
-                         src={item.bg} 
-                         alt="" 
-                         referrerPolicy="no-referrer"
-                         className="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-700" 
-                       />
-                       <div className="absolute inset-0 bg-gradient-to-br from-zinc-950/80 via-zinc-950/20 to-zinc-950/80" />
-                    </div>
-                    
-                    <div className="relative z-10">
-                      <h3 className="font-serif text-2xl font-normal mb-4 text-[#FFBF00]">{item.title}</h3>
-                      <p className="leading-relaxed font-light text-sm text-zinc-300">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-             </div>
-         </div>
-       </div>
-     </div>
-   );
- };
+          {/* Features */}
+          <div className="lg:col-span-3 grid sm:grid-cols-2 gap-6">
+            {[
+              { 
+                bg: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=800"
+              },
+              { 
+                bg: "https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&q=80&w=800"
+              }
+            ].map((item, i) => (
+              <div 
+                key={i}
+                className="p-10 rounded-[2.5rem] border backdrop-blur-md transition-all duration-500 bg-zinc-950 border-zinc-900 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] text-white relative overflow-hidden group min-h-[220px]"
+              >
+                {/* Background Image */}
+                <div className="absolute inset-0 z-0">
+                  <img 
+                    src={item.bg} 
+                    alt="" 
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700" 
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
