@@ -5,6 +5,7 @@ import investorsAndFounders from '@/src/assets/images/investors_and_founders_1_1
 import ventureTech from '@/src/assets/images/venture_connection_tech_1784549043938.jpg';
 import smartMatching from '@/src/assets/images/smart_matching_investment_1784549068657.jpg';
 import goldenGate from '@/src/assets/images/golden_gate_bridge_1785141940553.jpg';
+import worldModelAi from '@/src/assets/images/world_model_ai_1785704586218.jpg';
 
 const blogs: any[] = [
   {
@@ -79,7 +80,7 @@ const blogs: any[] = [
     author: 'Elena Rodriguez',
     date: 'Oct 02, 2026',
     readTime: '7 min read',
-    image: smartMatching,
+    image: worldModelAi,
   },
   {
     id: 4,
@@ -183,8 +184,31 @@ export const BlogSection: React.FC = () => {
             </div>
           </div>
         ) : (
-          /* Carousel Matching Image Exactly */
-          <div className="relative group/carousel px-2 sm:px-6">
+          <div>
+            {/* Animated Blog Header Title */}
+            <motion.div 
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="flex justify-center mb-10 sm:mb-16 px-2 sm:px-6"
+            >
+              <h2 className="text-5xl sm:text-7xl md:text-8xl font-display font-black text-center tracking-tighter uppercase">
+                <motion.span 
+                  initial={{ rotate: -15, opacity: 0, scale: 0.8 }}
+                  whileInView={{ rotate: 0, opacity: 1, scale: 1 }}
+                  whileHover={{ rotate: 6, scale: 1.06 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, type: 'spring', stiffness: 200, damping: 15 }}
+                  className="inline-block text-zinc-950 cursor-pointer origin-center"
+                >
+                  Blog
+                </motion.span>
+              </h2>
+            </motion.div>
+
+            {/* Carousel Matching Image Exactly */}
+            <div className="relative group/carousel px-2 sm:px-6">
             
             {/* Left Scroll Button */}
             <button 
@@ -238,14 +262,13 @@ export const BlogSection: React.FC = () => {
 
                       {/* Thin Separator Line */}
                       <div className="w-10 h-[1px] bg-white/60 my-3 group-hover:w-16 group-hover:bg-white transition-all duration-300" />
-
-
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+        </div>
         )}
 
       </div>
