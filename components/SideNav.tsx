@@ -48,14 +48,14 @@ export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onP
                       ? 'bg-zinc-100 text-zinc-900 font-black shadow-xs' 
                       : 'text-zinc-600 hover:bg-zinc-100/70 hover:text-zinc-900 font-semibold'
                     : isActive 
-                      ? 'bg-zinc-50 text-zinc-900 shadow-xl shadow-black/[0.02] border border-zinc-100' 
-                      : 'text-zinc-500 hover:bg-zinc-100/50 hover:text-zinc-900'
+                      ? 'bg-zinc-50 text-zinc-950 shadow-xl shadow-black/[0.02] border border-zinc-100' 
+                      : 'text-zinc-950 hover:bg-zinc-100/50 hover:text-black'
                 }`}
               >
                 <div className={`p-1 rounded-xl transition-all duration-200 shrink-0 flex items-center justify-center ${
                   isCommunity
-                    ? isActive ? 'text-yellow-500 scale-110' : 'text-zinc-700 group-hover:text-zinc-900'
-                    : isActive ? 'bg-brand-primary text-white scale-105 shadow-xl shadow-brand-primary/30' : 'bg-transparent text-zinc-400 group-hover:text-zinc-900'
+                    ? isActive ? 'text-yellow-500 scale-110' : 'text-zinc-950 group-hover:text-black'
+                    : isActive ? 'bg-brand-primary text-white scale-105 shadow-xl shadow-brand-primary/30' : 'bg-transparent text-zinc-950 group-hover:text-black'
                 }`}>
                   <item.icon 
                     size={22} 
@@ -65,7 +65,7 @@ export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onP
                 
                 {!isCollapsed && (
                   <span className={`text-base hidden xl:block tracking-tight ${
-                    isActive ? 'font-black text-zinc-900' : 'font-semibold text-zinc-700 group-hover:text-zinc-900'
+                    isActive ? 'font-black text-zinc-950' : 'font-semibold text-zinc-950 group-hover:text-black'
                   }`}>
                     {item.label}
                   </span>
