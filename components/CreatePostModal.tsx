@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { motion } from 'motion/react';
 import { X, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { StorageService } from '../services/storageService';
 
@@ -65,15 +66,36 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ userProfile, o
 
   return (
     <div 
-      className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
+      className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-hidden touch-none sm:touch-auto"
       onClick={(e) => {
         if (e.target === e.currentTarget && !isPosting) onClose();
       }}
     >
-      <div className="relative w-full max-w-xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-zinc-100 max-h-[90vh]">
+      <motion.div 
+        initial={{ y: 80, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: '100%', opacity: 0 }}
+        transition={{ type: 'spring', damping: 28, stiffness: 350 }}
+        drag="y"
+        dragDirectionLock
+        dragConstraints={{ top: 0, bottom: 0 }}
+        dragElastic={{ top: 0.05, bottom: 0.8 }}
+        dragSnapToOrigin
+        onDragEnd={(_, info) => {
+          if (info.offset.y > 100 || info.velocity.y > 350) {
+            onClose();
+          }
+        }}
+        className="relative w-full max-w-xl bg-white rounded-t-[32px] sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-zinc-100 max-h-[90vh]"
+      >
+        {/* Mobile Drag Handle */}
+        <div className="w-full flex justify-center pt-3 pb-1 sm:hidden bg-white shrink-0 cursor-grab active:cursor-grabbing">
+          <div className="w-12 h-1.5 bg-zinc-300 rounded-full"></div>
+        </div>
+
         <div className="px-6 py-4 border-b border-zinc-100 flex justify-between items-center bg-white shrink-0">
           <h3 className="font-bold text-xl text-zinc-900 font-display">Create Post</h3>
-          <button onClick={() => !isPosting && onClose()} className="p-2 bg-zinc-50 hover:bg-zinc-100 rounded-full transition-colors text-zinc-400 hover:text-zinc-900">
+          <button onClick={() => !isPosting && onClose()} className="p-2 bg-zinc-50 hover:bg-zinc-100 rounded-full transition-colors text-zinc-400 hover:text-zinc-900 cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -112,7 +134,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ userProfile, o
                   <img src={imagePreview} className="w-full max-h-[400px] object-cover" alt="Preview" />
                   <button 
                     onClick={() => { setSelectedImage(null); setImagePreview(null); }}
-                    className="absolute top-3 right-3 p-2 bg-black/50 backdrop-blur-md text-white rounded-full hover:bg-black/70 transition-colors"
+                    className="absolute top-3 right-3 p-2 bg-black/50 backdrop-blur-md text-white rounded-full hover:bg-black/70 transition-colors cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -122,7 +144,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ userProfile, o
               <div className="flex items-center justify-between pt-4 border-t border-zinc-50">
                 <button 
                   onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2.5 text-sm font-bold text-zinc-500 hover:text-brand-primary transition-colors px-3 py-2 rounded-full hover:bg-brand-primary/5"
+                  className="flex items-center gap-2.5 text-sm font-bold text-zinc-500 hover:text-brand-primary transition-colors px-3 py-2 rounded-full hover:bg-brand-primary/5 cursor-pointer"
                 >
                   <ImageIcon className="w-5 h-5" />
                   <span>Add Image</span>
@@ -138,7 +160,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ userProfile, o
                 <button 
                   onClick={handleCreatePost}
                   disabled={isPosting || !newPostContent.trim()}
-                  className="px-8 py-2.5 bg-zinc-900 text-white font-bold rounded-full hover:bg-zinc-800 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-lg shadow-zinc-200 active:scale-95"
+                  className="px-8 py-2.5 bg-zinc-900 text-white font-bold rounded-full hover:bg-zinc-800 transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-lg shadow-zinc-200 active:scale-95 cursor-pointer"
                 >
                   {isPosting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Post'}
                 </button>
@@ -146,7 +168,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ userProfile, o
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
