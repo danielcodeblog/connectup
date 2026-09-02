@@ -22,8 +22,8 @@ export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onP
   const isActiveProfile = currentView === 'profile';
   const isPro = userProfile?.plan === 'pro';
 
-  const navItems = [
-{ id: 'home', icon: Home01Icon, label: 'Dashboard' },
+ const navItems = [
+    { id: 'home', icon: Home01Icon, label: 'Dashboard' }
     { id: 'community', icon: UserGroupIcon, label: 'Community' },
     { id: 'bookmarks', icon: Bookmark02Icon, label: 'Bookmarks' },
     { id: 'messages', icon: Chat01Icon, label: 'Messages' },
