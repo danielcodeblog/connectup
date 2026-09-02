@@ -23,12 +23,14 @@ export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onP
   const isPro = userProfile?.plan === 'pro';
 
   const navItems = [
-    { id: 'home', icon: Home01Icon, label: 'Dashboard' },
+    
+{ id: 'home', icon: Home01Icon, label: 'Dashboard' },
     { id: 'community', icon: UserGroupIcon, label: 'Community' },
+    { id: 'bookmarks', icon: Bookmark02Icon, label: 'Bookmarks' },
     { id: 'messages', icon: Chat01Icon, label: 'Messages' },
+    { id: 'profile', icon: UserCircleIcon, label: 'Profile' },
     { id: 'settings', icon: Settings02Icon, label: 'Settings' },
   ];
-
   return (
     <div className={`hidden lg:flex flex-col bg-[#FFFCF0] h-screen sticky top-0 left-0 z-50 transition-all duration-300 ease-in-out backdrop-blur-3xl shadow-sm ${isCollapsed ? 'w-20' : 'w-20 xl:w-68'}`}>
       {/* Nav Items Container */}
