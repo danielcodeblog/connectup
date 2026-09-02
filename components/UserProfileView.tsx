@@ -1,27 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { StorageService } from '../services/storageService';
 import { CommunityPost, Startup, UserRole } from '../types';
-import { X, MapPin, BriefcaseBusiness, CalendarDays, Heart, MessageSquareText, UserPlus, UserCheck, MessageCircle, Mail, LoaderCircle, Globe, BadgeCheck, Bookmark } from 'lucide-react';
+import { X, MapPin, BriefcaseBusiness, CalendarDays, Heart, MessageSquareText, UserPlus, UserCheck, MessageCircle, Mail, LoaderCircle, Globe, BadgeCheck } from 'lucide-react';
 import { CircleLoader } from './CircleLoader';
 
 interface UserProfileViewProps {
   userId: string;
   onClose: () => void;
   onMessage?: (userId: string) => void;
-  initialTab?: 'posts' | 'bookmarks';
 }
 
-const UserProfileView: React.FC<UserProfileViewProps> = ({ userId, onClose, onMessage, initialTab = 'posts' }) => {
+const UserProfileView: React.FC<UserProfileViewProps> = ({ userId, onClose, onMessage }) => {
   const [profile, setProfile] = useState<any>(null);
   const [startup, setStartup] = useState<Startup | null>(null);
   const [posts, setPosts] = useState<CommunityPost[]>([]);
-  const [bookmarkedPosts, setBookmarkedPosts] = useState<CommunityPost[]>([]);
   const [followers, setFollowers] = useState<any[]>([]);
   const [following, setFollowing] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'posts' | 'bookmarks'>(initialTab);
 
   useEffect(() => {
     loadData();
@@ -39,11 +37,10 @@ const UserProfileView: React.FC<UserProfileViewProps> = ({ userId, onClose, onMe
         targetUserId = myId;
       }
 
-      const [profileData, startupData, postsData, bookmarksData, followersData, followingData] = await Promise.all([
+      const [profileData, startupData, postsData, followersData, followingData] = await Promise.all([
         StorageService.getUserProfile(targetUserId),
         StorageService.getStartupByUserId(targetUserId),
         StorageService.getPostsByUserId(targetUserId),
-        StorageService.getBookmarkedPosts(),
         StorageService.getFollowers(targetUserId),
         StorageService.getFollowing(targetUserId)
       ]);
@@ -51,7 +48,6 @@ const UserProfileView: React.FC<UserProfileViewProps> = ({ userId, onClose, onMe
       setProfile(profileData);
       setStartup(startupData);
       setPosts(postsData);
-      setBookmarkedPosts(bookmarksData);
       setFollowers(followersData);
       setFollowing(followingData);
       
@@ -63,11 +59,6 @@ const UserProfileView: React.FC<UserProfileViewProps> = ({ userId, onClose, onMe
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleToggleBookmark = async (postId: string) => {
-    setBookmarkedPosts(prev => prev.filter(p => p.id !== postId));
-    await StorageService.toggleBookmarkPost(postId, false);
   };
 
   const handleFollow = async () => {
@@ -93,59 +84,100 @@ const UserProfileView: React.FC<UserProfileViewProps> = ({ userId, onClose, onMe
 
   if (loading) {
     return (
-      <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center p-8">
-        <CircleLoader size="lg" />
-        <p className="text-zinc-400 text-sm font-medium mt-4 animate-pulse">Loading profile...</p>
+      <div 
+        onClick={onClose} 
+        className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center p-8 cursor-pointer"
+      >
+        <div onClick={(e) => e.stopPropagation()} className="flex flex-col items-center cursor-default">
+          <CircleLoader size="lg" />
+          <p className="text-zinc-400 text-sm font-medium mt-4 animate-pulse">Loading profile...</p>
+        </div>
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center">
-        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 flex flex-col items-center gap-4 max-w-sm text-center">
-          <div className="w-16 h-16 bg-zinc-850 rounded-full flex items-center justify-center text-zinc-500">
+      <div 
+        onClick={onClose} 
+        className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 cursor-pointer"
+      >
+        <div 
+          onClick={(e) => e.stopPropagation()} 
+          className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 flex flex-col items-center gap-4 max-w-sm text-center cursor-default"
+        >
+          <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center text-zinc-500">
             <X size={32} />
           </div>
           <h3 className="text-xl font-bold text-white">Profile Not Found</h3>
           <p className="text-zinc-400 text-sm">The user you are looking for does not exist or has been removed.</p>
-          <button onClick={onClose} className="w-full py-3 bg-zinc-800 text-white rounded-full font-bold mt-2 hover:bg-zinc-700">Close</button>
+          <button onClick={onClose} className="w-full py-3 bg-zinc-800 text-white rounded-full font-bold mt-2 hover:bg-zinc-700 cursor-pointer">Close</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-300">
-      <div className="bg-zinc-900 border border-zinc-800 w-full max-w-lg h-[90dvh] sm:h-auto sm:max-h-[85dvh] rounded-t-[32px] sm:rounded-[32px] overflow-y-auto overscroll-contain shadow-2xl animate-in slide-in-from-bottom-10 duration-500 text-white">
-        
-        {/* Mobile Drag Handle */}
-        <div className="w-full flex justify-center pt-3 pb-1 sm:hidden sticky top-0 bg-zinc-900 z-20">
-          <div className="w-12 h-1.5 bg-zinc-800 rounded-full"></div>
+    <div 
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+      className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-hidden touch-none sm:touch-auto"
+    >
+      <motion.div 
+        initial={{ y: 80, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: '100%', opacity: 0 }}
+        transition={{ type: 'spring', damping: 28, stiffness: 350 }}
+        drag="y"
+        dragDirectionLock
+        dragConstraints={{ top: 0, bottom: 0 }}
+        dragElastic={{ top: 0.05, bottom: 0.8 }}
+        dragSnapToOrigin
+        onDragEnd={(_, info) => {
+          if (info.offset.y > 100 || info.velocity.y > 350) {
+            onClose();
+          }
+        }}
+        className="bg-zinc-900 border border-zinc-800 w-full max-w-lg h-[90dvh] sm:h-auto sm:max-h-[85dvh] rounded-t-[32px] sm:rounded-[32px] overflow-y-auto overscroll-contain shadow-2xl text-white flex flex-col cursor-grab active:cursor-grabbing"
+      >
+        {/* Mobile Drag Handle Bar */}
+        <div 
+          className="w-full flex flex-col items-center justify-center pt-3 pb-1 sticky top-0 bg-zinc-900/95 backdrop-blur-md z-20 cursor-grab active:cursor-grabbing select-none"
+        >
+          <div className="w-12 h-1.5 bg-zinc-700 hover:bg-zinc-600 active:bg-amber-400 transition-colors rounded-full mb-1"></div>
+          <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest sm:hidden">Swipe down to close</span>
         </div>
 
         {/* Header */}
-        <div className="sticky top-0 sm:top-0 z-10 bg-zinc-900/80 backdrop-blur-md p-6 pt-2 sm:pt-6 flex justify-between items-center shrink-0 border-b border-zinc-800">
+        <div className="sticky top-0 z-10 bg-zinc-900/80 backdrop-blur-md px-6 py-3 flex justify-between items-center shrink-0 border-b border-zinc-800">
           <div className="flex items-center gap-3">
+            <span className="text-xs font-bold text-zinc-400 tracking-wide">Profile Details</span>
           </div>
-          <button onClick={onClose} className="p-2 bg-zinc-800 rounded-full text-zinc-400 hover:bg-zinc-700 hover:text-white">
+          <button 
+            onClick={onClose} 
+            className="p-2 bg-zinc-800 rounded-full text-zinc-400 hover:bg-zinc-700 hover:text-white transition-colors cursor-pointer"
+            title="Close"
+          >
             <X size={20} />
           </button>
         </div>
 
         {/* Profile Info */}
-        <div className="px-6 pb-6">
+        <div className="px-6 pb-6 pt-4">
           <div className="flex items-center gap-4 mb-6">
             {profile.avatarUrl ? (
               <img 
                 src={profile.avatarUrl} 
-                className="w-20 h-20 rounded-full object-cover" 
+                className="w-20 h-20 rounded-full object-cover border-2 border-zinc-700 shadow-md" 
                 alt={profile.name}
                 loading="eager"
                 fetchPriority="high"
               />
             ) : (
-              <div className="w-20 h-20 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400">
+              <div className="w-20 h-20 rounded-full bg-zinc-800 border-2 border-zinc-700 flex items-center justify-center text-zinc-400">
                 <UserPlus size={32} />
               </div>
             )}
@@ -158,8 +190,8 @@ const UserProfileView: React.FC<UserProfileViewProps> = ({ userId, onClose, onMe
               </div>
               <p className="text-sm text-zinc-400">{profile.title}</p>
               <div className="flex gap-4 mt-2 text-sm font-bold">
-                <span>{followers.length} <span className="text-zinc-550 font-normal">Followers</span></span>
-                <span>{following.length} <span className="text-zinc-550 font-normal">Following</span></span>
+                <span>{followers.length} <span className="text-zinc-500 font-normal">Followers</span></span>
+                <span>{following.length} <span className="text-zinc-500 font-normal">Following</span></span>
               </div>
             </div>
           </div>
@@ -168,15 +200,15 @@ const UserProfileView: React.FC<UserProfileViewProps> = ({ userId, onClose, onMe
             <div className="flex gap-3">
               <button 
                 onClick={handleFollow}
-                className={`flex-1 py-2.5 rounded-xl font-bold text-sm transition-all ${
-                  isFollowing ? 'bg-zinc-800 text-white border border-zinc-700' : 'bg-brand-primary text-black hover:bg-yellow-500'
+                className={`flex-1 py-2.5 rounded-xl font-bold text-sm transition-all cursor-pointer ${
+                  isFollowing ? 'bg-zinc-800 text-white border border-zinc-700 hover:bg-zinc-750' : 'bg-brand-primary text-black hover:bg-yellow-500'
                 }`}
               >
                 {isFollowing ? 'Following' : 'Follow'}
               </button>
               <button 
                 onClick={() => onMessage?.(userId === 'me' ? currentUserId || '' : userId)}
-                className="flex-1 py-2.5 rounded-xl font-bold text-sm transition-all bg-zinc-800 text-white hover:bg-zinc-750 border border-zinc-700"
+                className="flex-1 py-2.5 rounded-xl font-bold text-sm transition-all bg-zinc-800 text-white hover:bg-zinc-750 border border-zinc-700 cursor-pointer"
               >
                 Message
               </button>
@@ -187,58 +219,17 @@ const UserProfileView: React.FC<UserProfileViewProps> = ({ userId, onClose, onMe
         {/* Content */}
         <div className="px-6 pb-20 space-y-6">
           {startup && (
-            <div className="bg-zinc-950 border border-zinc-850 rounded-2xl p-4">
+            <div className="bg-zinc-950 border border-zinc-800 rounded-2xl p-4">
               <p className="text-xs font-bold text-zinc-500 uppercase mb-2">Startup</p>
               <p className="font-bold text-white">{startup.name}</p>
-              <p className="text-sm text-zinc-400 mb-3">{startup.oneLiner}</p>
-              {startup.fundingHistory && startup.fundingHistory.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-zinc-800">
-                  <p className="text-xs font-bold text-zinc-500 uppercase mb-3">Funding History</p>
-                  <div className="space-y-3">
-                    {startup.fundingHistory.map((round, idx) => (
-                      <div key={idx} className="flex justify-between items-center text-sm">
-                        <div>
-                          <span className="font-bold text-white">{round.round}</span>
-                          <span className="text-zinc-500 block text-xs">{round.investor}</span>
-                        </div>
-                        <div className="text-right">
-                          <span className="text-brand-primary font-bold">{round.amount}</span>
-                          <span className="text-zinc-500 block text-xs">{round.date}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {startup.socialMediaUrl && (
-                <a href={startup.socialMediaUrl} target="_blank" rel="noopener noreferrer" className="text-brand-primary font-bold text-xs hover:underline flex items-center gap-1">
-                  View Social Media
-                </a>
-              )}
+              <p className="text-sm text-zinc-400">{startup.oneLiner}</p>
             </div>
           )}
 
-            <div>
-            <div className="flex gap-6 mb-4 border-b border-zinc-800">
-              <button 
-                onClick={() => setActiveTab('posts')}
-                className={`pb-2 text-sm font-bold transition-all relative ${activeTab === 'posts' ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
-              >
-                Posts
-                {activeTab === 'posts' && <div className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-brand-primary" />}
-              </button>
-              <button 
-                onClick={() => setActiveTab('bookmarks')}
-                className={`pb-2 text-sm font-bold transition-all relative ${activeTab === 'bookmarks' ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'}`}
-              >
-                Bookmarks
-                {activeTab === 'bookmarks' && <div className="absolute bottom-[-1px] left-0 right-0 h-0.5 bg-brand-primary" />}
-              </button>
-            </div>
-            
-            {activeTab === 'posts' && (
-              <div className="space-y-4">
-                {posts.map(post => (
+          <div>
+            <p className="text-xs font-bold text-zinc-500 uppercase mb-4">Posts</p>
+            <div className="space-y-4">
+              {posts.map(post => (
                 <div key={post.id} className="border-b border-zinc-800 pb-4 last:border-0">
                   <div className="flex items-center gap-3 mb-2">
                     {post.avatar ? (
@@ -260,7 +251,7 @@ const UserProfileView: React.FC<UserProfileViewProps> = ({ userId, onClose, onMe
                   <div className="flex items-center gap-6 text-zinc-400">
                     <button 
                       onClick={() => handleLikePost(post.id, post.isLiked)}
-                      className={`flex items-center gap-1.5 transition-colors ${post.isLiked ? 'text-red-500' : 'hover:text-red-500'}`}
+                      className={`flex items-center gap-1.5 transition-colors cursor-pointer ${post.isLiked ? 'text-red-500' : 'hover:text-red-500'}`}
                     >
                       <Heart size={16} className={post.isLiked ? 'fill-current' : ''} /> <span className="text-xs">{post.likes}</span>
                     </button>
@@ -271,66 +262,9 @@ const UserProfileView: React.FC<UserProfileViewProps> = ({ userId, onClose, onMe
                 </div>
               ))}
             </div>
-            )}
-
-            {activeTab === 'bookmarks' && (
-              <div className="space-y-4">
-                {bookmarkedPosts.length > 0 ? (
-                  bookmarkedPosts.map(post => (
-                    <div key={post.id} className="border-b border-zinc-800 pb-4 last:border-0">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-3">
-                          {post.avatar ? (
-                            <img src={post.avatar} className="w-10 h-10 rounded-full object-cover" alt={post.author} />
-                          ) : (
-                            <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-500">
-                              <UserPlus size={20} />
-                            </div>
-                          )}
-                          <div>
-                            <p className="text-sm font-bold text-white">{post.author}</p>
-                            <p className="text-xs text-zinc-500">{post.time}</p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => handleToggleBookmark(post.id)}
-                          className="text-amber-400 hover:text-zinc-500 transition-colors p-2"
-                          title="Remove bookmark"
-                        >
-                          <Bookmark size={18} className="fill-current" />
-                        </button>
-                      </div>
-                      <p className="text-sm text-zinc-300 mb-3">{post.content}</p>
-                      {post.imageUrl && (
-                        <img src={post.imageUrl} className="w-full rounded-2xl mb-3 border border-zinc-800 object-cover max-h-72" alt="Post" />
-                      )}
-                      <div className="flex items-center gap-6 text-zinc-400">
-                        <button 
-                          onClick={() => handleLikePost(post.id, post.isLiked)}
-                          className={`flex items-center gap-1.5 transition-colors ${post.isLiked ? 'text-red-500' : 'hover:text-red-500'}`}
-                        >
-                          <Heart size={16} className={post.isLiked ? 'fill-current' : ''} /> <span className="text-xs">{post.likes}</span>
-                        </button>
-                        <div className="flex items-center gap-1.5 cursor-default">
-                          <MessageSquareText size={16} /> <span className="text-xs">{post.comments}</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center text-zinc-500 mb-4">
-                      <Bookmark size={32} />
-                    </div>
-                    <h3 className="text-lg font-bold text-white mb-2">No bookmarks yet</h3>
-                    <p className="text-zinc-400 text-sm">When you bookmark posts, they'll appear here.</p>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
