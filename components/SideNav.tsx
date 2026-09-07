@@ -6,7 +6,7 @@ import {
   Settings02Icon,
   UserCircleIcon,
 } from 'hugeicons-react';
-import { Feather, MoreHorizontal, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Feather, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface SideNavProps {
   currentView: string;
@@ -30,7 +30,6 @@ export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onP
 
   const isCollapsed = !isExpanded;
   const isCommunity = currentView === 'community' || currentView === 'profile';
-  const isActiveProfile = currentView === 'profile';
   const isPro = userProfile?.plan === 'pro';
 
   const toggleExpand = () => {
@@ -148,52 +147,6 @@ export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onP
               </button>
             </div>
           )}
-        </div>
-
-        {/* Bottom Profile Card */}
-        <div className="pt-4 mt-auto border-t border-zinc-100/80">
-          <button 
-            onClick={() => onViewChange('profile')}
-            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} py-2 px-2 rounded-full hover:bg-zinc-100/80 transition-all duration-200 group text-left relative ${
-              isActiveProfile ? 'bg-zinc-100/90 ring-1 ring-zinc-200' : ''
-            }`}
-            title="View Profile"
-          >
-            <div className="flex items-center gap-3 overflow-hidden">
-              {userProfile?.avatar_url || userProfile?.avatarUrl || userProfile?.avatar || userProfile?.photoURL || userProfile?.imageUrl ? (
-                <img 
-                  src={userProfile.avatar_url || userProfile.avatarUrl || userProfile.avatar || userProfile.photoURL || userProfile.imageUrl} 
-                  alt={userProfile.full_name || userProfile.name || 'User'} 
-                  className="w-9 h-9 rounded-full object-cover border border-zinc-200/80 shadow-xs shrink-0 group-hover:ring-2 group-hover:ring-yellow-400/50 transition-all" 
-                />
-              ) : (
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-500 text-zinc-950 font-black flex items-center justify-center shrink-0 shadow-sm text-sm group-hover:ring-2 group-hover:ring-yellow-400/50 transition-all">
-                  {(userProfile?.full_name || userProfile?.name || userProfile?.email || 'F')[0].toUpperCase()}
-                </div>
-              )}
-              {!isCollapsed && (
-                <div className="overflow-hidden leading-snug">
-                  <p className="font-extrabold text-sm text-zinc-900 truncate">
-                    {userProfile?.full_name || userProfile?.name || 'Founder'}
-                  </p>
-                  <p className="text-xs text-zinc-400 font-medium truncate">
-                    @{userProfile?.email ? userProfile.email.split('@')[0] : 'founder'}
-                  </p>
-                </div>
-              )}
-            </div>
-            {!isCollapsed && (
-              <MoreHorizontal size={20} className="text-zinc-400 group-hover:text-zinc-700 shrink-0" />
-            )}
-
-            {/* Tooltip for profile when collapsed */}
-            {isCollapsed && (
-              <div className="absolute left-full ml-6 px-3 py-1.5 bg-white text-zinc-900 border border-zinc-100 text-[10px] font-black uppercase tracking-widest rounded-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-300 whitespace-nowrap z-50 translate-x-[-10px] group-hover:translate-x-0 shadow-xl">
-                Profile
-                <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-white border-l border-b border-zinc-100 rotate-45" />
-              </div>
-            )}
-          </button>
         </div>
       </nav>
     </div>
