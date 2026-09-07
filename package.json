@@ -1,5 +1,5 @@
 {
-  "name": "copy-of-copy-of-connectup",
+  "name": "connectup",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -52,5 +52,15 @@
   "overrides": {
     "react": "$react",
     "react-dom": "$react-dom"
+  },
+  "lavamoat": {
+    "allowScripts": {
+      "@google/genai>protobufjs#7.5.4": true,
+      "protobufjs": true,
+      "esbuild#0.28.1": true,
+      "tsx>esbuild#0.27.4": true,
+      "vite>esbuild#0.25.12": true,
+      "esbuild": true
+    }
   }
 }
