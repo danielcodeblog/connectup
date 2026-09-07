@@ -168,6 +168,8 @@ const App = () => {
     }
     if (pathname === '/chat' || pathname === '/messages') return 'messages';
     if (pathname === '/community') return 'community';
+    if (pathname === '/bookmarks') return 'bookmarks';
+    if (pathname === '/profile') return 'profile';
     if (pathname === '/settings') return 'settings';
     if (pathname === '/founders' || pathname === '/founder' || pathname === '/investor' || pathname === '/investors' || pathname === '/home' || pathname === '/') return 'home';
 
@@ -204,6 +206,8 @@ const App = () => {
       if (view === 'admin') return '/admin';
       if (view === 'messages') return '/chat';
       if (view === 'community') return '/community';
+      if (view === 'bookmarks') return '/bookmarks';
+      if (view === 'profile') return '/profile';
       if (view === 'settings') return '/settings';
       if (view === 'home') {
         if (userRole === UserRole.FOUNDER) return '/founders';
@@ -307,6 +311,26 @@ const App = () => {
         if (isLoggedIn) {
           setAppState('MAIN_APP');
           setCurrentView('community');
+        } else {
+          setAppState('AUTH');
+        }
+        return;
+      }
+
+      if (pathname === '/bookmarks') {
+        if (isLoggedIn) {
+          setAppState('MAIN_APP');
+          setCurrentView('bookmarks');
+        } else {
+          setAppState('AUTH');
+        }
+        return;
+      }
+
+      if (pathname === '/profile') {
+        if (isLoggedIn) {
+          setAppState('MAIN_APP');
+          setCurrentView('profile');
         } else {
           setAppState('AUTH');
         }
@@ -804,46 +828,6 @@ const App = () => {
     setNotification(null);
   }, []);
 
-  // Auto-logout timer
-  useEffect(() => {
-    if (appState !== 'MAIN_APP') return;
-
-    let inactivityTimer: any;
-
-    const resetTimer = () => {
-      clearTimeout(inactivityTimer);
-      inactivityTimer = setTimeout(() => {
-        handleLogout();
-        setNotification({
-          sender: "System",
-          message: "You have been logged out due to inactivity.",
-          userId: "sys",
-          type: 'system'
-        });
-      }, 30 * 60 * 1000); // 30 minutes
-    };
-
-    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
-    
-    // Throttle the resetTimer for performance, especially on mousemove/scroll
-    let isThrottled = false;
-    const throttledResetTimer = () => {
-      if (!isThrottled) {
-        resetTimer();
-        isThrottled = true;
-        setTimeout(() => { isThrottled = false; }, 1000);
-      }
-    };
-
-    events.forEach(event => document.addEventListener(event, throttledResetTimer, { passive: true }));
-    resetTimer();
-
-    return () => {
-      clearTimeout(inactivityTimer);
-      events.forEach(event => document.removeEventListener(event, throttledResetTimer, { passive: true } as any));
-    };
-  }, [appState, handleLogout, setNotification]);
-
   const handleDeleteAccount = useCallback(async () => {
       setIsDeletingAccount(true);
       try {
@@ -990,7 +974,7 @@ const App = () => {
   const viewIndex = useMemo(() => {
     if (currentView === 'home') return 0;
     if (currentView === 'messages') return 1;
-    if (currentView === 'community' || currentView === 'bookmarks') return 3;
+    if (currentView === 'community') return 3;
     if (currentView === 'settings') return 4;
     return 0;
   }, [currentView]);
@@ -1211,7 +1195,7 @@ const App = () => {
   }, [currentView, settingsPath, currentUserId, userProfile?.email]);
 
   const mainContent = useMemo(() => {
-    if (currentView === 'community' || currentView === 'profile' || currentView === 'bookmarks') {
+    if (currentView === 'community' || currentView === 'bookmarks') {
       if (!userProfile || userProfile.plan !== 'pro') {
         return (
           <div className="relative h-full w-full flex flex-col items-center justify-center p-6 text-center overflow-hidden">
@@ -1250,13 +1234,25 @@ const App = () => {
       return (
           <CommunityFeed 
               userProfile={userProfile} 
+              initialTab={currentView === 'bookmarks' ? 'bookmarks' : 'for-you'}
               onMessage={handleCommunityMessage} 
               onViewProfile={setSelectedCommunityProfileId} 
               refreshTrigger={communityRefreshTrigger}
               onAddPost={() => handleOpenCreatePost()}
               onQuotePost={(post) => handleOpenCreatePost(post)}
-              initialTab={currentView === 'bookmarks' ? 'bookmarks' : 'for-you'}
           />
+      );
+    }
+
+    if (currentView === 'profile') {
+      return (
+        <div className="min-h-screen w-full bg-[#fefce8] dark:bg-zinc-950 flex justify-center items-center py-6 px-4">
+          <UserProfileView 
+            userId={(userProfile as any)?.id || 'me'} 
+            onClose={() => setCurrentView('community')} 
+            onMessage={handleCommunityMessage}
+          />
+        </div>
       );
     }
 
@@ -1524,17 +1520,6 @@ const App = () => {
                 <div className="absolute top-[30%] left-[20%] w-[30%] h-[30%] bg-brand-primary/5 rounded-full blur-[100px] opacity-5 lg:animate-blob lg:animation-delay-4000"></div>
             </div>
 
-            {StorageService.isMockMode() && currentView !== 'admin' && currentView !== 'home' && currentView !== 'discover' && (
-              <div id="db-offline-warning-banner" className="w-full bg-amber-50/95 border-b border-amber-200 py-2.5 px-4 z-[40] relative flex items-center justify-between gap-3 text-xs text-amber-800 font-sans shadow-sm">
-                <div className="flex items-center gap-2 mx-auto text-center">
-                  <AlertTriangle size={15} className="text-amber-600 shrink-0" />
-                  <span className="font-medium">
-                    <strong>Database Connected to Local Storage (Mock Mode)</strong>: Unable to reach your Supabase database server. Any data created now will be temporary. Please verify that your Supabase project is unpaused/active and that your credentials in the environment variables are configured correctly.
-                  </span>
-                </div>
-              </div>
-            )}
-
             <main className={`flex-1 pt-0 ${isLockedView ? 'pb-[72px] md:pb-0' : 'pb-20 md:pb-0'} bg-transparent relative z-10 w-full max-w-[1920px] mx-auto`}>
               {mainContent}
             </main>
@@ -1611,14 +1596,6 @@ const App = () => {
                   userId={selectedCommunityProfileId} 
                   onClose={() => setSelectedCommunityProfileId(null)} 
                   onMessage={handleCommunityMessage}
-                />
-            )}
-
-            {currentView === 'profile' && (
-                <UserProfileView 
-                  userId="me" 
-                  initialTab="posts"
-                  onClose={() => setCurrentView('community')} 
                 />
             )}
 
