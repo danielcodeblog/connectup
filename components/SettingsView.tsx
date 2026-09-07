@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { 
   User, Lock, CreditCard, Bell, Mail, Users, 
-  Download, Plus, Check, ExternalLink, Shield, Eye, Camera,
+  Download, Plus, Check, ExternalLink, Shield, Eye, EyeOff, Camera,
   ArrowRight, Globe, MapPin, BadgeCheck, Trash2, LogOut,
-  AlertCircle
+  AlertCircle, Briefcase, KeyRound, Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { SettingsTabs } from './SettingsTabs';
+import { SettingsTabs, SettingsTabItem } from './SettingsTabs';
 import { Card } from './Card';
 
 interface SettingsViewProps {
@@ -63,6 +63,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [localProfile, setLocalProfile] = useState(userProfile);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
     if (initialTab) {
@@ -74,13 +77,21 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     setLocalProfile(userProfile);
   }, [userProfile]);
 
-  const tabs = [
-    { id: 'profile', label: 'My Profile' },
-    { id: 'subscription', label: 'Subscription' },
-    { id: 'password', label: 'Security' },
-    { id: 'notifications', label: 'Notifications' },
-    { id: 'terms', label: 'Terms of Service' },
-    { id: 'privacy', label: 'Privacy Policy' },
+  const handleSaveProfile = () => {
+    onUpdateProfile(localProfile);
+    setSaveSuccess(true);
+    setTimeout(() => {
+      setSaveSuccess(false);
+    }, 2500);
+  };
+
+  const tabs: SettingsTabItem[] = [
+    { id: 'profile', label: 'My Profile', description: 'Public identity & credentials' },
+    { id: 'subscription', label: 'Subscription', description: 'Plans, billing & perks', badge: isPro ? 'PRO' : undefined },
+    { id: 'password', label: 'Security', description: 'Password & account protection' },
+    { id: 'notifications', label: 'Notifications', description: 'Alerts & message sounds' },
+    { id: 'terms', label: 'Terms of Service', description: 'Platform guidelines & rules' },
+    { id: 'privacy', label: 'Privacy Policy', description: 'Data handling & rights' },
   ];
 
   const renderTabContent = () => {
@@ -423,153 +434,304 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         );
       case 'profile':
         return (
-          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-             <section className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-xl font-semibold text-zinc-900 dark:text-white">Public Profile</h3>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">This information will be displayed publicly.</p>
-                  </div>
-                  <div className="flex flex-col items-center sm:flex-row gap-6">
-                        <input 
-                            type="file" 
-                            id="avatar-upload" 
-                            className="hidden" 
-                            accept="image/*" 
-                            onChange={onAvatarChange}
-                        />
-                        <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden border-4 border-white dark:border-zinc-900 shadow-2xl relative group cursor-pointer" onClick={() => document.getElementById('avatar-upload')?.click()}>
-                       {userProfile.avatarUrl ? (
-                         <img src={userProfile.avatarUrl} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="" loading="eager" fetchPriority="high" />
-                       ) : (
-                         <div className="w-full h-full flex items-center justify-center text-zinc-300 dark:text-zinc-700">
-                           <User size={48} className="text-yellow-500" />
-                         </div>
-                       )}
-                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                         <Camera className="text-yellow-500" size={24} />
-                       </div>
-                     </div>
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-300">
+            {/* Header */}
+            <div className="border-b border-zinc-100 dark:border-zinc-800 pb-5">
+              <div className="flex items-center gap-2 text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">
+                <User size={14} />
+                <span>Account Identity</span>
+              </div>
+              <h3 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">Public Profile</h3>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                This information is displayed on your ConnectUp networking card, swipe deck, and founder community profile.
+              </p>
+            </div>
+
+            {/* Profile Avatar Zone */}
+            <div className="p-6 bg-zinc-50/70 dark:bg-zinc-800/40 rounded-2xl border border-zinc-200/70 dark:border-zinc-800 flex flex-col sm:flex-row items-center gap-6">
+              <div className="relative group shrink-0">
+                <input 
+                  type="file" 
+                  id="avatar-upload" 
+                  className="hidden" 
+                  accept="image/*" 
+                  onChange={onAvatarChange}
+                />
+                <div 
+                  onClick={() => document.getElementById('avatar-upload')?.click()}
+                  className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-zinc-100 dark:bg-zinc-800 overflow-hidden border-2 border-zinc-200 dark:border-zinc-700 shadow-sm cursor-pointer relative"
+                >
+                  {localProfile?.avatarUrl || localProfile?.avatar_url || localProfile?.avatar ? (
+                    <img 
+                      src={localProfile.avatarUrl || localProfile.avatar_url || localProfile.avatar} 
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" 
+                      alt={localProfile.name || 'User'} 
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black text-3xl">
+                      {(localProfile?.name || localProfile?.email || 'U')[0].toUpperCase()}
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                    <Camera size={22} className="text-amber-400" />
                   </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => document.getElementById('avatar-upload')?.click()}
+                  className="absolute -bottom-1 -right-1 p-2 bg-zinc-900 dark:bg-white text-white dark:text-zinc-950 rounded-xl shadow-md hover:scale-110 active:scale-95 transition-all cursor-pointer"
+                  title="Upload image"
+                >
+                  <Camera size={14} />
+                </button>
+              </div>
 
-                  <div className="space-y-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-zinc-900 dark:text-zinc-300">Full Name</label>
-                    <input 
-                      type="text" 
-                      value={localProfile.name} 
-                      onChange={(e) => setLocalProfile({...localProfile, name: e.target.value})}
-                      className="w-full px-4 py-3 sm:px-6 sm:py-4 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800/80 rounded-2xl text-sm focus:ring-4 focus:ring-zinc-900/5 dark:focus:ring-white/5 focus:border-zinc-900 dark:focus:border-white outline-none transition-all font-bold text-zinc-900 dark:text-white" 
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-zinc-900 dark:text-zinc-300">
-                      {role === 'founder' ? 'Founder Title' : ' Title'}
-                    </label>
-                    <input 
-                      type="text" 
-                      value={localProfile.title} 
-                      onChange={(e) => setLocalProfile({...localProfile, title: e.target.value})}
-                      className="w-full px-4 py-3 sm:px-6 sm:py-4 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800/80 rounded-2xl text-sm focus:ring-4 focus:ring-zinc-900/5 dark:focus:ring-white/5 focus:border-zinc-900 dark:focus:border-white outline-none transition-all font-bold text-zinc-900 dark:text-white" 
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-zinc-900 dark:text-zinc-300">Location</label>
-                      <div className="relative">
-                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-yellow-500" size={16} />
-                        <input 
-                          type="text" 
-                          value={localProfile.location} 
-                          onChange={(e) => setLocalProfile({...localProfile, location: e.target.value})}
-                          className="w-full pl-10 pr-4 py-3 sm:pl-12 sm:pr-6 sm:py-4 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800/80 rounded-2xl text-sm focus:ring-4 focus:ring-zinc-900/5 dark:focus:ring-white/5 focus:border-zinc-900 dark:focus:border-white outline-none transition-all font-bold text-zinc-900 dark:text-white" 
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium text-zinc-900 dark:text-zinc-300">Email Address</label>
-                      <input 
-                        type="email" 
-                        value={localProfile.email} 
-                        onChange={(e) => setLocalProfile({...localProfile, email: e.target.value})}
-                        className="w-full px-4 py-3 sm:px-6 sm:py-4 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800/80 rounded-2xl text-sm focus:ring-4 focus:ring-zinc-900/5 dark:focus:ring-white/5 focus:border-zinc-900 dark:focus:border-white outline-none transition-all font-bold text-zinc-900 dark:text-white" 
-                      />
-                    </div>
-                  </div>
+              <div className="space-y-1.5 text-center sm:text-left flex-1">
+                <h4 className="text-base font-bold text-zinc-900 dark:text-white">Profile Photo</h4>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-sm">
+                  Upload a high-resolution photo. Recommended square PNG, JPG, or WEBP under 5MB.
+                </p>
+                <div className="pt-2 flex items-center gap-3 justify-center sm:justify-start">
+                  <button
+                    type="button"
+                    onClick={() => document.getElementById('avatar-upload')?.click()}
+                    className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-zinc-950 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+                  >
+                    Change Photo
+                  </button>
+                </div>
+              </div>
+            </div>
 
-                    <button 
-                      onClick={() => onUpdateProfile(localProfile)}
-                      className="w-full sm:w-auto px-8 py-3 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-2xl text-sm font-black hover:scale-105 active:scale-95 transition-all shadow-xl"
-                    >
-                      Save Changes
-                    </button>
-                 </div>
-              </section>
+            {/* Profile Input Fields */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <User size={13} className="text-amber-500" />
+                  Full Name
+                </label>
+                <input 
+                  type="text" 
+                  value={localProfile.name || ''} 
+                  onChange={(e) => setLocalProfile({...localProfile, name: e.target.value})}
+                  placeholder="e.g. Alex Chen"
+                  className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-850 border border-zinc-200/80 dark:border-zinc-700/80 rounded-xl text-sm font-semibold text-zinc-900 dark:text-white focus:ring-2 focus:ring-amber-400/30 focus:border-amber-400 outline-none transition-all" 
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <Briefcase size={13} className="text-amber-500" />
+                  {role === 'founder' ? 'Founder Title / Role' : 'Professional Title'}
+                </label>
+                <input 
+                  type="text" 
+                  value={localProfile.title || ''} 
+                  onChange={(e) => setLocalProfile({...localProfile, title: e.target.value})}
+                  placeholder={role === 'founder' ? 'e.g. Founder & CEO' : 'e.g. Partner, Venture Fund'}
+                  className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-850 border border-zinc-200/80 dark:border-zinc-700/80 rounded-xl text-sm font-semibold text-zinc-900 dark:text-white focus:ring-2 focus:ring-amber-400/30 focus:border-amber-400 outline-none transition-all" 
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <MapPin size={13} className="text-amber-500" />
+                  Location
+                </label>
+                <input 
+                  type="text" 
+                  value={localProfile.location || ''} 
+                  onChange={(e) => setLocalProfile({...localProfile, location: e.target.value})}
+                  placeholder="e.g. San Francisco, CA"
+                  className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-850 border border-zinc-200/80 dark:border-zinc-700/80 rounded-xl text-sm font-semibold text-zinc-900 dark:text-white focus:ring-2 focus:ring-amber-400/30 focus:border-amber-400 outline-none transition-all" 
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <Mail size={13} className="text-amber-500" />
+                  Email Address
+                </label>
+                <input 
+                  type="email" 
+                  value={localProfile.email || ''} 
+                  onChange={(e) => setLocalProfile({...localProfile, email: e.target.value})}
+                  placeholder="e.g. alex@startup.com"
+                  className="w-full px-4 py-3 bg-zinc-50 dark:bg-zinc-850 border border-zinc-200/80 dark:border-zinc-700/80 rounded-xl text-sm font-semibold text-zinc-900 dark:text-white focus:ring-2 focus:ring-amber-400/30 focus:border-amber-400 outline-none transition-all" 
+                />
+              </div>
+            </div>
+
+            {/* Actions Bar */}
+            <div className="pt-4 flex items-center gap-4">
+              <button 
+                onClick={handleSaveProfile}
+                className={`inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl text-sm font-black transition-all shadow-md active:scale-95 cursor-pointer ${
+                  saveSuccess 
+                    ? 'bg-emerald-600 text-white' 
+                    : 'bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950'
+                }`}
+              >
+                {saveSuccess ? (
+                  <>
+                    <Check size={16} />
+                    <span>Saved Successfully!</span>
+                  </>
+                ) : (
+                  <>
+                    <Check size={16} />
+                    <span>Save Changes</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         );
       case 'password':
         return (
-          <div className="max-w-md animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h3 className="text-xl font-semibold text-zinc-900 dark:text-white mb-2">Change Password</h3>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-8">Keep your account secure with a strong password.</p>
+          <div className="max-w-lg space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-300">
+            {/* Header */}
+            <div className="border-b border-zinc-100 dark:border-zinc-800 pb-5">
+              <div className="flex items-center gap-2 text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">
+                <Lock size={14} />
+                <span>Account Protection</span>
+              </div>
+              <h3 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">Security & Credentials</h3>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                Keep your account secure with a strong password.
+              </p>
+            </div>
+
             <form onSubmit={onUpdatePassword} className="space-y-6">
-               <div className="space-y-2">
-                 <label className="text-sm font-medium text-zinc-900 dark:text-zinc-300">New Password</label>
-                 <input 
-                  type="password" 
-                  value={passwordState.new}
-                  onChange={(e) => passwordState.setNew(e.target.value)}
-                  className="w-full px-4 py-3 bg-white dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm text-zinc-900 dark:text-white focus:ring-2 focus:ring-zinc-900/10 dark:focus:ring-white/5 focus:border-zinc-900 dark:focus:border-white outline-none transition-all" 
-                 />
-               </div>
-               <div className="space-y-2">
-                 <label className="text-sm font-medium text-zinc-900 dark:text-zinc-300">Confirm Password</label>
-                 <input 
-                  type="password" 
-                  value={passwordState.confirm}
-                  onChange={(e) => passwordState.setConfirm(e.target.value)}
-                  className="w-full px-4 py-3 bg-white dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-xl text-sm text-zinc-900 dark:text-white focus:ring-2 focus:ring-zinc-900/10 dark:focus:ring-white/5 focus:border-zinc-900 dark:focus:border-white outline-none transition-all" 
-                 />
-               </div>
-               <button 
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
+                  New Password
+                </label>
+                <div className="relative">
+                  <input 
+                    type={showNewPassword ? 'text' : 'password'} 
+                    value={passwordState.new}
+                    onChange={(e) => passwordState.setNew(e.target.value)}
+                    placeholder="Enter at least 8 characters"
+                    className="w-full pl-4 pr-11 py-3 bg-zinc-50 dark:bg-zinc-850 border border-zinc-200/80 dark:border-zinc-700/80 rounded-xl text-sm font-semibold text-zinc-900 dark:text-white focus:ring-2 focus:ring-amber-400/30 focus:border-amber-400 outline-none transition-all" 
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 p-1"
+                  >
+                    {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <input 
+                    type={showConfirmPassword ? 'text' : 'password'} 
+                    value={passwordState.confirm}
+                    onChange={(e) => passwordState.setConfirm(e.target.value)}
+                    placeholder="Re-enter your new password"
+                    className="w-full pl-4 pr-11 py-3 bg-zinc-50 dark:bg-zinc-850 border border-zinc-200/80 dark:border-zinc-700/80 rounded-xl text-sm font-semibold text-zinc-900 dark:text-white focus:ring-2 focus:ring-amber-400/30 focus:border-amber-400 outline-none transition-all" 
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 p-1"
+                  >
+                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Requirements Checklist */}
+              <div className="p-4 bg-zinc-50 dark:bg-zinc-800/40 rounded-xl border border-zinc-200/60 dark:border-zinc-800 text-xs text-zinc-500 dark:text-zinc-400 space-y-1.5">
+                <p className="font-bold text-zinc-700 dark:text-zinc-300">Password requirements:</p>
+                <div className="flex items-center gap-2">
+                  <div className={`w-1.5 h-1.5 rounded-full ${passwordState.new.length >= 8 ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-600'}`} />
+                  <span>Minimum 8 characters length</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className={`w-1.5 h-1.5 rounded-full ${passwordState.new && passwordState.new === passwordState.confirm ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-600'}`} />
+                  <span>Passwords match</span>
+                </div>
+              </div>
+
+              <button 
                 type="submit"
-                disabled={passwordState.updating}
-                className="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl font-bold hover:bg-black dark:hover:bg-zinc-100 transition-all flex items-center justify-center gap-2"
-               >
-                 {passwordState.updating ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : 'Update Password'}
-               </button>
+                disabled={passwordState.updating || !passwordState.new || passwordState.new !== passwordState.confirm}
+                className="w-full sm:w-auto px-8 py-3.5 bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-zinc-900 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-md cursor-pointer active:scale-95"
+              >
+                {passwordState.updating ? (
+                  <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <KeyRound size={16} />
+                    <span>Update Password</span>
+                  </>
+                )}
+              </button>
             </form>
           </div>
         );
       case 'notifications':
         return (
-          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
-             <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                  <h3 className="text-xl font-semibold text-zinc-900 dark:text-white">Notification Preferences</h3>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">Control how you receive updates and alerts.</p>
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-3 duration-300">
+            {/* Header */}
+            <div className="border-b border-zinc-100 dark:border-zinc-800 pb-5">
+              <div className="flex items-center gap-2 text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">
+                <Bell size={14} />
+                <span>Preferences</span>
+              </div>
+              <h3 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">Notification Settings</h3>
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                Control audio chimes, read receipts, and alert prompts.
+              </p>
+            </div>
+
+            <div className="space-y-4 max-w-2xl">
+              {[
+                { 
+                  label: 'Audio Sound Effects', 
+                  sub: 'Play an acoustic chime when receiving new direct messages or match alerts', 
+                  active: notificationState.sounds, 
+                  onToggle: notificationState.setSounds,
+                  icon: Bell
+                },
+                { 
+                  label: 'Read Receipts', 
+                  sub: 'Allow matched founders and investors to see when you have read their messages', 
+                  active: notificationState.readReceipts, 
+                  onToggle: notificationState.setReadReceipts,
+                  icon: Eye
+                },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center justify-between p-5 bg-zinc-50/70 dark:bg-zinc-800/40 border border-zinc-200/70 dark:border-zinc-800 rounded-2xl shadow-xs">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 flex items-center justify-center text-zinc-700 dark:text-zinc-300 shrink-0">
+                      <item.icon size={18} />
+                    </div>
+                    <div className="space-y-0.5">
+                      <span className="text-sm font-bold text-zinc-900 dark:text-white">{item.label}</span>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-md">{item.sub}</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => item.onToggle(!item.active)}
+                    className={`w-12 h-7 rounded-full p-1 transition-colors duration-200 relative shrink-0 cursor-pointer ${
+                      item.active ? 'bg-amber-400' : 'bg-zinc-300 dark:bg-zinc-700'
+                    }`}
+                  >
+                    <div className={`w-5 h-5 bg-zinc-950 rounded-full shadow-sm transition-transform duration-200 ${
+                      item.active ? 'translate-x-5' : 'translate-x-0'
+                    }`} />
+                  </button>
                 </div>
-                <div className="space-y-4">
-                   {[
-                     { label: 'Sound Effects', sub: 'Play sounds for new messages', active: notificationState.sounds, onToggle: notificationState.setSounds },
-                     { label: 'Read Receipts', sub: 'Show when you\'ve seen messages', active: notificationState.readReceipts, onToggle: notificationState.setReadReceipts },
-                   ].map((item, i) => (
-                     <div key={i} className="flex items-center justify-between p-6 bg-white dark:bg-zinc-800/40 border border-zinc-100 dark:border-zinc-800 rounded-2xl shadow-sm">
-                        <div className="space-y-1">
-                          <span className="text-sm font-bold text-zinc-900 dark:text-white">{item.label}</span>
-                          <p className="text-xs text-zinc-500 dark:text-zinc-400">{item.sub}</p>
-                        </div>
-                        <button 
-                          onClick={() => item.onToggle(!item.active)}
-                          className={`w-12 h-6 rounded-full p-1 transition-colors duration-300 relative ${item.active ? 'bg-zinc-900 dark:bg-white' : 'bg-zinc-200 dark:bg-zinc-700'}`}
-                        >
-                          <div className={`w-4 h-4 bg-white dark:bg-zinc-900 rounded-full shadow-sm transition-transform duration-300 ${item.active ? 'translate-x-6' : 'translate-x-0'}`} />
-                        </button>
-                     </div>
-                   ))}
-                </div>
-             </section>
+              ))}
+            </div>
           </div>
         );
       default:
@@ -578,17 +740,23 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFCF9] dark:bg-[#0D0D0F] flex flex-col p-4 sm:p-8 lg:p-12 pb-28 md:pb-12 transition-colors duration-700">
-      <div className="max-w-[1400px] mx-auto w-full space-y-8 mt-20">
+    <div className="min-h-screen bg-[#FFFCF9] dark:bg-[#0D0D0F] flex flex-col p-4 sm:p-8 lg:p-10 pb-28 md:pb-12 transition-colors duration-500">
+      <div className="max-w-[1400px] mx-auto w-full space-y-6">
         {/* Header */}
-        <header className="fixed top-0 left-0 right-0 z-50 bg-[#FFFCF9] dark:bg-[#0D0D0F] p-4 sm:p-8 lg:px-12 flex flex-row items-center justify-between gap-6">
-          <div className="space-y-2 text-left mt-4 ml-8">
-            <div className="flex items-center justify-start gap-3">
-              <h1 className="text-4xl font-display font-black text-zinc-900 dark:text-white tracking-tight">Settings</h1>
-              {isPro && (
-                <div className="flex items-center gap-1 px-3 py-1 bg-brand-primary text-black rounded-full text-[10px] font-black uppercase tracking-wider shadow-lg shadow-brand-primary/20">
-                  <BadgeCheck size={14} />
-                  Pro
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+          <div className="space-y-1">
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl sm:text-4xl font-black text-zinc-900 dark:text-white tracking-tight">
+                Settings
+              </h1>
+              {isPro ? (
+                <div className="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-amber-400 to-yellow-400 text-zinc-950 rounded-full text-[11px] font-black uppercase tracking-wider shadow-xs">
+                  <BadgeCheck size={14} className="fill-zinc-950 text-amber-400" />
+                  Pro Member
+                </div>
+              ) : (
+                <div className="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-full text-[11px] font-bold uppercase tracking-wider">
+                  Free Member
                 </div>
               )}
             </div>
@@ -596,21 +764,54 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           
           <button 
             onClick={onLogout}
-            className="p-3 bg-red-50 text-red-600 rounded-full hover:scale-105 active:scale-95 transition-all"
+            className="self-start sm:self-auto inline-flex items-center gap-2 px-4 py-2.5 bg-red-50 hover:bg-red-100/80 text-red-600 dark:bg-red-950/30 dark:hover:bg-red-900/40 dark:text-red-400 rounded-xl font-bold text-xs transition-all shadow-xs active:scale-95 cursor-pointer"
             title="Sign Out"
           >
-            <LogOut size={20} />
+            <LogOut size={16} />
+            <span>Sign Out</span>
           </button>
         </header>
 
         {/* Content Card */}
-        <div className="bg-white dark:bg-zinc-900 rounded-[32px] shadow-2xl shadow-black/[0.03] border border-zinc-100 dark:border-zinc-800 flex flex-col lg:flex-row min-h-[700px] relative">
-          <div className="w-full lg:w-72 sticky top-0 lg:top-8 z-30 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md lg:backdrop-blur-none lg:bg-zinc-50/50 lg:dark:bg-zinc-900/50 border-b lg:border-b-0 lg:border-r border-zinc-100 dark:border-zinc-800 rounded-t-[32px] lg:rounded-l-[32px] lg:rounded-tr-none flex flex-col justify-between self-start">
-            <div className="p-4 sm:p-6 lg:p-8 lg:pt-12">
+        <div className="bg-white dark:bg-zinc-900 rounded-[28px] shadow-[0_4px_30px_rgba(0,0,0,0.03)] border border-zinc-200/80 dark:border-zinc-800 flex flex-col lg:flex-row min-h-[720px] relative overflow-hidden">
+          {/* Left Navigation Sidebar */}
+          <div className="w-full lg:w-80 shrink-0 bg-zinc-50/70 dark:bg-zinc-900/50 border-b lg:border-b-0 lg:border-r border-zinc-200/70 dark:border-zinc-800 flex flex-col justify-between">
+            <div className="p-4 sm:p-6 lg:p-7 space-y-5">
+              {/* User Mini Profile Widget */}
+              <div className="p-3.5 rounded-2xl bg-white dark:bg-zinc-800/60 border border-zinc-200/70 dark:border-zinc-700/60 shadow-xs flex items-center gap-3">
+                {localProfile?.avatarUrl || localProfile?.avatar_url || localProfile?.avatar || userProfile?.avatarUrl ? (
+                  <img
+                    src={localProfile?.avatarUrl || localProfile?.avatar_url || localProfile?.avatar || userProfile?.avatarUrl}
+                    alt={localProfile?.name || 'User'}
+                    className="w-11 h-11 rounded-xl object-cover border border-zinc-200 dark:border-zinc-700 shrink-0"
+                  />
+                ) : (
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 text-zinc-950 font-black text-sm flex items-center justify-center shrink-0 shadow-xs">
+                    {(localProfile?.name || localProfile?.email || userProfile?.name || 'U')[0].toUpperCase()}
+                  </div>
+                )}
+                <div className="min-w-0 flex-1 leading-tight">
+                  <div className="flex items-center gap-1.5">
+                    <p className="font-extrabold text-sm text-zinc-900 dark:text-white truncate">
+                      {localProfile?.name || userProfile?.name || 'Founder'}
+                    </p>
+                    {isPro && (
+                      <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" title="Pro Member" />
+                    )}
+                  </div>
+                  <p className="text-xs text-zinc-400 dark:text-zinc-500 truncate mt-0.5 font-medium">
+                    {localProfile?.email || userProfile?.email || 'user@connectup.com'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Enhanced Settings Tabs */}
               <SettingsTabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
             </div>
           </div>
-          <div className="flex-1 p-8 sm:p-12 bg-white dark:bg-zinc-900 rounded-b-[32px] lg:rounded-r-[32px] lg:rounded-bl-none">
+
+          {/* Right Content Panel */}
+          <div className="flex-1 p-6 sm:p-10 lg:p-12 bg-white dark:bg-zinc-900 overflow-y-auto">
             {renderTabContent()}
           </div>
         </div>
