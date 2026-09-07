@@ -3,25 +3,20 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   Target, RotateCcw, Check, Sparkles, AlertCircle, HelpCircle, 
   ChevronRight, ArrowLeft, Crown, HelpCircle as HintIcon, Info, RefreshCw,
-  Sun, Moon, Zap, Type, PieChart, Flame, GitFork, Trophy, Play, Footprints
+  Sun, Moon, Lightbulb, Grid3X3, KeyRound, Type, Delete, ArrowRight
 } from 'lucide-react';
 
 // ==========================================
 // TYPES & CONSTANTS
 // ==========================================
 
-export type GameType = 'pinpoint' | 'crossclimb' | 'queens' | 'connections' | 'wordle' | 'tango' | 'pitch' | 'equity' | 'zip';
-
 interface PuzzleState {
   pinpoint: 'unplayed' | 'completed';
   crossclimb: 'unplayed' | 'completed';
   queens: 'unplayed' | 'completed';
   connections: 'unplayed' | 'completed';
-  wordle: 'unplayed' | 'completed';
   tango: 'unplayed' | 'completed';
-  pitch: 'unplayed' | 'completed';
-  equity: 'unplayed' | 'completed';
-  zip: 'unplayed' | 'completed';
+  wordle: 'unplayed' | 'completed';
 }
 
 // ------------------------------------------
@@ -82,42 +77,6 @@ const PINPOINT_PUZZLES: PinpointPuzzle[] = [
       "Silicon Valley"
     ],
     options: ["Famous Tech Hubs", "Financial Districts", "Crypto Valleys", "Manufacturing Centers"]
-  },
-  {
-    id: 5,
-    correctCategory: "Unicorn Startups",
-    clues: [
-      "Pioneered online payments and developer-friendly APIs",
-      "Founded by Irish brothers Patrick and John Collison",
-      "Valued over $50B in venture funding rounds",
-      "Powers online payments for millions of businesses worldwide",
-      "Stripe"
-    ],
-    options: ["Unicorn Startups", "Legacy Banks", "Social Networks", "Cloud Infrastructure"]
-  },
-  {
-    id: 6,
-    correctCategory: "AI Foundations",
-    clues: [
-      "Architecture introduced in Google's landmark 'Attention Is All You Need' paper",
-      "Powers modern Large Language Models like GPT-4 and Gemini",
-      "Replaced traditional recurrent neural networks for NLP",
-      "Utilizes self-attention mechanisms for parallel processing",
-      "Transformer Architecture"
-    ],
-    options: ["AI Foundations", "Database Systems", "Operating Systems", "Networking Protocols"]
-  },
-  {
-    id: 7,
-    correctCategory: "Growth Metrics",
-    clues: [
-      "Represents the average dollar amount generated per active user",
-      "Calculated as Total Revenue divided by Total Active Users",
-      "Crucial for evaluating monetisation efficiency in SaaS and Consumer Tech",
-      "Abbreviated as ARPU",
-      "Average Revenue Per User"
-    ],
-    options: ["Growth Metrics", "Legal Compliance", "Hardware Specifications", "Security Audits"]
   }
 ];
 
@@ -152,39 +111,6 @@ const QUEENS_PUZZLES: QueensPuzzle[] = [
       [4, 4, 4, 4, 3]
     ],
     solution: new Set(["0,4", "1,1", "2,3", "3,0", "4,2"])
-  },
-  {
-    id: 3,
-    board: [
-      [0, 0, 1, 1, 2],
-      [0, 0, 1, 1, 2],
-      [3, 0, 1, 2, 2],
-      [3, 3, 4, 4, 2],
-      [3, 3, 4, 4, 4]
-    ],
-    solution: new Set(["0,0", "1,2", "2,4", "3,1", "4,3"])
-  },
-  {
-    id: 4,
-    board: [
-      [1, 1, 2, 2, 4],
-      [1, 1, 2, 2, 4],
-      [1, 1, 2, 3, 4],
-      [0, 1, 0, 3, 3],
-      [0, 0, 0, 3, 3]
-    ],
-    solution: new Set(["0,2", "1,4", "2,1", "3,3", "4,0"])
-  },
-  {
-    id: 5,
-    board: [
-      [1, 1, 1, 3, 3],
-      [1, 1, 1, 3, 3],
-      [0, 2, 2, 2, 4],
-      [0, 0, 2, 2, 4],
-      [0, 0, 4, 4, 4]
-    ],
-    solution: new Set(["0,3", "1,1", "2,4", "3,2", "4,0"])
   }
 ];
 
@@ -244,28 +170,6 @@ const CROSSCLIMB_PUZZLES: CrossclimbPuzzle[] = [
       { word: "HORN", clue: "What a startup unicorn has on its head" }
     ],
     startingScramble: ["TORN", "BURN", "HORN", "TURN"]
-  },
-  {
-    id: 4,
-    name: "Market Velocity",
-    steps: [
-      { word: "FUND", clue: "Capital pooled by venture capitalists" },
-      { word: "FIND", clue: "What investors do when searching for top founders" },
-      { word: "FINE", clue: "A high quality or acceptable pitch" },
-      { word: "LINE", clue: "A sequence of code or a queue of investors" }
-    ],
-    startingScramble: ["FINE", "FUND", "LINE", "FIND"]
-  },
-  {
-    id: 5,
-    name: "Tech Stack Ascent",
-    steps: [
-      { word: "DATA", clue: "Raw information used for business analytics" },
-      { word: "DATE", clue: "A milestone scheduled on a startup roadmap" },
-      { word: "RATE", clue: "The speed of growth or interest percentage" },
-      { word: "RACE", clue: "The fast-paced competition to win market share" }
-    ],
-    startingScramble: ["RATE", "DATA", "RACE", "DATE"]
   }
 ];
 
@@ -388,176 +292,146 @@ const CONNECTIONS_PUZZLES: Puzzle[] = [
         textColor: "text-purple-300"
       }
     ]
+  }
+];
+
+// ------------------------------------------
+// TANGO GAME DATA
+// ------------------------------------------
+interface TangoPuzzle {
+  id: number;
+  name: string;
+  size: number;
+  givens: [number, number, 'S' | 'M'][];
+  equalPairs: [number, number, number, number][];
+  oppositePairs: [number, number, number, number][];
+  solution: ('S' | 'M')[][];
+}
+
+const TANGO_PUZZLES: TangoPuzzle[] = [
+  {
+    id: 1,
+    name: "Solar Flare",
+    size: 4,
+    givens: [
+      [0, 0, 'S'],
+      [1, 3, 'S'],
+      [3, 1, 'M']
+    ],
+    equalPairs: [
+      [2, 0, 2, 1],
+      [2, 2, 2, 3],
+      [3, 0, 3, 1],
+      [3, 2, 3, 3]
+    ],
+    oppositePairs: [
+      [0, 1, 1, 1],
+      [0, 2, 1, 2]
+    ],
+    solution: [
+      ['S', 'M', 'S', 'M'],
+      ['M', 'S', 'M', 'S'],
+      ['S', 'S', 'M', 'M'],
+      ['M', 'M', 'S', 'S']
+    ]
+  },
+  {
+    id: 2,
+    name: "Eclipse",
+    size: 4,
+    givens: [
+      [0, 0, 'M'],
+      [1, 3, 'S'],
+      [3, 2, 'S']
+    ],
+    equalPairs: [
+      [0, 1, 0, 2],
+      [1, 1, 1, 2]
+    ],
+    oppositePairs: [
+      [2, 0, 3, 0],
+      [2, 3, 3, 3]
+    ],
+    solution: [
+      ['M', 'S', 'S', 'M'],
+      ['S', 'M', 'M', 'S'],
+      ['M', 'S', 'M', 'S'],
+      ['S', 'M', 'S', 'M']
+    ]
+  },
+  {
+    id: 3,
+    name: "Equinox",
+    size: 4,
+    givens: [
+      [0, 3, 'S'],
+      [1, 0, 'M'],
+      [3, 3, 'S']
+    ],
+    equalPairs: [
+      [0, 1, 0, 2],
+      [1, 1, 1, 2],
+      [2, 0, 2, 1],
+      [3, 0, 3, 1]
+    ],
+    oppositePairs: [
+      [1, 0, 2, 0]
+    ],
+    solution: [
+      ['S', 'M', 'M', 'S'],
+      ['M', 'S', 'S', 'M'],
+      ['S', 'S', 'M', 'M'],
+      ['M', 'M', 'S', 'S']
+    ]
+  }
+];
+
+// ------------------------------------------
+// WORDLE GAME DATA
+// ------------------------------------------
+interface WordlePuzzle {
+  id: number;
+  word: string;
+  hint: string;
+  category: string;
+}
+
+const WORDLE_PUZZLES: WordlePuzzle[] = [
+  {
+    id: 1,
+    word: "PIVOT",
+    hint: "A strategic shift in business direction or product vision to capture market opportunity",
+    category: "Startup Strategy"
+  },
+  {
+    id: 2,
+    word: "ANGEL",
+    hint: "An early-stage accredited investor who backs founders before major venture rounds",
+    category: "Venture Capital"
+  },
+  {
+    id: 3,
+    word: "SCALE",
+    hint: "Rapidly expanding product reach, team, and revenue while improving unit economics",
+    category: "Growth & Traction"
   },
   {
     id: 4,
-    name: "Venture Capital & Deal Flow",
-    categories: [
-      {
-        title: "STAGES OF FUNDING",
-        words: ["SEED", "SERIES A", "SERIES B", "GROWTH"],
-        color: "border-yellow-500",
-        bgColor: "bg-yellow-500/20",
-        textColor: "text-yellow-300"
-      },
-      {
-        title: "PITCH DECK SLIDES",
-        words: ["PROBLEM", "SOLUTION", "TRACTION", "TAM"],
-        color: "border-emerald-500",
-        bgColor: "bg-emerald-500/20",
-        textColor: "text-emerald-300"
-      },
-      {
-        title: "VC DUE DILIGENCE",
-        words: ["CAP TABLE", "METRICS", "FINANCIALS", "IP"],
-        color: "border-blue-500",
-        bgColor: "bg-blue-500/20",
-        textColor: "text-blue-300"
-      },
-      {
-        title: "EXIT PATHWAYS",
-        words: ["ACQUISITION", "IPO", "SPAC", "BUYOUT"],
-        color: "border-purple-500",
-        bgColor: "bg-purple-500/20",
-        textColor: "text-purple-300"
-      }
-    ]
+    word: "PITCH",
+    hint: "A presentation where founders showcase problem, product, and metrics to secure capital",
+    category: "Fundraising"
   },
   {
     id: 5,
-    name: "AI & Machine Learning",
-    categories: [
-      {
-        title: "AI MODEL TYPES",
-        words: ["LLM", "CNN", "RNN", "TRANSFORMER"],
-        color: "border-yellow-500",
-        bgColor: "bg-yellow-500/20",
-        textColor: "text-yellow-300"
-      },
-      {
-        title: "TRAINING CONCEPTS",
-        words: ["WEIGHTS", "BIAS", "EPOCH", "DATASET"],
-        color: "border-emerald-500",
-        bgColor: "bg-emerald-500/20",
-        textColor: "text-emerald-300"
-      },
-      {
-        title: "POPULAR FRAMEWORKS",
-        words: ["PYTORCH", "KERAS", "JAX", "TENSORFLOW"],
-        color: "border-blue-500",
-        bgColor: "bg-blue-500/20",
-        textColor: "text-blue-300"
-      },
-      {
-        title: "AI APPLICATION AREAS",
-        words: ["VISION", "NLP", "ROBOTICS", "SPEECH"],
-        color: "border-purple-500",
-        bgColor: "bg-purple-500/20",
-        textColor: "text-purple-300"
-      }
-    ]
+    word: "FUNDS",
+    hint: "Pooled venture capital vehicles deployed by general partners into high-growth bets",
+    category: "Financing"
   },
   {
     id: 6,
-    name: "Fintech & Web3",
-    categories: [
-      {
-        title: "PAYMENT METHODS",
-        words: ["ACH", "SWIFT", "STRIPE", "WIRE"],
-        color: "border-yellow-500",
-        bgColor: "bg-yellow-500/20",
-        textColor: "text-yellow-300"
-      },
-      {
-        title: "DEFI CONCEPTS",
-        words: ["STAKING", "SWAP", "LENDING", "YIELD"],
-        color: "border-emerald-500",
-        bgColor: "bg-emerald-500/20",
-        textColor: "text-emerald-300"
-      },
-      {
-        title: "BANKING INFRASTRUCTURE",
-        words: ["NEOBANK", "LEDGER", "ESCROW", "CLEARING"],
-        color: "border-blue-500",
-        bgColor: "bg-blue-500/20",
-        textColor: "text-blue-300"
-      },
-      {
-        title: "BLOCKCHAIN BASICS",
-        words: ["BLOCK", "HASH", "NODE", "WALLET"],
-        color: "border-purple-500",
-        bgColor: "bg-purple-500/20",
-        textColor: "text-purple-300"
-      }
-    ]
-  },
-  {
-    id: 7,
-    name: "Metrics & Performance",
-    categories: [
-      {
-        title: "REVENUE METRICS",
-        words: ["ARR", "MRR", "LTV", "GMV"],
-        color: "border-yellow-500",
-        bgColor: "bg-yellow-500/20",
-        textColor: "text-yellow-300"
-      },
-      {
-        title: "SPEND & BURN",
-        words: ["CAC", "RUNWAY", "COGS", "OPEX"],
-        color: "border-emerald-500",
-        bgColor: "bg-emerald-500/20",
-        textColor: "text-emerald-300"
-      },
-      {
-        title: "USER RETENTION",
-        words: ["CHURN", "NET RETENTION", "COHORT", "STICKINESS"],
-        color: "border-blue-500",
-        bgColor: "bg-blue-500/20",
-        textColor: "text-blue-300"
-      },
-      {
-        title: "PROFITABILITY",
-        words: ["EBITDA", "MARGIN", "GROSS PROFIT", "FREE CASH"],
-        color: "border-purple-500",
-        bgColor: "bg-purple-500/20",
-        textColor: "text-purple-300"
-      }
-    ]
-  },
-  {
-    id: 8,
-    name: "Corporate & Legal",
-    categories: [
-      {
-        title: "ENTITY STRUCTURES",
-        words: ["C-CORP", "LLC", "S-CORP", "PARTNERSHIP"],
-        color: "border-yellow-500",
-        bgColor: "bg-yellow-500/20",
-        textColor: "text-yellow-300"
-      },
-      {
-        title: "LEGAL DEALS",
-        words: ["NDA", "TERM SHEET", "APA", "BYLAWS"],
-        color: "border-emerald-500",
-        bgColor: "bg-emerald-500/20",
-        textColor: "text-emerald-300"
-      },
-      {
-        title: "INTELLECTUAL PROPERTY",
-        words: ["PATENT", "TRADEMARK", "COPYRIGHT", "TRADE SECRET"],
-        color: "border-blue-500",
-        bgColor: "bg-blue-500/20",
-        textColor: "text-blue-300"
-      },
-      {
-        title: "GOVERNANCE ROLES",
-        words: ["CHAIR", "DIRECTOR", "OBSERVER", "SECRETARY"],
-        color: "border-purple-500",
-        bgColor: "bg-purple-500/20",
-        textColor: "text-purple-300"
-      }
-    ]
+    word: "YIELD",
+    hint: "The financial return or productivity generated from deployed capital and operational efforts",
+    category: "Unit Economics"
   }
 ];
 
@@ -566,17 +440,14 @@ const CONNECTIONS_PUZZLES: Puzzle[] = [
 // ==========================================
 
 export const VentureConnections = () => {
-  const [activeGame, setActiveGame] = useState<null | GameType>(null);
+  const [activeGame, setActiveGame] = useState<null | 'pinpoint' | 'crossclimb' | 'queens' | 'connections' | 'tango' | 'wordle'>(null);
   const [completedGames, setCompletedGames] = useState<PuzzleState>({
     pinpoint: 'unplayed',
     crossclimb: 'unplayed',
     queens: 'unplayed',
     connections: 'unplayed',
-    wordle: 'unplayed',
     tango: 'unplayed',
-    pitch: 'unplayed',
-    equity: 'unplayed',
-    zip: 'unplayed'
+    wordle: 'unplayed'
   });
 
   const [completedPuzzles, setCompletedPuzzles] = useState<Record<string, number[]>>({
@@ -584,11 +455,8 @@ export const VentureConnections = () => {
     crossclimb: [],
     queens: [],
     connections: [],
-    wordle: [],
     tango: [],
-    pitch: [],
-    equity: [],
-    zip: []
+    wordle: []
   });
 
   // State persists completions in local storage
@@ -611,7 +479,7 @@ export const VentureConnections = () => {
     }
   }, []);
 
-  const handleSolvePuzzle = useCallback((game: GameType, id: number) => {
+  const handleSolvePuzzle = useCallback((game: 'pinpoint' | 'crossclimb' | 'queens' | 'connections' | 'tango' | 'wordle', id: number) => {
     setCompletedPuzzles(prev => {
       const alreadySolved = prev[game] || [];
       if (alreadySolved.includes(id)) return prev;
@@ -625,11 +493,8 @@ export const VentureConnections = () => {
       else if (game === 'crossclimb') total = CROSSCLIMB_PUZZLES.length;
       else if (game === 'queens') total = QUEENS_PUZZLES.length;
       else if (game === 'connections') total = CONNECTIONS_PUZZLES.length;
-      else if (game === 'wordle') total = WORDLE_PUZZLES.length;
       else if (game === 'tango') total = TANGO_PUZZLES.length;
-      else if (game === 'pitch') total = PITCH_TRIVIA_PUZZLES.length;
-      else if (game === 'equity') total = EQUITY_PUZZLES.length;
-      else if (game === 'zip') total = ZIP_PATH_PUZZLES.length;
+      else if (game === 'wordle') total = WORDLE_PUZZLES.length;
 
       if (updatedList.length >= total) {
         setCompletedGames(prevGames => {
@@ -647,11 +512,8 @@ export const VentureConnections = () => {
   const handleSolveCrossclimb = useCallback((id: number) => handleSolvePuzzle('crossclimb', id), [handleSolvePuzzle]);
   const handleSolveQueens = useCallback((id: number) => handleSolvePuzzle('queens', id), [handleSolvePuzzle]);
   const handleSolveConnections = useCallback((id: number) => handleSolvePuzzle('connections', id), [handleSolvePuzzle]);
-  const handleSolveWordle = useCallback((id: number) => handleSolvePuzzle('wordle', id), [handleSolvePuzzle]);
   const handleSolveTango = useCallback((id: number) => handleSolvePuzzle('tango', id), [handleSolvePuzzle]);
-  const handleSolvePitch = useCallback((id: number) => handleSolvePuzzle('pitch', id), [handleSolvePuzzle]);
-  const handleSolveEquity = useCallback((id: number) => handleSolvePuzzle('equity', id), [handleSolvePuzzle]);
-  const handleSolveZip = useCallback((id: number) => handleSolvePuzzle('zip', id), [handleSolvePuzzle]);
+  const handleSolveWordle = useCallback((id: number) => handleSolvePuzzle('wordle', id), [handleSolvePuzzle]);
 
   const handleBackToMain = () => {
     setActiveGame(null);
@@ -659,319 +521,247 @@ export const VentureConnections = () => {
 
   // Render game list matching LinkedIn screenshot visual style
   if (activeGame === null) {
-    const isPinpointAll = (completedPuzzles.pinpoint?.length || 0) === PINPOINT_PUZZLES.length;
-    const isCrossclimbAll = (completedPuzzles.crossclimb?.length || 0) === CROSSCLIMB_PUZZLES.length;
-    const isQueensAll = (completedPuzzles.queens?.length || 0) === QUEENS_PUZZLES.length;
-    const isConnectionsAll = (completedPuzzles.connections?.length || 0) === CONNECTIONS_PUZZLES.length;
-    const isWordleAll = (completedPuzzles.wordle?.length || 0) === WORDLE_PUZZLES.length;
+    const isPinpointAll = completedPuzzles.pinpoint?.length === PINPOINT_PUZZLES.length;
+    const isCrossclimbAll = completedPuzzles.crossclimb?.length === CROSSCLIMB_PUZZLES.length;
+    const isQueensAll = completedPuzzles.queens?.length === QUEENS_PUZZLES.length;
+    const isConnectionsAll = completedPuzzles.connections?.length === CONNECTIONS_PUZZLES.length;
     const isTangoAll = (completedPuzzles.tango?.length || 0) === TANGO_PUZZLES.length;
-    const isPitchAll = (completedPuzzles.pitch?.length || 0) === PITCH_TRIVIA_PUZZLES.length;
-    const isEquityAll = (completedPuzzles.equity?.length || 0) === EQUITY_PUZZLES.length;
-    const isZipAll = (completedPuzzles.zip?.length || 0) === ZIP_PATH_PUZZLES.length;
+    const isWordleAll = (completedPuzzles.wordle?.length || 0) === WORDLE_PUZZLES.length;
 
     return (
-      <div className="bg-black rounded-2xl p-6 border border-zinc-800 flex flex-col relative overflow-hidden text-white shadow-xl">
+      <div className="bg-black rounded-2xl p-6 border border-zinc-800/80 shadow-2xl flex flex-col relative overflow-y-auto max-h-[calc(100vh-32px)] text-white">
         {/* Title Block */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2">
+            <div className="p-2.5 bg-yellow-500/25 rounded-2xl border border-yellow-500/20">
+              <Target className="w-5 h-5 text-yellow-400" />
+            </div>
             <div>
               <h2 className="text-base font-bold tracking-tight text-white">Today's puzzles</h2>
-              <p className="text-xs text-zinc-400">Daily brain teasers for professionals</p>
+              <p className="text-xs text-white/50">Daily brain teasers for professionals</p>
             </div>
           </div>
           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.7)]" />
         </div>
 
-        {/* Puzzle Selector Rows */}
-        <div className="space-y-2.5 max-h-[520px] overflow-y-auto pr-1">
+        {/* Puzzle Selector Rows - styled like the screenshot */}
+        <div className="space-y-3">
           {/* 1. Pinpoint */}
           <button 
             onClick={() => setActiveGame('pinpoint')}
-            className="w-full flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-zinc-800/80 hover:border-zinc-700 transition-all text-left cursor-pointer group active:scale-[0.99]"
+            className="w-full flex items-center justify-between p-2.5 sm:p-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all text-left cursor-pointer group active:scale-[0.99]"
           >
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-600 flex items-center justify-center text-white shrink-0 shadow-sm relative">
-                <Target className="w-4 h-4" />
+            <div className="flex items-center gap-2.5 sm:gap-3.5">
+              {/* Blue Map/Target Pinpoint Icon */}
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-900/40 relative">
+                <Target className="w-4 h-4 sm:w-5 sm:h-5" />
                 {isPinpointAll && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-white">✓</div>
+                  <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-emerald-500 rounded-full border border-black flex items-center justify-center text-[8px] sm:text-[9px] font-bold text-white">✓</div>
                 )}
               </div>
               <div>
                 <div className="flex items-center gap-1">
-                  <span className="font-bold text-[13px] text-white group-hover:text-amber-400 transition-colors">Pinpoint</span>
-                  <span className="text-[10px] text-zinc-500 font-medium">#809</span>
+                  <span className="font-bold text-[13px] sm:text-sm text-white group-hover:text-yellow-400 transition-colors">Pinpoint</span>
+                  <span className="text-[10px] sm:text-[11px] text-white/40 font-medium">#809</span>
                 </div>
-                <p className="text-[11px] text-zinc-400 mt-0.5">
-                  {isPinpointAll ? '🎉 All completed!' : `${completedPuzzles.pinpoint?.length || 0}/${PINPOINT_PUZZLES.length} puzzles solved`}
+                <p className="text-[11px] sm:text-xs text-white/50 mt-0.5">
+                  {isPinpointAll ? '🎉 All completed!' : `${completedPuzzles.pinpoint.length}/${PINPOINT_PUZZLES.length} puzzles solved`}
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+            <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
           </button>
 
           {/* 2. Crossclimb */}
           <button 
             onClick={() => setActiveGame('crossclimb')}
-            className="w-full flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-zinc-800/80 hover:border-zinc-700 transition-all text-left cursor-pointer group active:scale-[0.99]"
+            className="w-full flex items-center justify-between p-2.5 sm:p-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all text-left cursor-pointer group active:scale-[0.99]"
           >
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-cyan-600 flex items-center justify-center text-white shrink-0 shadow-sm relative">
+            <div className="flex items-center gap-2.5 sm:gap-3.5">
+              {/* Cyan Stair/Ladder Crossclimb Icon */}
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-cyan-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-cyan-900/40 relative">
                 <div className="flex flex-col gap-0.5 items-end rotate-12">
-                  <div className="w-2.5 h-[3px] bg-white rounded-sm" />
-                  <div className="w-1.5 h-[3px] bg-white rounded-sm" />
-                  <div className="w-1 h-[3px] bg-white rounded-sm" />
+                  <div className="w-2.5 h-[3px] sm:w-3.5 sm:h-1 bg-white rounded-sm" />
+                  <div className="w-1.5 h-[3px] sm:w-2.5 sm:h-1 bg-white rounded-sm" />
+                  <div className="w-1 h-[3px] sm:w-1.5 sm:h-1 bg-white rounded-sm" />
                 </div>
                 {isCrossclimbAll && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-white">✓</div>
+                  <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-emerald-500 rounded-full border border-black flex items-center justify-center text-[8px] sm:text-[9px] font-bold text-white">✓</div>
                 )}
               </div>
               <div>
                 <div className="flex items-center gap-1">
-                  <span className="font-bold text-[13px] text-white group-hover:text-amber-400 transition-colors">Crossclimb</span>
-                  <span className="text-[10px] text-zinc-500 font-medium">#809</span>
+                  <span className="font-bold text-[13px] sm:text-sm text-white group-hover:text-yellow-400 transition-colors">Crossclimb</span>
+                  <span className="text-[10px] sm:text-[11px] text-white/40 font-medium">#809</span>
                 </div>
-                <p className="text-[11px] text-zinc-400 mt-0.5">
-                  {isCrossclimbAll ? '🎉 All completed!' : `${completedPuzzles.crossclimb?.length || 0}/${CROSSCLIMB_PUZZLES.length} ladders solved`}
+                <p className="text-[11px] sm:text-xs text-white/50 mt-0.5">
+                  {isCrossclimbAll ? '🎉 All completed!' : `${completedPuzzles.crossclimb.length}/${CROSSCLIMB_PUZZLES.length} ladders solved`}
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+            <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
           </button>
 
           {/* 3. Queens */}
           <button 
             onClick={() => setActiveGame('queens')}
-            className="w-full flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-zinc-800/80 hover:border-zinc-700 transition-all text-left cursor-pointer group active:scale-[0.99]"
+            className="w-full flex items-center justify-between p-2.5 sm:p-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all text-left cursor-pointer group active:scale-[0.99]"
           >
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-purple-600 flex items-center justify-center text-white shrink-0 shadow-sm relative">
-                <Crown className="w-4 h-4 text-white" />
+            <div className="flex items-center gap-2.5 sm:gap-3.5">
+              {/* Purple Crown Queens Icon */}
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-purple-900/40 relative">
+                <Crown className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 {isQueensAll && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-white">✓</div>
+                  <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-emerald-500 rounded-full border border-black flex items-center justify-center text-[8px] sm:text-[9px] font-bold text-white">✓</div>
                 )}
               </div>
               <div>
                 <div className="flex items-center gap-1">
-                  <span className="font-bold text-[13px] text-white group-hover:text-amber-400 transition-colors">Queens</span>
-                  <span className="text-[10px] text-zinc-500 font-medium">#809</span>
+                  <span className="font-bold text-[13px] sm:text-sm text-white group-hover:text-yellow-400 transition-colors">Queens</span>
+                  <span className="text-[10px] sm:text-[11px] text-white/40 font-medium">#809</span>
                 </div>
-                <p className="text-[11px] text-zinc-400 mt-0.5">
-                  {isQueensAll ? '🎉 All completed!' : `${completedPuzzles.queens?.length || 0}/${QUEENS_PUZZLES.length} boards solved`}
+                <p className="text-[11px] sm:text-xs text-white/50 mt-0.5">
+                  {isQueensAll ? '🎉 All completed!' : `${completedPuzzles.queens.length}/${QUEENS_PUZZLES.length} boards solved`}
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+            <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
           </button>
 
           {/* 4. Connections */}
           <button 
             onClick={() => setActiveGame('connections')}
-            className="w-full flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-zinc-800/80 hover:border-zinc-700 transition-all text-left cursor-pointer group active:scale-[0.99]"
+            className="w-full flex items-center justify-between p-2.5 sm:p-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all text-left cursor-pointer group active:scale-[0.99]"
           >
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-amber-500 flex items-center justify-center text-black shrink-0 shadow-sm relative">
-                <div className="grid grid-cols-2 gap-0.5 p-1">
-                  <div className="w-2 h-2 rounded-full bg-black/80" />
-                  <div className="w-2 h-2 rounded-full bg-black/80" />
-                  <div className="w-2 h-2 rounded-full bg-black/80" />
-                  <div className="w-2 h-2 rounded-full bg-black/80" />
+            <div className="flex items-center gap-2.5 sm:gap-3.5">
+              {/* Amber Node Connections Icon */}
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-amber-500 flex items-center justify-center text-black shrink-0 shadow-lg shadow-amber-900/40 relative">
+                <div className="grid grid-cols-2 gap-0.5 sm:gap-1 p-1">
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-black/80" />
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-black/80" />
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-black/80" />
+                  <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-black/80" />
                 </div>
                 {isConnectionsAll && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-white">✓</div>
+                  <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-emerald-500 rounded-full border border-black flex items-center justify-center text-[8px] sm:text-[9px] font-bold text-white">✓</div>
                 )}
               </div>
               <div>
                 <div className="flex items-center gap-1">
-                  <span className="font-bold text-[13px] text-white group-hover:text-amber-400 transition-colors">Connections</span>
-                  <span className="text-[10px] text-zinc-500 font-medium">#101</span>
+                  <span className="font-bold text-[13px] sm:text-sm text-white group-hover:text-yellow-400 transition-colors">Connections</span>
+                  <span className="text-[10px] sm:text-[11px] text-white/40 font-medium">#101</span>
                 </div>
-                <p className="text-[11px] text-zinc-400 mt-0.5">
-                  {isConnectionsAll ? '🎉 All completed!' : `${completedPuzzles.connections?.length || 0}/${CONNECTIONS_PUZZLES.length} connections solved`}
+                <p className="text-[11px] sm:text-xs text-white/50 mt-0.5">
+                  {isConnectionsAll ? '🎉 All completed!' : `${completedPuzzles.connections.length}/${CONNECTIONS_PUZZLES.length} connections solved`}
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+            <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
           </button>
 
-          {/* 5. Foundery Wordle */}
-          <button 
-            onClick={() => setActiveGame('wordle')}
-            className="w-full flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-zinc-800/80 hover:border-zinc-700 transition-all text-left cursor-pointer group active:scale-[0.99]"
-          >
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-emerald-600 flex items-center justify-center text-white shrink-0 shadow-sm relative">
-                <Type className="w-4 h-4 text-white" />
-                {isWordleAll && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-white">✓</div>
-                )}
-              </div>
-              <div>
-                <div className="flex items-center gap-1">
-                  <span className="font-bold text-[13px] text-white group-hover:text-amber-400 transition-colors">Foundery Wordle</span>
-                  <span className="text-[10px] text-zinc-500 font-medium">#204</span>
-                </div>
-                <p className="text-[11px] text-zinc-400 mt-0.5">
-                  {isWordleAll ? '🎉 All completed!' : `${completedPuzzles.wordle?.length || 0}/${WORDLE_PUZZLES.length} words solved`}
-                </p>
-              </div>
-            </div>
-            <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
-          </button>
-
-          {/* 6. Tango Duals */}
+          {/* 5. Tango */}
           <button 
             onClick={() => setActiveGame('tango')}
-            className="w-full flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-zinc-800/80 hover:border-zinc-700 transition-all text-left cursor-pointer group active:scale-[0.99]"
+            className="w-full flex items-center justify-between p-2.5 sm:p-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all text-left cursor-pointer group active:scale-[0.99]"
           >
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-rose-600 flex items-center justify-center text-white shrink-0 shadow-sm relative">
-                <Sun className="w-4 h-4 text-white" />
+            <div className="flex items-center gap-2.5 sm:gap-3.5">
+              {/* Sun/Moon Tango Icon */}
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-orange-900/40 relative">
+                <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-100" />
                 {isTangoAll && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-white">✓</div>
+                  <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-emerald-500 rounded-full border border-black flex items-center justify-center text-[8px] sm:text-[9px] font-bold text-white">✓</div>
                 )}
               </div>
               <div>
                 <div className="flex items-center gap-1">
-                  <span className="font-bold text-[13px] text-white group-hover:text-amber-400 transition-colors">Tango Duals</span>
-                  <span className="text-[10px] text-zinc-500 font-medium">#112</span>
+                  <span className="font-bold text-[13px] sm:text-sm text-white group-hover:text-yellow-400 transition-colors">Tango</span>
+                  <span className="text-[10px] sm:text-[11px] text-white/40 font-medium">#42</span>
                 </div>
-                <p className="text-[11px] text-zinc-400 mt-0.5">
-                  {isTangoAll ? '🎉 All completed!' : `${completedPuzzles.tango?.length || 0}/${TANGO_PUZZLES.length} duals solved`}
+                <p className="text-[11px] sm:text-xs text-white/50 mt-0.5">
+                  {isTangoAll ? '🎉 All completed!' : `${completedPuzzles.tango?.length || 0}/${TANGO_PUZZLES.length} grids balanced`}
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+            <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
           </button>
 
-          {/* 7. Pitch Rush */}
+          {/* 6. Wordle */}
           <button 
-            onClick={() => setActiveGame('pitch')}
-            className="w-full flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-zinc-800/80 hover:border-zinc-700 transition-all text-left cursor-pointer group active:scale-[0.99]"
+            onClick={() => setActiveGame('wordle')}
+            className="w-full flex items-center justify-between p-2.5 sm:p-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all text-left cursor-pointer group active:scale-[0.99]"
           >
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-gradient-to-br from-amber-400 via-orange-500 to-red-500 flex items-center justify-center text-white shrink-0 shadow-md shadow-orange-500/20 relative">
-                <Footprints className="w-4 h-4 text-white animate-pulse" />
-                {isPitchAll && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-white">✓</div>
+            <div className="flex items-center gap-2.5 sm:gap-3.5">
+              {/* Emerald Letter Tile Wordle Icon */}
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-emerald-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-emerald-900/40 relative">
+                <Type className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                {isWordleAll && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-emerald-500 rounded-full border border-black flex items-center justify-center text-[8px] sm:text-[9px] font-bold text-white">✓</div>
                 )}
               </div>
               <div>
                 <div className="flex items-center gap-1">
-                  <span className="font-bold text-[13px] text-white group-hover:text-amber-400 transition-colors">Pitch Rush</span>
-                  <span className="text-[10px] text-zinc-500 font-medium">#088</span>
+                  <span className="font-bold text-[13px] sm:text-sm text-white group-hover:text-yellow-400 transition-colors">Wordle</span>
+                  <span className="text-[10px] sm:text-[11px] text-white/40 font-medium">#365</span>
                 </div>
-                <p className="text-[11px] text-zinc-400 mt-0.5">
-                  {isPitchAll ? '🎉 All completed!' : `${completedPuzzles.pitch?.length || 0}/${PITCH_TRIVIA_PUZZLES.length} questions solved`}
+                <p className="text-[11px] sm:text-xs text-white/50 mt-0.5">
+                  {isWordleAll ? '🎉 All completed!' : `${completedPuzzles.wordle?.length || 0}/${WORDLE_PUZZLES.length} words guessed`}
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
-          </button>
-
-          {/* 8. Equity Split */}
-          <button 
-            onClick={() => setActiveGame('equity')}
-            className="w-full flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-zinc-800/80 hover:border-zinc-700 transition-all text-left cursor-pointer group active:scale-[0.99]"
-          >
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-indigo-600 flex items-center justify-center text-white shrink-0 shadow-sm relative">
-                <PieChart className="w-4 h-4 text-white" />
-                {isEquityAll && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-white">✓</div>
-                )}
-              </div>
-              <div>
-                <div className="flex items-center gap-1">
-                  <span className="font-bold text-[13px] text-white group-hover:text-amber-400 transition-colors">Equity Split</span>
-                  <span className="text-[10px] text-zinc-500 font-medium">#045</span>
-                </div>
-                <p className="text-[11px] text-zinc-400 mt-0.5">
-                  {isEquityAll ? '🎉 All completed!' : `${completedPuzzles.equity?.length || 0}/${EQUITY_PUZZLES.length} splits solved`}
-                </p>
-              </div>
-            </div>
-            <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
-          </button>
-
-          {/* 9. Zip Path */}
-          <button 
-            onClick={() => setActiveGame('zip')}
-            className="w-full flex items-center justify-between p-2.5 sm:p-3 rounded-xl bg-zinc-900/90 hover:bg-zinc-800/90 border border-zinc-800/80 hover:border-zinc-700 transition-all text-left cursor-pointer group active:scale-[0.99]"
-          >
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-teal-600 flex items-center justify-center text-white shrink-0 shadow-sm relative">
-                <GitFork className="w-4 h-4 text-white" />
-                {isZipAll && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border border-black flex items-center justify-center text-[8px] font-bold text-white">✓</div>
-                )}
-              </div>
-              <div>
-                <div className="flex items-center gap-1">
-                  <span className="font-bold text-[13px] text-white group-hover:text-amber-400 transition-colors">Zip Path</span>
-                  <span className="text-[10px] text-zinc-500 font-medium">#077</span>
-                </div>
-                <p className="text-[11px] text-zinc-400 mt-0.5">
-                  {isZipAll ? '🎉 All completed!' : `${completedPuzzles.zip?.length || 0}/${ZIP_PATH_PUZZLES.length} routes solved`}
-                </p>
-              </div>
-            </div>
-            <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+            <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
           </button>
         </div>
 
+        {/* Footer info line */}
+        <div className="mt-4 pt-3 border-t border-white/5 text-center text-[11px] text-white/40">
+          <span>Puzzles refresh daily</span>
+        </div>
       </div>
     );
   }
 
   // Active games rendered in-place with easy go-back headers
   return (
-    <div className="bg-black rounded-2xl p-6 border border-zinc-800 flex flex-col relative overflow-hidden text-white shadow-xl">
+    <div className="bg-black rounded-2xl p-6 border border-zinc-800/80 shadow-2xl flex flex-col relative overflow-y-auto max-h-[calc(100vh-32px)] text-white">
       {/* Header with back button */}
-      <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-zinc-800">
+      <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-white/10">
         <button 
           onClick={handleBackToMain}
-          className="flex items-center gap-1.5 text-xs font-bold text-zinc-400 hover:text-white transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 text-xs font-bold text-white/70 hover:text-white transition-colors cursor-pointer"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back to Puzzles</span>
         </button>
-        <span className="text-[11px] font-black uppercase bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800 text-amber-400">
+        <span className="text-[11px] font-black uppercase bg-white/5 px-2 py-0.5 rounded border border-white/5 text-yellow-400">
           Playing {activeGame}
         </span>
       </div>
 
       {activeGame === 'pinpoint' && (
         <PinpointGame 
-          completedList={completedPuzzles.pinpoint || []}
+          completedList={completedPuzzles.pinpoint}
           onSolve={handleSolvePinpoint} 
         />
       )}
 
       {activeGame === 'crossclimb' && (
         <CrossclimbGame 
-          completedList={completedPuzzles.crossclimb || []}
+          completedList={completedPuzzles.crossclimb}
           onSolve={handleSolveCrossclimb} 
         />
       )}
 
       {activeGame === 'queens' && (
         <QueensGame 
-          completedList={completedPuzzles.queens || []}
+          completedList={completedPuzzles.queens}
           onSolve={handleSolveQueens} 
         />
       )}
 
       {activeGame === 'connections' && (
         <ConnectionsGame 
-          completedList={completedPuzzles.connections || []}
+          completedList={completedPuzzles.connections}
           onSolve={handleSolveConnections} 
-        />
-      )}
-
-      {activeGame === 'wordle' && (
-        <WordleGame 
-          completedList={completedPuzzles.wordle || []}
-          onSolve={handleSolveWordle} 
         />
       )}
 
@@ -982,24 +772,10 @@ export const VentureConnections = () => {
         />
       )}
 
-      {activeGame === 'pitch' && (
-        <PitchTriviaGame 
-          completedList={completedPuzzles.pitch || []}
-          onSolve={handleSolvePitch} 
-        />
-      )}
-
-      {activeGame === 'equity' && (
-        <EquityGame 
-          completedList={completedPuzzles.equity || []}
-          onSolve={handleSolveEquity} 
-        />
-      )}
-
-      {activeGame === 'zip' && (
-        <ZipPathGame 
-          completedList={completedPuzzles.zip || []}
-          onSolve={handleSolveZip} 
+      {activeGame === 'wordle' && (
+        <WordleGame 
+          completedList={completedPuzzles.wordle || []}
+          onSolve={handleSolveWordle} 
         />
       )}
     </div>
@@ -1108,22 +884,22 @@ const PinpointGame = memo(({
       </div>
 
       <div>
-        <h3 className="font-bold text-sm text-zinc-900">Pinpoint Guessing — Puzzle {puzzleIndex + 1}</h3>
-        <p className="text-[11px] text-zinc-500">Guess the single category linking all five clue words below.</p>
+        <h3 className="font-bold text-sm text-white">Pinpoint Guessing — Puzzle {puzzleIndex + 1}</h3>
+        <p className="text-[11px] text-white/50">Guess the single category linking all five clue words below.</p>
       </div>
 
       {/* Clues board */}
-      <div className="bg-zinc-50 rounded-xl p-4 border border-zinc-200/80 space-y-2">
-        <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Clues revealed ({currentClueCount}/5)</span>
+      <div className="bg-black/20 rounded-xl p-4 border border-white/5 space-y-2 overflow-y-auto max-h-60">
+        <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Clues revealed ({currentClueCount}/5)</span>
         <div className="space-y-2 pt-1">
           {Array.from({ length: currentClueCount }).map((_, i) => (
             <motion.div 
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               key={i} 
-              className="flex items-center gap-2 text-xs font-bold bg-white p-2 rounded-lg border border-zinc-200/80 text-zinc-800 shadow-xs"
+              className="flex items-center gap-2 text-xs font-bold bg-white/5 p-2 rounded-lg border border-white/5"
             >
-              <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-bold">{i + 1}</span>
+              <span className="w-5 h-5 rounded-full bg-blue-600/30 text-blue-300 flex items-center justify-center text-[10px]">{i + 1}</span>
               <span>{puzzle.clues[i]}</span>
             </motion.div>
           ))}
@@ -1141,7 +917,7 @@ const PinpointGame = memo(({
 
       {/* Options selector */}
       {!isWon && !isLost && (
-        <div className="space-y-2">
+        <div className="space-y-2 overflow-y-auto max-h-56">
           <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">Select your category guess</span>
           <div className="grid grid-cols-1 gap-2">
             {puzzle.options.map((opt) => (
@@ -1546,14 +1322,14 @@ const QueensGame = memo(({
       </div>
 
       {/* Rules cheat-sheet */}
-      <div className="bg-zinc-50 p-2 rounded-xl text-[10px] text-zinc-600 leading-relaxed border border-zinc-200/80">
-        <span className="font-bold text-amber-600 block mb-0.5">Quick Play Instructions:</span>
-        Tap cell to cycle: <span className="text-zinc-900 font-bold">👑 Crown</span> → <span className="text-zinc-900 font-bold">❌ Safe indicator</span> → Empty.
+      <div className="bg-white/5 p-2 rounded-xl text-[10px] text-white/60 leading-relaxed border border-white/5">
+        <span className="font-bold text-yellow-400 block mb-0.5">Quick Play Instructions:</span>
+        Tap cell to cycle: <span className="text-white font-bold">👑 Crown</span> → <span className="text-white font-bold">❌ Safe indicator</span> → Empty.
       </div>
 
       {/* Grid Container */}
       <div className="flex justify-center py-2">
-        <div className="grid grid-cols-5 gap-1.5 p-2 bg-zinc-100 rounded-2xl border border-zinc-200 shadow-inner">
+        <div className="grid grid-cols-5 gap-1.5 p-2 bg-black/40 rounded-2xl border border-white/10 shadow-inner">
           {grid.map((row, r) =>
             row.map((cell, c) => {
               const region = puzzle.board[r][c];
@@ -1863,131 +1639,677 @@ const ConnectionsGame = memo(({
   );
 });
 
+
 // ==========================================
-// 5. FOUNDERY WORDLE SUB-GAME COMPONENT
+// 5. TANGO (SUN & MOON BALANCE) SUB-GAME COMPONENT
 // ==========================================
 
-interface WordlePuzzle {
-  id: number;
-  word: string;
-  hint: string;
-}
-
-const WORDLE_PUZZLES: WordlePuzzle[] = [
-  { id: 1, word: "PITCH", hint: "What founders deliver to investors in 3 minutes" },
-  { id: 2, word: "SCALE", hint: "Growing revenue exponentially without proportional costs" },
-  { id: 3, word: "ANGEL", hint: "Early-stage investor backing pre-seed founders" }
-];
-
-const WordleGame = memo(({ completedList, onSolve }: { completedList: number[]; onSolve: (id: number) => void }) => {
+const TangoGame = memo(({ 
+  completedList, 
+  onSolve 
+}: { 
+  completedList: number[]; 
+  onSolve: (id: number) => void; 
+}) => {
   const [puzzleIndex, setPuzzleIndex] = useState(0);
-  const puzzle = WORDLE_PUZZLES[puzzleIndex];
-  const [guesses, setGuesses] = useState<string[]>([]);
-  const [currentGuess, setCurrentGuess] = useState("");
-  const [gameWon, setGameWon] = useState(false);
-  const [gameLost, setGameLost] = useState(false);
+  const puzzle = TANGO_PUZZLES[puzzleIndex];
+
+  // Grid of cells: 4x4
+  const [grid, setGrid] = useState<('S' | 'M' | null)[][]>(() => 
+    Array(4).fill(null).map(() => Array(4).fill(null))
+  );
+  const [isSolved, setIsSolved] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [errorStatus, setErrorStatus] = useState<string | null>(null);
+  const [showRules, setShowRules] = useState(false);
 
+  // Set of locked given coordinates: "r,c"
+  const givensMap = useMemo(() => {
+    const map = new Map<string, 'S' | 'M'>();
+    puzzle.givens.forEach(([r, c, s]) => map.set(`${r},${c}`, s));
+    return map;
+  }, [puzzle.givens]);
+
+  // Load puzzle state on change or solved update
   useEffect(() => {
-    setGuesses([]);
-    setCurrentGuess("");
-    setGameWon(completedList.includes(puzzle.id));
-    setGameLost(false);
-    setFeedback(completedList.includes(puzzle.id) ? "🎉 Word solved!" : null);
-  }, [puzzleIndex, completedList, puzzle.id]);
+    const isCompleted = completedList.includes(puzzle.id);
+    if (isCompleted) {
+      setGrid(puzzle.solution.map(row => [...row]));
+      setIsSolved(true);
+      setFeedback("Brilliant! All suns & moons are perfectly balanced with every rule satisfied.");
+      setErrorStatus(null);
+    } else {
+      // Initialize with givens
+      const initialGrid: ('S' | 'M' | null)[][] = Array(4).fill(null).map(() => Array(4).fill(null));
+      puzzle.givens.forEach(([r, c, s]) => {
+        initialGrid[r][c] = s;
+      });
+      setGrid(initialGrid);
+      setIsSolved(false);
+      setFeedback(null);
+      setErrorStatus(null);
+    }
+  }, [puzzleIndex, completedList, puzzle.id, puzzle.givens, puzzle.solution]);
 
-  const handleKeyInput = (char: string) => {
-    if (gameWon || gameLost) return;
-    if (char === "ENTER") {
-      if (currentGuess.length !== 5) {
-        setFeedback("Word must be 5 letters!");
+  // Toggle cell: null -> 'S' -> 'M' -> null (only if not a given cell)
+  const handleCellClick = (r: number, c: number) => {
+    if (isSolved || givensMap.has(`${r},${c}`)) return;
+
+    setGrid(prev => {
+      const next = prev.map(row => [...row]);
+      const current = next[r][c];
+      if (current === null) next[r][c] = 'S';
+      else if (current === 'S') next[r][c] = 'M';
+      else next[r][c] = null;
+      return next;
+    });
+    setFeedback(null);
+    setErrorStatus(null);
+  };
+
+  const handleVerify = () => {
+    // 1. Check if all cells are filled
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        if (!grid[r][c]) {
+          setErrorStatus("Grid incomplete! Fill all cells with Suns or Moons.");
+          return;
+        }
+      }
+    }
+
+    // 2. Check no 3 in a row (horizontal)
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c <= 1; c++) {
+        if (grid[r][c] && grid[r][c] === grid[r][c + 1] && grid[r][c] === grid[r][c + 2]) {
+          setErrorStatus(`Three consecutive ${grid[r][c] === 'S' ? 'Suns' : 'Moons'} in row ${r + 1}!`);
+          return;
+        }
+      }
+    }
+
+    // 3. Check no 3 in a column (vertical)
+    for (let c = 0; c < 4; c++) {
+      for (let r = 0; r <= 1; r++) {
+        if (grid[r][c] && grid[r][c] === grid[r + 1][c] && grid[r][c] === grid[r + 2][c]) {
+          setErrorStatus(`Three consecutive ${grid[r][c] === 'S' ? 'Suns' : 'Moons'} in column ${c + 1}!`);
+          return;
+        }
+      }
+    }
+
+    // 4. Check row counts (2 Suns, 2 Moons)
+    for (let r = 0; r < 4; r++) {
+      const suns = grid[r].filter(v => v === 'S').length;
+      const moons = grid[r].filter(v => v === 'M').length;
+      if (suns !== 2 || moons !== 2) {
+        setErrorStatus(`Row ${r + 1} must contain exactly 2 Suns and 2 Moons.`);
         return;
       }
-      const newGuesses = [...guesses, currentGuess];
-      setGuesses(newGuesses);
-      if (currentGuess === puzzle.word) {
-        setGameWon(true);
-        setFeedback("🎉 Excellent! You guessed the startup word!");
-        onSolve(puzzle.id);
-      } else if (newGuesses.length >= 6) {
-        setGameLost(true);
-        setFeedback(`Game Over! The word was ${puzzle.word}`);
-      } else {
-        setFeedback(null);
-      }
-      setCurrentGuess("");
-    } else if (char === "DEL" || char === "BACKSPACE") {
-      setCurrentGuess(prev => prev.slice(0, -1));
-    } else if (currentGuess.length < 5 && /^[A-Z]$/.test(char)) {
-      setCurrentGuess(prev => prev + char);
     }
+
+    // 5. Check column counts (2 Suns, 2 Moons)
+    for (let c = 0; c < 4; c++) {
+      let suns = 0;
+      let moons = 0;
+      for (let r = 0; r < 4; r++) {
+        if (grid[r][c] === 'S') suns++;
+        if (grid[r][c] === 'M') moons++;
+      }
+      if (suns !== 2 || moons !== 2) {
+        setErrorStatus(`Column ${c + 1} must contain exactly 2 Suns and 2 Moons.`);
+        return;
+      }
+    }
+
+    // 6. Check equal relations (=)
+    for (const [r1, c1, r2, c2] of puzzle.equalPairs) {
+      if (grid[r1][c1] !== grid[r2][c2]) {
+        setErrorStatus("Constraint violation: Cells linked by '=' must be the same symbol!");
+        return;
+      }
+    }
+
+    // 7. Check opposite relations (x)
+    for (const [r1, c1, r2, c2] of puzzle.oppositePairs) {
+      if (grid[r1][c1] === grid[r2][c2]) {
+        setErrorStatus("Constraint violation: Cells linked by '×' must have opposite symbols!");
+        return;
+      }
+    }
+
+    // Success!
+    setIsSolved(true);
+    setFeedback("Brilliant! All suns & moons are perfectly balanced with every rule satisfied.");
+    setErrorStatus(null);
+    onSolve(puzzle.id);
   };
 
-  const getTileColor = (guess: string, index: number) => {
-    const char = guess[index];
-    if (puzzle.word[index] === char) return "bg-emerald-600 border-emerald-500 text-white font-black";
-    if (puzzle.word.includes(char)) return "bg-amber-500 border-amber-400 text-black font-black";
-    return "bg-zinc-800 border-zinc-700 text-zinc-400 font-bold";
+  const handleReset = () => {
+    const initialGrid: ('S' | 'M' | null)[][] = Array(4).fill(null).map(() => Array(4).fill(null));
+    puzzle.givens.forEach(([r, c, s]) => {
+      initialGrid[r][c] = s;
+    });
+    setGrid(initialGrid);
+    setIsSolved(false);
+    setFeedback(null);
+    setErrorStatus(null);
   };
 
-  const keyboardRows = [
-    ["Q","W","E","R","T","Y","U","I","O","P"],
-    ["A","S","D","F","G","H","J","K","L"],
-    ["ENTER","Z","X","C","V","B","N","M","DEL"]
-  ];
+  // Helper to test if a pair is equal or opposite
+  const getRelation = (r1: number, c1: number, r2: number, c2: number) => {
+    const isEqual = puzzle.equalPairs.some(
+      ([ar1, ac1, ar2, ac2]) =>
+        (ar1 === r1 && ac1 === c1 && ar2 === r2 && ac2 === c2) ||
+        (ar1 === r2 && ac1 === c2 && ar2 === r1 && ac2 === c1)
+    );
+    if (isEqual) return '=';
+
+    const isOpposite = puzzle.oppositePairs.some(
+      ([ar1, ac1, ar2, ac2]) =>
+        (ar1 === r1 && ac1 === c1 && ar2 === r2 && ac2 === c2) ||
+        (ar1 === r2 && ac1 === c2 && ar2 === r1 && ac2 === c1)
+    );
+    if (isOpposite) return '×';
+
+    return null;
+  };
 
   return (
-    <div className="space-y-4 text-white">
-      {/* Level bar */}
-      <div className="flex items-center justify-between bg-zinc-900/90 p-2.5 rounded-xl border border-zinc-800">
-        <div className="flex items-center gap-2">
-          <Type className="w-4 h-4 text-emerald-400" />
-          <span className="text-xs font-bold">Wordle Word #{puzzle.id}</span>
-        </div>
-        <div className="flex gap-1">
-          {WORDLE_PUZZLES.map((p, idx) => (
+    <div className="space-y-4">
+      {/* Puzzle Tabs */}
+      <div className="flex gap-2 pb-1 overflow-x-auto scrollbar-none border-b border-white/5">
+        {TANGO_PUZZLES.map((p, idx) => {
+          const isCompleted = completedList.includes(p.id);
+          const isActive = puzzleIndex === idx;
+          return (
             <button
               key={p.id}
               onClick={() => setPuzzleIndex(idx)}
-              className={`px-2.5 py-1 text-[11px] font-extrabold rounded-lg cursor-pointer ${
-                puzzleIndex === idx ? 'bg-emerald-500 text-black' : completedList.includes(p.id) ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-zinc-800 text-zinc-400'
-              }`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer
+                ${isActive 
+                  ? 'bg-amber-600 text-white shadow-md' 
+                  : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+                }`}
             >
-              #{p.id}
+              <span>{p.name}</span>
+              {isCompleted && <span className="text-emerald-400 text-[10px]">✓</span>}
             </button>
+          );
+        })}
+      </div>
+
+      {/* Description & Rules Toggle */}
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="font-bold text-sm text-white">Tango — {puzzle.name}</h3>
+          <p className="text-[11px] text-white/50">Fill the grid with Suns ☀️ and Moons 🌙 to achieve equilibrium.</p>
+        </div>
+        <button
+          onClick={() => setShowRules(prev => !prev)}
+          className="text-amber-400 hover:text-amber-300 text-[11px] flex items-center gap-1 underline cursor-pointer"
+        >
+          <Info className="w-3.5 h-3.5" />
+          <span>Rules</span>
+        </button>
+      </div>
+
+      {/* Rules Banner */}
+      {showRules && (
+        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-xs text-amber-200/90 space-y-1">
+          <p className="font-bold text-amber-300 text-xs">How to play Tango:</p>
+          <ul className="list-disc list-inside space-y-0.5 text-[11px] text-white/70">
+            <li>Fill every cell with either a Sun (☀️) or Moon (🌙).</li>
+            <li>No 3 of the same symbol in a row or column (no ☀️☀️☀️ or 🌙🌙🌙).</li>
+            <li>Each row and column must have exactly 2 Suns and 2 Moons.</li>
+            <li><span className="font-bold text-amber-300">=</span> means connected cells must be the same symbol.</li>
+            <li><span className="font-bold text-rose-300">×</span> means connected cells must be opposite symbols.</li>
+          </ul>
+        </div>
+      )}
+
+      {/* Tango Board Layout */}
+      <div className="flex flex-col items-center justify-center p-3 bg-white/[0.02] rounded-2xl border border-white/5">
+        <div className="relative inline-block">
+          {Array.from({ length: 4 }).map((_, r) => (
+            <div key={r} className="flex flex-col">
+              {/* Row of cells with horizontal relation markers */}
+              <div className="flex items-center">
+                {Array.from({ length: 4 }).map((_, c) => {
+                  const val = grid[r][c];
+                  const isGiven = givensMap.has(`${r},${c}`);
+                  const hRel = c < 3 ? getRelation(r, c, r, c + 1) : null;
+
+                  return (
+                    <React.Fragment key={c}>
+                      <button
+                        onClick={() => handleCellClick(r, c)}
+                        disabled={isGiven || isSolved}
+                        className={`w-11 h-11 sm:w-13 sm:h-13 rounded-xl border flex items-center justify-center transition-all relative select-none
+                          ${isGiven 
+                            ? 'bg-white/10 border-white/20 cursor-default' 
+                            : 'cursor-pointer hover:border-white/40 active:scale-95'
+                          }
+                          ${val === 'S' 
+                            ? 'bg-amber-500/25 border-amber-500/60 shadow-lg shadow-amber-900/30' 
+                            : val === 'M' 
+                            ? 'bg-sky-500/25 border-sky-500/60 shadow-lg shadow-sky-900/30' 
+                            : 'bg-white/5 border-white/10'
+                          }
+                        `}
+                      >
+                        {val === 'S' && <Sun className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />}
+                        {val === 'M' && <Moon className="w-5 h-5 sm:w-6 sm:h-6 text-sky-300" />}
+                        {isGiven && (
+                          <span className="absolute bottom-1 right-1 w-1.5 h-1.5 rounded-full bg-white/40" />
+                        )}
+                      </button>
+
+                      {/* Horizontal relation sign */}
+                      {c < 3 && (
+                        <div className="w-4 flex items-center justify-center">
+                          {hRel === '=' && (
+                            <span className="text-xs font-black text-emerald-400 bg-emerald-500/20 px-1 rounded border border-emerald-500/30">=</span>
+                          )}
+                          {hRel === '×' && (
+                            <span className="text-xs font-black text-rose-400 bg-rose-500/20 px-1 rounded border border-rose-500/30">×</span>
+                          )}
+                        </div>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </div>
+
+              {/* Vertical relation signs between rows */}
+              {r < 3 && (
+                <div className="flex items-center h-4">
+                  {Array.from({ length: 4 }).map((_, c) => {
+                    const vRel = getRelation(r, c, r + 1, c);
+                    return (
+                      <React.Fragment key={c}>
+                        <div className="w-11 sm:w-13 flex items-center justify-center">
+                          {vRel === '=' && (
+                            <span className="text-xs font-black text-emerald-400 bg-emerald-500/20 px-1 rounded border border-emerald-500/30">=</span>
+                          )}
+                          {vRel === '×' && (
+                            <span className="text-xs font-black text-rose-400 bg-rose-500/20 px-1 rounded border border-rose-500/30">×</span>
+                          )}
+                        </div>
+                        {c < 3 && <div className="w-4" />}
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </div>
 
-      <div className="text-center space-y-1">
-        <h3 className="text-sm font-bold text-white">Foundery Daily Word</h3>
-        <p className="text-xs text-zinc-400">Hint: <span className="text-amber-400 font-medium">{puzzle.hint}</span></p>
+      {/* Status Messages */}
+      {feedback && (
+        <div className="p-3 rounded-xl text-xs font-semibold border flex items-center gap-2 bg-emerald-500/10 border-emerald-500/20 text-emerald-300">
+          <Check className="w-4 h-4 shrink-0" />
+          <span>{feedback}</span>
+        </div>
+      )}
+
+      {errorStatus && (
+        <div className="p-3 rounded-xl text-xs font-semibold border flex items-center gap-2 bg-rose-500/10 border-rose-500/20 text-rose-300">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{errorStatus}</span>
+        </div>
+      )}
+
+      {/* Footer controls */}
+      <div className="pt-2 border-t border-white/5 flex items-center justify-between">
+        <span className="text-[11px] text-white/40 flex items-center gap-1">
+          <Info className="w-3.5 h-3.5 text-amber-400" />
+          Click cell to cycle ☀️ → 🌙
+        </span>
+
+        <div className="flex gap-2">
+          <button 
+            onClick={handleReset}
+            disabled={completedList.includes(puzzle.id)}
+            className="text-white/50 hover:text-white text-xs hover:underline transition-all font-bold disabled:opacity-30 disabled:no-underline"
+          >
+            Reset
+          </button>
+
+          {!isSolved && (
+            <button
+              onClick={handleVerify}
+              className="py-1.5 px-4 bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs tracking-wider uppercase rounded-lg cursor-pointer transition-all active:scale-95"
+            >
+              Verify
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+});
+
+
+// ==========================================
+// 6. WORDLE (VENTURE KEYWORD GUESS) SUB-GAME COMPONENT
+// ==========================================
+
+const WordleGame = memo(({ 
+  completedList, 
+  onSolve 
+}: { 
+  completedList: number[]; 
+  onSolve: (id: number) => void; 
+}) => {
+  const [puzzleIndex, setPuzzleIndex] = useState(0);
+  const puzzle = WORDLE_PUZZLES[puzzleIndex];
+
+  // Persistent user attempts per puzzle id
+  const [savedAttempts, setSavedAttempts] = useState<Record<number, string[]>>(() => {
+    try {
+      const stored = localStorage.getItem('connectup_wordle_saved_attempts');
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  const [guesses, setGuesses] = useState<string[]>([]);
+  const [currentGuess, setCurrentGuess] = useState("");
+  const [isWon, setIsWon] = useState(false);
+  const [isLost, setIsLost] = useState(false);
+  const [showHint, setShowHint] = useState(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [shakeRow, setShakeRow] = useState(false);
+
+  // Sync state when puzzleIndex or savedAttempts change
+  useEffect(() => {
+    const attempts = savedAttempts[puzzle.id];
+    if (attempts && attempts.length > 0) {
+      setGuesses(attempts);
+      const won = attempts.includes(puzzle.word);
+      const lost = attempts.length >= 6 && !won;
+      setIsWon(won);
+      setIsLost(lost);
+      setCurrentGuess("");
+      if (won) {
+        setFeedback(`Target unlocked! Solved in ${attempts.length} ${attempts.length === 1 ? 'guess' : 'guesses'}.`);
+      } else if (lost) {
+        setFeedback(`Target was "${puzzle.word}".`);
+      } else {
+        setFeedback(null);
+      }
+    } else if (completedList.includes(puzzle.id)) {
+      setGuesses([puzzle.word]);
+      setCurrentGuess("");
+      setIsWon(true);
+      setIsLost(false);
+      setFeedback(`Target unlocked! "${puzzle.word}" is solved.`);
+    } else {
+      setGuesses([]);
+      setCurrentGuess("");
+      setIsWon(false);
+      setIsLost(false);
+      setShowHint(false);
+      setFeedback(null);
+    }
+  }, [puzzleIndex, puzzle.id, puzzle.word, completedList, savedAttempts]);
+
+  // Evaluate guess against target word
+  const evaluateGuess = useCallback((guess: string, target: string) => {
+    const res: ('correct' | 'present' | 'absent')[] = Array(5).fill('absent');
+    const targetArr = target.split('');
+    const guessArr = guess.split('');
+    const letterPool: Record<string, number> = {};
+
+    // 1st pass: exact matches
+    for (let i = 0; i < 5; i++) {
+      if (guessArr[i] === targetArr[i]) {
+        res[i] = 'correct';
+        targetArr[i] = '#';
+      }
+    }
+
+    // Pool remaining target letters
+    for (let i = 0; i < 5; i++) {
+      if (targetArr[i] !== '#') {
+        letterPool[targetArr[i]] = (letterPool[targetArr[i]] || 0) + 1;
+      }
+    }
+
+    // 2nd pass: misplaced letters
+    for (let i = 0; i < 5; i++) {
+      if (res[i] !== 'correct') {
+        const char = guessArr[i];
+        if (letterPool[char] && letterPool[char] > 0) {
+          res[i] = 'present';
+          letterPool[char]--;
+        }
+      }
+    }
+
+    return res;
+  }, []);
+
+  // Compute key statuses across all submitted guesses
+  const keyStatuses = useMemo(() => {
+    const map: Record<string, 'correct' | 'present' | 'absent'> = {};
+
+    guesses.forEach(g => {
+      const evaluation = evaluateGuess(g, puzzle.word);
+      g.split('').forEach((char, idx) => {
+        const status = evaluation[idx];
+        const prev = map[char];
+        if (prev === 'correct') return;
+        if (status === 'correct') {
+          map[char] = 'correct';
+        } else if (status === 'present') {
+          map[char] = 'present';
+        } else if (!prev) {
+          map[char] = 'absent';
+        }
+      });
+    });
+
+    return map;
+  }, [guesses, puzzle.word, evaluateGuess]);
+
+  const handleCharInput = useCallback((char: string) => {
+    if (isWon || isLost) return;
+    setFeedback(null);
+    setCurrentGuess(prev => prev.length < 5 ? prev + char.toUpperCase() : prev);
+  }, [isWon, isLost]);
+
+  const handleBackspace = useCallback(() => {
+    if (isWon || isLost) return;
+    setFeedback(null);
+    setCurrentGuess(prev => prev.slice(0, -1));
+  }, [isWon, isLost]);
+
+  const handleSubmit = useCallback(() => {
+    if (isWon || isLost) return;
+    if (currentGuess.length !== 5) {
+      setFeedback("Word must be 5 letters!");
+      setShakeRow(true);
+      setTimeout(() => setShakeRow(false), 500);
+      return;
+    }
+
+    const nextGuesses = [...guesses, currentGuess];
+    setGuesses(nextGuesses);
+
+    // Save to persistent storage
+    const updatedMap = { ...savedAttempts, [puzzle.id]: nextGuesses };
+    setSavedAttempts(updatedMap);
+    try {
+      localStorage.setItem('connectup_wordle_saved_attempts', JSON.stringify(updatedMap));
+    } catch {
+      // ignore
+    }
+
+    if (currentGuess === puzzle.word) {
+      setIsWon(true);
+      setFeedback(`Bravo! You solved "${puzzle.word}" in ${nextGuesses.length} ${nextGuesses.length === 1 ? 'try' : 'tries'}! 🎉`);
+      onSolve(puzzle.id);
+    } else if (nextGuesses.length >= 6) {
+      setIsLost(true);
+      setFeedback(`Out of attempts! The target keyword was "${puzzle.word}".`);
+    } else {
+      setFeedback(null);
+    }
+
+    setCurrentGuess("");
+  }, [currentGuess, guesses, isWon, isLost, onSolve, puzzle.id, puzzle.word, savedAttempts]);
+
+  // Physical keyboard listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+        return;
+      }
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleSubmit();
+      } else if (e.key === 'Backspace' || e.key === 'Delete') {
+        e.preventDefault();
+        handleBackspace();
+      } else if (/^[a-zA-Z]$/.test(e.key)) {
+        e.preventDefault();
+        handleCharInput(e.key);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleCharInput, handleBackspace, handleSubmit]);
+
+  const handleReset = () => {
+    setGuesses([]);
+    setCurrentGuess("");
+    setIsWon(false);
+    setIsLost(false);
+    setShowHint(false);
+    setFeedback(null);
+
+    // Clear saved attempts for this specific puzzle so player can replay
+    const updated = { ...savedAttempts };
+    delete updated[puzzle.id];
+    setSavedAttempts(updated);
+    try {
+      localStorage.setItem('connectup_wordle_saved_attempts', JSON.stringify(updated));
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleNextWord = () => {
+    if (puzzleIndex < WORDLE_PUZZLES.length - 1) {
+      setPuzzleIndex(prev => prev + 1);
+    }
+  };
+
+  const KEYBOARD_ROWS = [
+    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+    ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE']
+  ];
+
+  return (
+    <div className="space-y-4">
+      {/* Puzzle Tabs */}
+      <div className="flex gap-2 pb-1 overflow-x-auto scrollbar-none border-b border-white/5">
+        {WORDLE_PUZZLES.map((p, idx) => {
+          const isCompleted = completedList.includes(p.id);
+          const isActive = puzzleIndex === idx;
+          return (
+            <button
+              key={p.id}
+              onClick={() => setPuzzleIndex(idx)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer
+                ${isActive 
+                  ? 'bg-emerald-600 text-white shadow-md' 
+                  : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+                }`}
+            >
+              <span>Word {idx + 1}</span>
+              {isCompleted && <span className="text-emerald-300 text-[10px]">✓</span>}
+            </button>
+          );
+        })}
       </div>
 
-      {/* 6 Grid Rows */}
-      <div className="flex flex-col items-center gap-1.5 py-2">
-        {Array.from({ length: 6 }).map((_, rowIndex) => {
-          const guess = guesses[rowIndex];
-          const isCurrentRow = rowIndex === guesses.length && !gameWon && !gameLost;
+      {/* Header and Hint Toggle */}
+      <div className="flex items-start justify-between">
+        <div>
+          <h3 className="font-bold text-sm text-white">Venture Wordle #{puzzle.id}</h3>
+          <p className="text-[11px] text-white/50">{puzzle.category} • Guess the 5-letter term in 6 tries.</p>
+        </div>
+        <button
+          onClick={() => setShowHint(prev => !prev)}
+          className="text-emerald-400 hover:text-emerald-300 text-[11px] flex items-center gap-1 underline cursor-pointer"
+        >
+          <Lightbulb className="w-3.5 h-3.5" />
+          <span>{showHint ? "Hide Clue" : "Hint Clue"}</span>
+        </button>
+      </div>
+
+      {/* Hint Clue Banner */}
+      {showHint && (
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-3 text-xs text-emerald-200/90 flex items-start gap-2">
+          <Lightbulb className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+          <div>
+            <span className="font-bold text-emerald-300">Category Clue: </span>
+            <span>{puzzle.hint}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Wordle Grid (6 rows of 5 tiles) */}
+      <div className="flex flex-col items-center gap-1.5 py-1">
+        {Array.from({ length: 6 }).map((_, rowIdx) => {
+          const isSubmitted = rowIdx < guesses.length;
+          const isCurrent = rowIdx === guesses.length && !isWon && !isLost;
+          const submittedWord = isSubmitted ? guesses[rowIdx] : "";
+          const evaluation = isSubmitted ? evaluateGuess(submittedWord, puzzle.word) : [];
 
           return (
-            <div key={rowIndex} className="flex gap-1.5">
-              {Array.from({ length: 5 }).map((_, colIndex) => {
+            <div 
+              key={rowIdx} 
+              className={`flex gap-1.5 transition-transform ${isCurrent && shakeRow ? 'animate-bounce' : ''}`}
+            >
+              {Array.from({ length: 5 }).map((_, colIdx) => {
                 let char = "";
-                let tileStyle = "bg-zinc-900/60 border-zinc-800 text-white";
+                let status: 'correct' | 'present' | 'absent' | 'typing' | 'empty' = 'empty';
 
-                if (guess) {
-                  char = guess[colIndex] || "";
-                  tileStyle = getTileColor(guess, colIndex);
-                } else if (isCurrentRow) {
-                  char = currentGuess[colIndex] || "";
-                  if (char) tileStyle = "bg-zinc-800 border-zinc-600 text-white";
+                if (isSubmitted) {
+                  char = submittedWord[colIdx];
+                  status = evaluation[colIdx];
+                } else if (isCurrent) {
+                  char = currentGuess[colIdx] || "";
+                  status = char ? 'typing' : 'empty';
                 }
 
                 return (
-                  <div 
-                    key={colIndex}
-                    className={`w-10 h-10 sm:w-11 sm:h-11 border rounded-lg flex items-center justify-center text-sm sm:text-base tracking-wider uppercase select-none transition-all ${tileStyle}`}
+                  <div
+                    key={colIdx}
+                    className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl border flex items-center justify-center font-black text-base sm:text-lg tracking-wider uppercase transition-all duration-200 select-none
+                      ${status === 'correct' 
+                        ? 'bg-emerald-600 border-emerald-500 text-white shadow-md shadow-emerald-950/40' 
+                        : status === 'present' 
+                        ? 'bg-amber-500 border-amber-400 text-black shadow-md shadow-amber-950/40' 
+                        : status === 'absent' 
+                        ? 'bg-zinc-800/90 border-zinc-700 text-zinc-400' 
+                        : status === 'typing' 
+                        ? 'bg-white/15 border-white/60 text-white scale-[1.04]' 
+                        : 'bg-white/5 border-white/10 text-white/20'
+                      }
+                    `}
                   >
                     {char}
                   </div>
@@ -1998,584 +2320,92 @@ const WordleGame = memo(({ completedList, onSolve }: { completedList: number[]; 
         })}
       </div>
 
+      {/* Feedback Banner */}
       {feedback && (
-        <div className={`p-2 rounded-xl text-center text-xs font-bold border ${gameWon ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300' : 'bg-zinc-800 border-zinc-700 text-amber-300'}`}>
-          {feedback}
+        <div className={`p-2.5 rounded-xl text-xs font-semibold border flex items-center justify-between gap-2 ${
+          isLost 
+            ? 'bg-rose-500/10 border-rose-500/20 text-rose-300' 
+            : isWon 
+            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300' 
+            : 'bg-yellow-500/10 border-yellow-500/20 text-yellow-300'
+        }`}>
+          <div className="flex items-center gap-1.5">
+            {isLost ? <AlertCircle className="w-4 h-4 shrink-0" /> : <Check className="w-4 h-4 shrink-0" />}
+            <span>{feedback}</span>
+          </div>
+
+          {/* Action buttons on win/loss */}
+          {(isWon || isLost) && (
+            <div className="flex items-center gap-2 shrink-0">
+              {puzzleIndex < WORDLE_PUZZLES.length - 1 && (
+                <button
+                  onClick={handleNextWord}
+                  className="py-1 px-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-[11px] rounded-md flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                >
+                  <span>Next Word</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
 
-      {/* Onscreen Keyboard */}
-      <div className="flex flex-col gap-1.5 items-center pt-2">
-        {keyboardRows.map((row, rIdx) => (
-          <div key={rIdx} className="flex gap-1 justify-center w-full">
-            {row.map(key => (
-              <button
-                key={key}
-                onClick={() => handleKeyInput(key)}
-                className={`py-2 px-1.5 sm:px-2 rounded-md font-bold text-[11px] sm:text-xs cursor-pointer select-none transition-all active:scale-95 ${
-                  key.length > 1 ? 'bg-zinc-800 text-zinc-300 min-w-[38px]' : 'bg-zinc-900 text-white hover:bg-zinc-800 border border-zinc-800 flex-1 max-w-[32px]'
-                }`}
-              >
-                {key}
-              </button>
-            ))}
+      {/* On-screen QWERTY Keyboard */}
+      <div className="flex flex-col items-center gap-1 pt-1 touch-manipulation">
+        {KEYBOARD_ROWS.map((row, rIdx) => (
+          <div key={rIdx} className="flex gap-1 justify-center w-full max-w-sm">
+            {row.map((key) => {
+              const status = keyStatuses[key];
+              const isEnter = key === 'ENTER';
+              const isBackspace = key === 'BACKSPACE';
+
+              let keyStyle = "bg-white/10 border-white/10 text-white hover:bg-white/20";
+              if (status === 'correct') {
+                keyStyle = "bg-emerald-600 border-emerald-500 text-white font-black";
+              } else if (status === 'present') {
+                keyStyle = "bg-amber-500 border-amber-400 text-black font-black";
+              } else if (status === 'absent') {
+                keyStyle = "bg-zinc-800/80 border-zinc-700/80 text-zinc-500";
+              }
+
+              return (
+                <button
+                  key={key}
+                  onClick={() => {
+                    if (isEnter) handleSubmit();
+                    else if (isBackspace) handleBackspace();
+                    else handleCharInput(key);
+                  }}
+                  className={`h-9 sm:h-10 rounded-lg border text-[11px] sm:text-xs font-bold transition-all cursor-pointer select-none active:scale-95 flex items-center justify-center
+                    ${isEnter ? 'px-2 sm:px-3 bg-white/20 hover:bg-white/30 text-white font-black' : isBackspace ? 'px-2 sm:px-2.5 bg-white/20 hover:bg-white/30 text-white' : 'flex-1 max-w-[34px] sm:max-w-[38px]'}
+                    ${keyStyle}
+                  `}
+                >
+                  {isBackspace ? <Delete className="w-4 h-4" /> : key}
+                </button>
+              );
+            })}
           </div>
         ))}
       </div>
-    </div>
-  );
-});
 
+      {/* Footer controls */}
+      <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[11px]">
+        <span className="text-white/40 flex items-center gap-1">
+          <Info className="w-3.5 h-3.5 text-emerald-400" />
+          Type letters or tap keys
+        </span>
 
-// ==========================================
-// 6. TANGO DUALS SUB-GAME COMPONENT
-// ==========================================
-
-interface TangoPuzzle {
-  id: number;
-  size: number;
-  initial: (null | 'sun' | 'moon')[][];
-  solution: ('sun' | 'moon')[][];
-}
-
-const TANGO_PUZZLES: TangoPuzzle[] = [
-  {
-    id: 1,
-    size: 4,
-    initial: [
-      ['sun', null, null, 'moon'],
-      [null, 'moon', null, null],
-      [null, null, 'sun', null],
-      ['moon', null, null, 'sun']
-    ],
-    solution: [
-      ['sun', 'sun', 'moon', 'moon'],
-      ['moon', 'moon', 'sun', 'sun'],
-      ['moon', 'sun', 'sun', 'moon'],
-      ['moon', 'sun', 'moon', 'sun']
-    ]
-  },
-  {
-    id: 2,
-    size: 4,
-    initial: [
-      [null, 'sun', null, null],
-      ['moon', null, null, 'sun'],
-      [null, null, 'moon', null],
-      [null, 'moon', 'sun', null]
-    ],
-    solution: [
-      ['sun', 'sun', 'moon', 'moon'],
-      ['moon', 'moon', 'sun', 'sun'],
-      ['sun', 'moon', 'moon', 'sun'],
-      ['moon', 'moon', 'sun', 'sun']
-    ]
-  }
-];
-
-const TangoGame = memo(({ completedList, onSolve }: { completedList: number[]; onSolve: (id: number) => void }) => {
-  const [puzzleIndex, setPuzzleIndex] = useState(0);
-  const puzzle = TANGO_PUZZLES[puzzleIndex];
-  const [grid, setGrid] = useState<(null | 'sun' | 'moon')[][]>(puzzle.initial);
-  const [feedback, setFeedback] = useState<string | null>(null);
-
-  useEffect(() => {
-    setGrid(puzzle.initial);
-    setFeedback(completedList.includes(puzzle.id) ? "🎉 Board solved!" : null);
-  }, [puzzleIndex, completedList, puzzle.id]);
-
-  const handleCellClick = (r: number, c: number) => {
-    if (puzzle.initial[r][c] !== null) return;
-    setGrid(prev => {
-      const next = prev.map(row => [...row]);
-      const current = next[r][c];
-      if (current === null) next[r][c] = 'sun';
-      else if (current === 'sun') next[r][c] = 'moon';
-      else next[r][c] = null;
-      return next;
-    });
-  };
-
-  const verifySolution = () => {
-    let isCorrect = true;
-    for (let r = 0; r < puzzle.size; r++) {
-      for (let c = 0; c < puzzle.size; c++) {
-        if (grid[r][c] !== puzzle.solution[r][c]) {
-          isCorrect = false;
-          break;
-        }
-      }
-    }
-
-    if (isCorrect) {
-      setFeedback("🎉 Outstanding! Dual grid balanced perfectly!");
-      onSolve(puzzle.id);
-    } else {
-      setFeedback("Almost! Ensure equal Suns ☀️ & Moons 🌙 with no 3-in-a-row.");
-    }
-  };
-
-  return (
-    <div className="space-y-4 text-white">
-      <div className="flex items-center justify-between bg-zinc-900/90 p-2.5 rounded-xl border border-zinc-800">
-        <div className="flex items-center gap-2">
-          <Sun className="w-4 h-4 text-rose-400" />
-          <span className="text-xs font-bold">Tango Dual Board #{puzzle.id}</span>
-        </div>
-        <div className="flex gap-1">
-          {TANGO_PUZZLES.map((p, idx) => (
-            <button
-              key={p.id}
-              onClick={() => setPuzzleIndex(idx)}
-              className={`px-2.5 py-1 text-[11px] font-extrabold rounded-lg cursor-pointer ${
-                puzzleIndex === idx ? 'bg-rose-500 text-white' : completedList.includes(p.id) ? 'bg-rose-950 text-rose-300 border border-rose-800' : 'bg-zinc-800 text-zinc-400'
-              }`}
-            >
-              #{p.id}
-            </button>
-          ))}
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={handleReset}
+            className="text-white/60 hover:text-white hover:underline transition-all font-bold cursor-pointer"
+          >
+            {isWon || isLost ? 'Play Again' : 'Reset Word'}
+          </button>
         </div>
       </div>
-
-      <div className="bg-zinc-900/60 p-2.5 rounded-xl border border-zinc-800 text-[11px] text-zinc-300 leading-relaxed">
-        <span className="font-bold text-rose-400 block mb-0.5">Rules:</span>
-        Tap cell to cycle: ☀️ Sun → 🌙 Moon → Empty. Each row and column must contain equal Suns and Moons with no 3-in-a-row.
-      </div>
-
-      <div className="flex justify-center my-4">
-        <div className="grid grid-cols-4 gap-2 bg-zinc-900 p-3 rounded-2xl border border-zinc-800 shadow-inner">
-          {grid.map((row, r) =>
-            row.map((cell, c) => {
-              const isFixed = puzzle.initial[r][c] !== null;
-              return (
-                <button
-                  key={`${r}-${c}`}
-                  onClick={() => handleCellClick(r, c)}
-                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center text-lg sm:text-xl font-bold transition-all cursor-pointer ${
-                    isFixed 
-                      ? 'bg-zinc-800/90 border-2 border-zinc-700 text-white shadow-xs' 
-                      : 'bg-black/50 hover:bg-zinc-800 border border-zinc-800 active:scale-95'
-                  }`}
-                >
-                  {cell === 'sun' && '☀️'}
-                  {cell === 'moon' && '🌙'}
-                </button>
-              );
-            })
-          )}
-        </div>
-      </div>
-
-      {feedback && (
-        <div className="p-2.5 rounded-xl text-center text-xs font-bold border bg-zinc-900 border-zinc-800 text-rose-300">
-          {feedback}
-        </div>
-      )}
-
-      <div className="flex justify-between items-center pt-2 border-t border-zinc-800">
-        <button 
-          onClick={() => setGrid(puzzle.initial)}
-          className="text-xs text-zinc-400 hover:text-white font-bold"
-        >
-          Reset Board
-        </button>
-        <button
-          onClick={verifySolution}
-          className="py-1.5 px-4 bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-[11px] uppercase tracking-widest rounded-lg cursor-pointer shadow-sm"
-        >
-          Verify Board
-        </button>
-      </div>
-    </div>
-  );
-});
-
-
-// ==========================================
-// 7. PITCH RUSH TRIVIA SUB-GAME COMPONENT
-// ==========================================
-
-interface PitchTriviaPuzzle {
-  id: number;
-  question: string;
-  options: string[];
-  correctIndex: number;
-  explanation: string;
-}
-
-const PITCH_TRIVIA_PUZZLES: PitchTriviaPuzzle[] = [
-  {
-    id: 1,
-    question: "What is Y Combinator's standard funding deal terms for batch startups?",
-    options: ["$125k for 7% plus $375k MFN SAFE", "$500k for 20% fixed equity", "$1M uncapped convertible note", "$250k grant with no equity"],
-    correctIndex: 0,
-    explanation: "YC's standard deal includes $125k on a post-money SAFE for 7% and $375k on an MFN SAFE."
-  },
-  {
-    id: 2,
-    question: "What does ARR stand for in SaaS metrics?",
-    options: ["Annual Recurring Revenue", "Average Return Rate", "Adjusted Realized Revenue", "Automated Retention Ratio"],
-    correctIndex: 0,
-    explanation: "ARR stands for Annual Recurring Revenue, a fundamental metric for subscription SaaS businesses."
-  },
-  {
-    id: 3,
-    question: "Which milestone is typically celebrated as reaching 'Unicorn' status?",
-    options: ["$1 Billion valuation", "$100 Million ARR", "$10 Billion valuation", "Passing IPO filing"],
-    correctIndex: 0,
-    explanation: "Coined by Aileen Lee in 2013, a Unicorn is a private startup valued at $1 Billion or more."
-  }
-];
-
-const PitchTriviaGame = memo(({ completedList, onSolve }: { completedList: number[]; onSolve: (id: number) => void }) => {
-  const [puzzleIndex, setPuzzleIndex] = useState(0);
-  const puzzle = PITCH_TRIVIA_PUZZLES[puzzleIndex];
-  const [selectedOpt, setSelectedOpt] = useState<number | null>(null);
-
-  useEffect(() => {
-    setSelectedOpt(null);
-  }, [puzzleIndex]);
-
-  const handleSelectOption = (idx: number) => {
-    setSelectedOpt(idx);
-    if (idx === puzzle.correctIndex) {
-      onSolve(puzzle.id);
-    }
-  };
-
-  return (
-    <div className="space-y-4 text-white">
-      <div className="flex items-center justify-between bg-zinc-900/90 p-2.5 rounded-xl border border-zinc-800">
-        <div className="flex items-center gap-2">
-          <Footprints className="w-4 h-4 text-orange-400" />
-          <span className="text-xs font-bold">Pitch Trivia Question #{puzzle.id}</span>
-        </div>
-        <div className="flex gap-1">
-          {PITCH_TRIVIA_PUZZLES.map((p, idx) => (
-            <button
-              key={p.id}
-              onClick={() => setPuzzleIndex(idx)}
-              className={`px-2.5 py-1 text-[11px] font-extrabold rounded-lg cursor-pointer ${
-                puzzleIndex === idx ? 'bg-orange-500 text-black' : completedList.includes(p.id) ? 'bg-orange-950 text-orange-300 border border-orange-800' : 'bg-zinc-800 text-zinc-400'
-              }`}
-            >
-              #{p.id}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="bg-zinc-900/80 p-4 rounded-xl border border-zinc-800 space-y-3">
-        <h3 className="text-sm font-bold text-white leading-snug">{puzzle.question}</h3>
-
-        <div className="space-y-2 pt-1">
-          {puzzle.options.map((option, idx) => {
-            const isChosen = selectedOpt === idx;
-            const isCorrect = idx === puzzle.correctIndex;
-            let btnStyle = "bg-zinc-800/80 border-zinc-700 text-zinc-200 hover:bg-zinc-700/80";
-
-            if (selectedOpt !== null) {
-              if (isCorrect) btnStyle = "bg-emerald-600 border-emerald-500 text-white font-bold";
-              else if (isChosen) btnStyle = "bg-rose-600 border-rose-500 text-white font-bold";
-            }
-
-            return (
-              <button
-                key={idx}
-                onClick={() => handleSelectOption(idx)}
-                disabled={selectedOpt !== null}
-                className={`w-full p-3 rounded-xl border text-xs text-left font-medium transition-all cursor-pointer flex items-center justify-between ${btnStyle}`}
-              >
-                <span>{option}</span>
-                {selectedOpt !== null && isCorrect && <Check className="w-4 h-4 text-white shrink-0" />}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {selectedOpt !== null && (
-        <div className={`p-3 rounded-xl text-xs border leading-relaxed ${selectedOpt === puzzle.correctIndex ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' : 'bg-rose-500/10 border-rose-500/30 text-rose-300'}`}>
-          <span className="font-bold block mb-1">
-            {selectedOpt === puzzle.correctIndex ? "🎉 Correct!" : "Not quite!"}
-          </span>
-          <span>{puzzle.explanation}</span>
-        </div>
-      )}
-    </div>
-  );
-});
-
-
-// ==========================================
-// 8. EQUITY SPLIT SUB-GAME COMPONENT
-// ==========================================
-
-interface EquityPuzzle {
-  id: number;
-  title: string;
-  targetPercentages: {
-    founderA: number;
-    founderB: number;
-    investor: number;
-    pool: number;
-  };
-  clues: string[];
-}
-
-const EQUITY_PUZZLES: EquityPuzzle[] = [
-  {
-    id: 1,
-    title: "Series A Cap Table Split",
-    targetPercentages: { founderA: 40, founderB: 30, investor: 20, pool: 10 },
-    clues: [
-      "Founder A holds 40%",
-      "Founder B holds 30%",
-      "Lead Investor owns 20%",
-      "ESOP Pool is set to 10%"
-    ]
-  },
-  {
-    id: 2,
-    title: "Seed Round Cap Table",
-    targetPercentages: { founderA: 45, founderB: 35, investor: 15, pool: 5 },
-    clues: [
-      "Founder A has 45%",
-      "Founder B has 35%",
-      "Investor holds 15%",
-      "Remaining 5% is allocated to ESOP Pool"
-    ]
-  }
-];
-
-const EquityGame = memo(({ completedList, onSolve }: { completedList: number[]; onSolve: (id: number) => void }) => {
-  const [puzzleIndex, setPuzzleIndex] = useState(0);
-  const puzzle = EQUITY_PUZZLES[puzzleIndex];
-
-  const [founderA, setFounderA] = useState(25);
-  const [founderB, setFounderB] = useState(25);
-  const [investor, setInvestor] = useState(25);
-  const [pool, setPool] = useState(25);
-  const [feedback, setFeedback] = useState<string | null>(null);
-
-  useEffect(() => {
-    setFounderA(25);
-    setFounderB(25);
-    setInvestor(25);
-    setPool(25);
-    setFeedback(completedList.includes(puzzle.id) ? "🎉 Cap Table balanced!" : null);
-  }, [puzzleIndex, completedList, puzzle.id]);
-
-  const total = founderA + founderB + investor + pool;
-
-  const handleValidate = () => {
-    const target = puzzle.targetPercentages;
-    if (
-      founderA === target.founderA &&
-      founderB === target.founderB &&
-      investor === target.investor &&
-      pool === target.pool
-    ) {
-      setFeedback("🎉 Spot on! Cap table mathematically balanced!");
-      onSolve(puzzle.id);
-    } else {
-      setFeedback("Check the targets! Sum must equal 100% and match clue allocations.");
-    }
-  };
-
-  return (
-    <div className="space-y-4 text-white">
-      <div className="flex items-center justify-between bg-zinc-900/90 p-2.5 rounded-xl border border-zinc-800">
-        <div className="flex items-center gap-2">
-          <PieChart className="w-4 h-4 text-indigo-400" />
-          <span className="text-xs font-bold">{puzzle.title}</span>
-        </div>
-        <div className="flex gap-1">
-          {EQUITY_PUZZLES.map((p, idx) => (
-            <button
-              key={p.id}
-              onClick={() => setPuzzleIndex(idx)}
-              className={`px-2.5 py-1 text-[11px] font-extrabold rounded-lg cursor-pointer ${
-                puzzleIndex === idx ? 'bg-indigo-600 text-white' : completedList.includes(p.id) ? 'bg-indigo-950 text-indigo-300 border border-indigo-800' : 'bg-zinc-800 text-zinc-400'
-              }`}
-            >
-              #{p.id}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="bg-zinc-900/60 p-3 rounded-xl border border-zinc-800 space-y-1 text-xs">
-        <span className="font-bold text-indigo-400">Target Cap Table Clues:</span>
-        <ul className="list-disc list-inside text-zinc-300 space-y-0.5 text-[11px]">
-          {puzzle.clues.map((clue, idx) => (
-            <li key={idx}>{clue}</li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Sliders */}
-      <div className="space-y-3 bg-zinc-900/80 p-3.5 rounded-xl border border-zinc-800">
-        <div className="flex items-center justify-between text-xs">
-          <span className="font-bold text-blue-400">Founder A: {founderA}%</span>
-          <input 
-            type="range" min="0" max="100" step="5" value={founderA} 
-            onChange={e => setFounderA(Number(e.target.value))}
-            className="w-36 accent-blue-500 cursor-pointer"
-          />
-        </div>
-
-        <div className="flex items-center justify-between text-xs">
-          <span className="font-bold text-purple-400">Founder B: {founderB}%</span>
-          <input 
-            type="range" min="0" max="100" step="5" value={founderB} 
-            onChange={e => setFounderB(Number(e.target.value))}
-            className="w-36 accent-purple-500 cursor-pointer"
-          />
-        </div>
-
-        <div className="flex items-center justify-between text-xs">
-          <span className="font-bold text-emerald-400">Investor: {investor}%</span>
-          <input 
-            type="range" min="0" max="100" step="5" value={investor} 
-            onChange={e => setInvestor(Number(e.target.value))}
-            className="w-36 accent-emerald-500 cursor-pointer"
-          />
-        </div>
-
-        <div className="flex items-center justify-between text-xs">
-          <span className="font-bold text-amber-400">Option Pool: {pool}%</span>
-          <input 
-            type="range" min="0" max="100" step="5" value={pool} 
-            onChange={e => setPool(Number(e.target.value))}
-            className="w-36 accent-amber-500 cursor-pointer"
-          />
-        </div>
-
-        {/* Total Bar */}
-        <div className="pt-2 border-t border-zinc-800 flex items-center justify-between">
-          <span className="text-xs font-bold text-zinc-400">Total Equity:</span>
-          <span className={`text-xs font-black px-2 py-0.5 rounded ${total === 100 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'}`}>
-            {total}% / 100%
-          </span>
-        </div>
-      </div>
-
-      {feedback && (
-        <div className="p-2.5 rounded-xl text-center text-xs font-bold border bg-zinc-900 border-zinc-800 text-indigo-300">
-          {feedback}
-        </div>
-      )}
-
-      <div className="flex justify-end pt-1">
-        <button
-          onClick={handleValidate}
-          className="py-1.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-[11px] uppercase tracking-widest rounded-lg cursor-pointer shadow-sm"
-        >
-          Validate Cap Table
-        </button>
-      </div>
-    </div>
-  );
-});
-
-
-// ==========================================
-// 9. ZIP PATH SUB-GAME COMPONENT
-// ==========================================
-
-interface ZipPathPuzzle {
-  id: number;
-  gridSize: number;
-  endpoints: { id: number; color: string; r1: number; c1: number; r2: number; c2: number }[];
-}
-
-const ZIP_PATH_PUZZLES: ZipPathPuzzle[] = [
-  {
-    id: 1,
-    gridSize: 3,
-    endpoints: [
-      { id: 1, color: 'bg-emerald-500', r1: 0, c1: 0, r2: 2, c2: 0 },
-      { id: 2, color: 'bg-blue-500', r1: 0, c1: 2, r2: 2, c2: 2 }
-    ]
-  }
-];
-
-const ZipPathGame = memo(({ completedList, onSolve }: { completedList: number[]; onSolve: (id: number) => void }) => {
-  const [puzzleIndex, setPuzzleIndex] = useState(0);
-  const puzzle = ZIP_PATH_PUZZLES[puzzleIndex];
-  const [connected, setConnected] = useState<number[]>([]);
-  const [feedback, setFeedback] = useState<string | null>(null);
-
-  useEffect(() => {
-    setConnected([]);
-    setFeedback(completedList.includes(puzzle.id) ? "🎉 Route connected!" : null);
-  }, [puzzleIndex, completedList, puzzle.id]);
-
-  const toggleConnect = (id: number) => {
-    setConnected(prev => {
-      const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
-      if (next.length === puzzle.endpoints.length) {
-        setFeedback("🎉 All tech routes synced successfully!");
-        onSolve(puzzle.id);
-      }
-      return next;
-    });
-  };
-
-  return (
-    <div className="space-y-4 text-white">
-      <div className="flex items-center justify-between bg-zinc-900/90 p-2.5 rounded-xl border border-zinc-800">
-        <div className="flex items-center gap-2">
-          <GitFork className="w-4 h-4 text-teal-400" />
-          <span className="text-xs font-bold">Zip Route Connector #{puzzle.id}</span>
-        </div>
-        <div className="flex gap-1">
-          {ZIP_PATH_PUZZLES.map((p, idx) => (
-            <button
-              key={p.id}
-              onClick={() => setPuzzleIndex(idx)}
-              className={`px-2.5 py-1 text-[11px] font-extrabold rounded-lg cursor-pointer ${
-                puzzleIndex === idx ? 'bg-teal-600 text-white' : completedList.includes(p.id) ? 'bg-teal-950 text-teal-300 border border-teal-800' : 'bg-zinc-800 text-zinc-400'
-              }`}
-            >
-              #{p.id}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="bg-zinc-900/60 p-2.5 rounded-xl border border-zinc-800 text-[11px] text-zinc-300">
-        Tap matching colored node pairs to connect their startup data pipeline.
-      </div>
-
-      <div className="space-y-2 py-2">
-        {puzzle.endpoints.map(ep => {
-          const isConnected = connected.includes(ep.id);
-          return (
-            <div key={ep.id} className="p-3 bg-zinc-900 rounded-xl border border-zinc-800 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className={`w-4 h-4 rounded-full ${ep.color}`} />
-                <span className="text-xs font-bold">Pipeline #{ep.id}</span>
-              </div>
-              <button
-                onClick={() => toggleConnect(ep.id)}
-                className={`py-1 px-3 text-xs font-extrabold rounded-lg cursor-pointer transition-all ${
-                  isConnected ? 'bg-emerald-600 text-white' : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
-                }`}
-              >
-                {isConnected ? 'Connected ✓' : 'Connect Pipeline'}
-              </button>
-            </div>
-          );
-        })}
-      </div>
-
-      {feedback && (
-        <div className="p-2.5 rounded-xl text-center text-xs font-bold border bg-zinc-900 border-zinc-800 text-teal-300">
-          {feedback}
-        </div>
-      )}
     </div>
   );
 });
