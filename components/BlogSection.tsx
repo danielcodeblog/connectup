@@ -126,7 +126,7 @@ export const BlogSection: React.FC = () => {
   }, [selectedBlog]);
 
   return (
-    <div className="w-full py-20 sm:py-28 bg-white text-zinc-900 relative overflow-hidden" ref={(el) => { if(el) el.id = 'blog'; }}>
+    <div className="w-full py-20 sm:py-28 bg-[#FAF6E8] text-zinc-900 relative overflow-hidden" ref={(el) => { if(el) el.id = 'blog'; }}>
       <div className="max-w-none mx-auto px-4 sm:px-10 lg:px-16 w-full relative z-10">
 
         {selectedBlog ? (
@@ -184,31 +184,8 @@ export const BlogSection: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div>
-            {/* Animated Blog Header Title */}
-            <motion.div 
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="flex justify-center mb-10 sm:mb-16 px-2 sm:px-6"
-            >
-              <h2 className="text-5xl sm:text-7xl md:text-8xl font-display font-black text-center tracking-tighter uppercase">
-                <motion.span 
-                  initial={{ rotate: -15, opacity: 0, scale: 0.8 }}
-                  whileInView={{ rotate: 0, opacity: 1, scale: 1 }}
-                  whileHover={{ rotate: 6, scale: 1.06 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, type: 'spring', stiffness: 200, damping: 15 }}
-                  className="inline-block text-zinc-950 cursor-pointer origin-center"
-                >
-                  Blog
-                </motion.span>
-              </h2>
-            </motion.div>
-
-            {/* Carousel Matching Image Exactly */}
-            <div className="relative group/carousel px-2 sm:px-6">
+          /* Carousel Matching Image Exactly */
+          <div className="relative group/carousel px-2 sm:px-6">
             
             {/* Left Scroll Button */}
             <button 
@@ -262,13 +239,18 @@ export const BlogSection: React.FC = () => {
 
                       {/* Thin Separator Line */}
                       <div className="w-10 h-[1px] bg-white/60 my-3 group-hover:w-16 group-hover:bg-white transition-all duration-300" />
+
+                      {/* Action Link with Top-Right Arrow */}
+                      <div className="flex items-center gap-1 text-sm font-medium text-white group-hover:text-white transition-colors">
+                        About
+                        <ArrowUpRight size={16} className="text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                      </div>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-        </div>
         )}
 
       </div>
