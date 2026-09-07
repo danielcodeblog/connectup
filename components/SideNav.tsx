@@ -6,7 +6,8 @@ import {
   Settings02Icon,
   UserCircleIcon,
 } from 'hugeicons-react';
-import { Feather, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Feather, Plus, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface SideNavProps {
   currentView: string;
@@ -53,38 +54,64 @@ export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onP
   ];
 
   return (
-    <div className={`hidden lg:flex flex-col bg-[#FFFCF0] h-screen sticky top-0 left-0 z-50 transition-all duration-300 ease-in-out backdrop-blur-3xl shadow-sm ${isCollapsed ? 'w-20' : 'w-64 xl:w-72'}`}>
+    <div className={`hidden lg:flex flex-col bg-[#FFFCF0] h-screen sticky top-0 left-0 z-50 transition-all duration-300 ease-in-out backdrop-blur-3xl ${isCollapsed ? 'w-20' : 'w-64 xl:w-72'}`}>
       {/* Nav Items Container */}
       <nav className={`flex-1 flex flex-col justify-between py-5 m-2 rounded-[2.5rem] bg-white shadow-[inset_0_1px_2px_rgba(255,255,255,0.45),0_8px_32px_rgba(0,0,0,0.02)] ${isCollapsed ? 'px-2' : 'px-3.5'}`}>
         <div className="space-y-2">
           {/* Expand / Collapse Button Header */}
-          <div className="flex items-center justify-center pb-2.5 mb-1 border-b border-zinc-100/90 w-full">
-            <button
+          <div className={`flex items-center pb-2.5 mb-1 w-full ${isCollapsed ? 'justify-center' : 'justify-end px-2'}`}>
+            <motion.button
               onClick={toggleExpand}
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92 }}
               aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              className="p-2 rounded-xl text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 transition-all cursor-pointer flex items-center justify-center group relative mx-auto"
+              className="p-2 rounded-xl text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 transition-colors cursor-pointer flex items-center justify-center group relative overflow-hidden"
             >
-              <svg 
-                width={20} 
-                height={20} 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2.75" 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                className="transition-transform group-hover:scale-110 shrink-0"
-              >
-                <path d="M4 6h16M4 12h10M4 18h16" />
-              </svg>
+              <AnimatePresence mode="wait" initial={false}>
+                {isCollapsed ? (
+                  <motion.div
+                    key="menu"
+                    initial={{ rotate: -90, scale: 0.5, opacity: 0 }}
+                    animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                    exit={{ rotate: 90, scale: 0.5, opacity: 0 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="flex items-center justify-center"
+                  >
+                    <svg 
+                      width={20} 
+                      height={20} 
+                      viewBox="0 0 24 24" 
+                      fill="none" 
+                      stroke="currentColor" 
+                      strokeWidth="2.75" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round" 
+                      className="shrink-0"
+                    >
+                      <path d="M4 6h16M4 12h10M4 18h16" />
+                    </svg>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="x"
+                    initial={{ rotate: -90, scale: 0.5, opacity: 0 }}
+                    animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                    exit={{ rotate: 90, scale: 0.5, opacity: 0 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="flex items-center justify-center text-zinc-600 group-hover:text-zinc-950"
+                  >
+                    <X size={20} strokeWidth={2.5} className="shrink-0" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
               {isCollapsed && (
                 <div className="absolute left-full ml-6 px-3 py-1.5 bg-zinc-900 text-white text-[10px] font-bold uppercase tracking-wider rounded-lg opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 whitespace-nowrap z-50 translate-x-[-6px] group-hover:translate-x-0 shadow-lg">
                   Expand Sidebar
                   <div className="absolute top-1/2 -left-1 -translate-y-1/2 w-2 h-2 bg-zinc-900 rotate-45" />
                 </div>
               )}
-            </button>
+            </motion.button>
           </div>
 
           {navItems.map((item) => {
