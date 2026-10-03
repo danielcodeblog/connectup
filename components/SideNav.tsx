@@ -4,7 +4,6 @@ import {
   Chat01Icon, 
   UserGroupIcon, 
   Settings02Icon,
-  UserCircleIcon,
 } from 'hugeicons-react';
 import { Feather, Plus, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -30,7 +29,6 @@ export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onP
   });
 
   const isCollapsed = !isExpanded;
-  const isCommunity = currentView === 'community' || currentView === 'profile';
   const isPro = userProfile?.plan === 'pro';
 
   const toggleExpand = () => {
@@ -49,7 +47,6 @@ export const SideNav: React.FC<SideNavProps> = ({ currentView, onViewChange, onP
     { id: 'home', icon: Home01Icon, label: 'Dashboard' },
     { id: 'community', icon: UserGroupIcon, label: 'Community' },
     { id: 'messages', icon: Chat01Icon, label: 'Messages' },
-    { id: 'profile', icon: UserCircleIcon, label: 'Profile' },
     { id: 'settings', icon: Settings02Icon, label: 'Settings' },
   ];
 
