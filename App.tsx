@@ -157,16 +157,6 @@ const App = () => {
     if (pathname === '/founders' || pathname === '/founder') return UserRole.FOUNDER;
     if (pathname === '/investor' || pathname === '/investors') return UserRole.INVESTOR;
     const cachedRole = localStorage.getItem('connectup_cached_role') as UserRole;
-    const cachedProfileStr = localStorage.getItem('connectup_cached_profile');
-    if (cachedProfileStr) {
-      try {
-        const parsed = JSON.parse(cachedProfileStr);
-        if (parsed?.email?.toLowerCase() === 'wavy7551@gmail.com' && cachedRole === UserRole.ADMIN) {
-          localStorage.setItem('connectup_cached_role', UserRole.FOUNDER);
-          return UserRole.FOUNDER;
-        }
-      } catch (e) {}
-    }
     return cachedRole || UserRole.INVESTOR;
   });
   const [currentView, setCurrentView] = useState<string>(() => {
@@ -175,14 +165,8 @@ const App = () => {
     const search = window.location.search.toLowerCase();
     const isAdminRequested = pathname === '/admin' || pathname.startsWith('/admin') || hash === '#admin' || search.includes('admin=true');
     if (isAdminRequested) {
-      const cachedProfileStr = localStorage.getItem('connectup_cached_profile');
-      let userEmail = '';
-      try {
-        if (cachedProfileStr) userEmail = JSON.parse(cachedProfileStr)?.email?.toLowerCase() || '';
-      } catch (e) {}
       const cachedRole = localStorage.getItem('connectup_cached_role');
-      const isAdmin = (cachedRole === UserRole.ADMIN && userEmail !== 'wavy7551@gmail.com') || userEmail === 'admin@connectup.com';
-      if (isAdmin) {
+      if (cachedRole === UserRole.ADMIN) {
         return 'admin';
       }
       return 'home';
@@ -267,13 +251,8 @@ const App = () => {
       const isAdminRequested = pathname === '/admin' || pathname.startsWith('/admin') || hash === '#admin' || search.includes('admin=true');
 
       if (isAdminRequested) {
-        const cachedProfileStr = localStorage.getItem('connectup_cached_profile');
-        let userEmail = '';
-        try {
-          if (cachedProfileStr) userEmail = JSON.parse(cachedProfileStr)?.email?.toLowerCase() || '';
-        } catch (e) {}
         const cachedRole = localStorage.getItem('connectup_cached_role');
-        const isAdmin = (cachedRole === UserRole.ADMIN && userEmail !== 'wavy7551@gmail.com') || userEmail === 'admin@connectup.com';
+        const isAdmin = cachedRole === UserRole.ADMIN;
 
         if (isLoggedIn && isAdmin) {
           setAppState('MAIN_APP');
@@ -600,14 +579,6 @@ const App = () => {
         let currentProfile = profile;
         if (verifiedPlan) currentProfile.plan = verifiedPlan;
 
-        if (email?.toLowerCase() === 'wavy7551@gmail.com' || currentProfile.email?.toLowerCase() === 'wavy7551@gmail.com') {
-          if (currentProfile.role === UserRole.ADMIN || (currentProfile.role as string) === 'ADMIN') {
-            currentProfile.role = UserRole.FOUNDER;
-            localStorage.setItem('connectup_cached_role', UserRole.FOUNDER);
-            supabase.from('profiles').update({ role: 'FOUNDER' }).eq('id', uid).then();
-          }
-        }
-
         if (currentProfile.role && currentProfile.role !== role) {
            setRole(currentProfile.role);
         }
@@ -718,7 +689,6 @@ const App = () => {
         const hash = window.location.hash.toLowerCase();
         const search = window.location.search.toLowerCase();
         const isAdminRequested = pathname === '/admin' || pathname.startsWith('/admin') || hash === '#admin' || search.includes('admin=true');
-        const MASTER_ADMIN_EMAILS = ['admin@connectup.com'];
 
         await StorageService.init();
         
@@ -734,7 +704,7 @@ const App = () => {
                 setCurrentView('home');
                 setNotification({
                   sender: 'System',
-                  message: '🔒 Access Denied: Regular accounts are blocked from reaching the Admin Portal.',
+                  message: 'Access Denied: Regular accounts cannot access the Admin Portal.',
                   userId: 'system',
                   type: 'error'
                 });
@@ -764,31 +734,14 @@ const App = () => {
           return;
         }
 
-        const email = sessionData.session.user.email?.toLowerCase();
-        if (email && MASTER_ADMIN_EMAILS.includes(email)) {
-          // Call the check-or-upgrade-role API endpoint to secure database profile alignment
-          try {
-            const token = sessionData.session.access_token;
-            await fetch('/api/admin/check-or-upgrade-role', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-              }
-            });
-          } catch (apiErr) {
-            console.error("Failed to sync admin role via API:", apiErr);
-          }
-        }
-
+        // Strictly query database for user role
         const userRole = await StorageService.checkUserRole(sessionData.session.user.id);
-        const isAdmin = userRole === UserRole.ADMIN || (email && MASTER_ADMIN_EMAILS.includes(email));
+        const isAdmin = userRole === UserRole.ADMIN;
 
-        if (userRole || isAdmin) {
-          const finalRole = isAdmin ? UserRole.ADMIN : (userRole || UserRole.INVESTOR);
-          setRole(finalRole);
+        if (userRole) {
+          setRole(userRole);
           if (sessionData.session.user.email) {
-            setUserProfile(prev => ({ ...prev, email: sessionData.session.user.email }));
+            setUserProfile(prev => ({ ...prev, email: sessionData.session.user.email, role: userRole }));
           }
           setCurrentUserId(sessionData.session.user.id);
           localStorage.setItem('connectup_logged_in', 'true');
@@ -798,12 +751,11 @@ const App = () => {
             if (isAdmin) {
               setCurrentView('admin');
             } else {
-              // BLOCK NON-ADMIN USER FROM REACHING ADMIN PORTAL
               setCurrentView('home');
               try { window.history.pushState({}, '', '/'); } catch {}
               setNotification({
                 sender: 'System',
-                message: '🔒 Access Denied: Account is a regular user and is blocked from reaching the Admin Portal.',
+                message: 'Access Denied: Your account does not have administrator privileges in the database.',
                 userId: 'system',
                 type: 'error'
               });
@@ -1450,9 +1402,8 @@ const App = () => {
     }
     
     if (currentView === 'admin') {
-      const MASTER_ADMIN_EMAILS = ['admin@connectup.com'];
       const userEmail = userProfile?.email?.toLowerCase() || '';
-      const isAdmin = userEmail !== 'wavy7551@gmail.com' && (role === UserRole.ADMIN || MASTER_ADMIN_EMAILS.includes(userEmail));
+      const isAdmin = role === UserRole.ADMIN;
 
       if (!isAdmin) {
         return (
@@ -1462,7 +1413,7 @@ const App = () => {
             </div>
             <h2 className="text-2xl font-black text-zinc-900 dark:text-white mb-2 tracking-tight">Access Restricted</h2>
             <p className="text-zinc-500 dark:text-zinc-400 max-w-md mb-6 text-sm font-medium leading-relaxed">
-              Account <strong>{userEmail || 'Your account'}</strong> does not have administrator privileges. Only authorized master administrators can access this portal.
+              Account <strong>{userEmail || 'Your account'}</strong> does not have administrator privileges in the database.
             </p>
             <button 
               onClick={() => setCurrentView('home')} 
@@ -1628,21 +1579,6 @@ const App = () => {
                 setAppState('AUTH');
               }} 
               onAdminLoginClick={() => {
-                const MASTER_ADMIN_EMAILS = ['admin@connectup.com'];
-                const userEmail = userProfile?.email?.toLowerCase() || '';
-                const isLoggedIn = localStorage.getItem('connectup_logged_in') === 'true';
-                const isAdmin = userEmail !== 'wavy7551@gmail.com' && (role === UserRole.ADMIN || MASTER_ADMIN_EMAILS.includes(userEmail));
-
-                if (isLoggedIn && !isAdmin) {
-                  setNotification({
-                    sender: 'System',
-                    message: '🔒 Access Denied: You are signed in as a regular user and are blocked from admin login.',
-                    userId: 'system',
-                    type: 'error'
-                  });
-                  return;
-                }
-
                 try {
                   window.history.pushState({}, '', '/admin');
                 } catch {
