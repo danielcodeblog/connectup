@@ -92,9 +92,6 @@ export const AdminAuthScreen: React.FC<AdminAuthScreenProps> = ({ onComplete, on
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const isLocked = StorageService.getAdminSignupDisabled();
-  const MASTER_ADMIN_EMAILS = ['admin@connectup.com', 'danielsamuel1662@gmail.com', 'wavy7551@gmail.com'];
-
   const handleAdminLoginSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setIsLoading(true);
@@ -114,61 +111,66 @@ export const AdminAuthScreen: React.FC<AdminAuthScreenProps> = ({ onComplete, on
     }
 
     const cleanEmail = inputEmail.toLowerCase();
-    const isMasterEmail = MASTER_ADMIN_EMAILS.includes(cleanEmail);
-
-    if (isLocked) {
-      const isMasterPass = password === 'admin123';
-
-      if (!isMasterEmail && !isMasterPass) {
-        setErrorMsg('Public Admin Portal Access is restricted. Only authorized master administrators can log in.');
-        setIsLoading(false);
-        return;
-      }
-    }
-
-    if (StorageService.isMockMode()) {
-      if (isMasterEmail || password === 'admin123') {
-        onComplete(UserRole.ADMIN, cleanEmail);
-      } else {
-        setErrorMsg('Access Denied: This account does not possess administrator credentials.');
-      }
-      setIsLoading(false);
-      return;
-    }
 
     try {
+      // 1. Try server-side admin login first (which validates credentials and verifies profiles.role === 'ADMIN' in DB)
+      try {
+        const loginRes = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: cleanEmail, password })
+        });
+        const loginData = await loginRes.json().catch(() => ({}));
+        if (loginRes.ok && loginData?.token) {
+          localStorage.setItem('connectup_admin_session_token', loginData.token);
+          localStorage.setItem('connectup_logged_in', 'true');
+          onComplete(UserRole.ADMIN, cleanEmail);
+          setIsLoading(false);
+          return;
+        } else if (loginRes.status === 403) {
+          setErrorMsg(loginData.error || 'Access Denied: Your account does not have an ADMIN role in the database.');
+          setIsLoading(false);
+          return;
+        }
+      } catch (srvErr) {
+        console.warn("Direct server admin login check:", srvErr);
+      }
+
+      // 2. Direct Supabase authentication
       const { data, error } = await supabase.auth.signInWithPassword({
         email: inputEmail,
         password
       });
 
-      if (error || !data.user) {
-        // Fallback for master email only if network is offline or mock credentials match master key
-        if (isMasterEmail && (password === 'admin123' || password === 'admin' || password === 'ConnectUp2026!')) {
-          onComplete(UserRole.ADMIN, cleanEmail);
-          setIsLoading(false);
-          return;
-        }
-        setErrorMsg(error?.message || 'Invalid administrator credentials or password.');
+      if (error || !data?.user) {
+        setErrorMsg(error?.message || 'Invalid administrator email or password.');
         setIsLoading(false);
         return;
       }
 
-      // Check if logged-in user is actually an admin
-      const userRole = await StorageService.checkUserRole(data.user.id);
-      const authenticatedEmail = data.user.email?.toLowerCase() || '';
-      const isAdmin = userRole === UserRole.ADMIN || MASTER_ADMIN_EMAILS.includes(authenticatedEmail);
+      // 3. Strictly check role from database table alone
+      const { data: dbProfile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .maybeSingle();
 
-      if (!isAdmin) {
+      const userRole = (dbProfile?.role || '').toUpperCase();
+
+      if (userRole !== 'ADMIN') {
         await supabase.auth.signOut();
-        setErrorMsg(`Access Denied: Account "${authenticatedEmail}" is not authorized as an administrator. Only administrator accounts can log in here.`);
+        setErrorMsg(`Access Denied: Account "${cleanEmail}" does not have the ADMIN role in the database.`);
         setIsLoading(false);
         return;
       }
 
-      onComplete(UserRole.ADMIN, authenticatedEmail);
+      if (data.session?.access_token) {
+        localStorage.setItem('connectup_admin_session_token', data.session.access_token);
+      }
+      localStorage.setItem('connectup_logged_in', 'true');
+      onComplete(UserRole.ADMIN, cleanEmail);
     } catch (err: any) {
-      setErrorMsg(err?.message || 'Authentication error. Please verify network connection.');
+      setErrorMsg(err?.message || 'Authentication error. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
