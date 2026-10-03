@@ -2566,7 +2566,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ userProfile, onN
 
                         {!isFetchingSubscriptions && filteredSubscriptions.length === 0 && (
                           <tr>
-                            <td colSpan={7} className="py-12 text-center text-zinc-400 font-medium">
+                            <td colSpan={8} className="py-12 text-center text-zinc-400 font-medium">
                               No subscription records found.
                             </td>
                           </tr>
