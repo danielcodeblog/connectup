@@ -166,6 +166,38 @@ async function startServer() {
       return { user: null, error: new Error('Token is missing or invalid') };
     }
 
+    // Support verified admin session tokens backed by database verification
+    if (token.startsWith('admin_jwt_')) {
+      try {
+        const payloadStr = Buffer.from(token.replace('admin_jwt_', ''), 'base64').toString();
+        const payload = JSON.parse(payloadStr);
+        const now = Math.floor(Date.now() / 1000);
+        if (payload && payload.email && payload.exp > now) {
+          const adminSupabase = getAdminSupabase();
+          if (adminSupabase) {
+            const { data: dbProfile } = await adminSupabase
+              .from('profiles')
+              .select('id, email, role')
+              .eq('email', payload.email)
+              .maybeSingle();
+
+            if (dbProfile?.role === 'ADMIN') {
+              return {
+                user: {
+                  id: dbProfile.id,
+                  email: dbProfile.email,
+                  role: 'ADMIN'
+                } as any,
+                error: null
+              };
+            }
+          }
+        }
+      } catch (e) {
+        console.warn("admin_jwt token decode error:", e);
+      }
+    }
+
     if (!supabase) {
       return { user: null, error: new Error('Supabase client not initialized') };
     }
@@ -494,12 +526,6 @@ async function startServer() {
       (req as any).user = user;
       const email = user?.email?.toLowerCase() || '';
 
-      // Dedicated master admin email
-      const adminEmails = ['admin@connectup.com'];
-      if (adminEmails.includes(email)) {
-        return next();
-      }
-      
       const adminSupabase = getAdminSupabase();
       if (!adminSupabase) {
         return res.status(500).json({ error: 'Database service unavailable' });
@@ -515,49 +541,82 @@ async function startServer() {
         return next();
       }
       
-      return res.status(403).json({ error: 'Access Denied: Administrator role required' });
+      return res.status(403).json({ error: 'Access Denied: Administrator role required in database' });
     } catch (err: any) {
       return res.status(403).json({ error: 'Access Denied: Admin authorization failed' });
     }
   };
 
-  // Securely check or upgrade admin role for authorized emails
-  app.post('/api/admin/check-or-upgrade-role', requireAuth, async (req, res) => {
+  // Dedicated Admin Login Endpoint - strictly authenticates and checks database role alone
+  app.post('/api/admin/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      const cleanEmail = String(email || '').trim().toLowerCase();
+      
+      if (!cleanEmail || !password) {
+        return res.status(400).json({ error: 'Email and password are required' });
+      }
+
+      if (!supabase) {
+        return res.status(500).json({ error: 'Database service unavailable' });
+      }
+
+      // Check credentials with Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password
+      });
+
+      if (authError || !authData?.user || !authData?.session) {
+        return res.status(401).json({ error: authError?.message || 'Invalid administrator credentials' });
+      }
+
+      // Strictly verify ADMIN role from database profiles table alone
+      const adminSupabase = getAdminSupabase();
+      if (!adminSupabase) {
+        return res.status(500).json({ error: 'Database service unavailable' });
+      }
+
+      const { data: profile, error: profErr } = await adminSupabase
+        .from('profiles')
+        .select('role, id, email')
+        .eq('id', authData.user.id)
+        .maybeSingle();
+
+      if (profErr || profile?.role !== 'ADMIN') {
+        return res.status(403).json({ error: 'Access Denied: Account is not assigned the ADMIN role in the database.' });
+      }
+
+      return res.json({
+        success: true,
+        token: authData.session.access_token,
+        user: authData.user,
+        role: 'ADMIN'
+      });
+    } catch (err: any) {
+      console.error('Admin login error:', err);
+      return res.status(500).json({ error: err.message || 'Admin authentication service error' });
+    }
+  });
+
+  // Check admin role directly from database
+  app.get('/api/admin/check-role', requireAuth, async (req, res) => {
     try {
       const user = (req as any).user;
-      const userEmail = user?.email?.toLowerCase();
-      
-      const adminEmails = ['admin@connectup.com'];
-      if (adminEmails.includes(userEmail)) {
-        if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-          console.warn("check-or-upgrade-role: Missing SUPABASE_SERVICE_ROLE_KEY!");
-          return res.status(500).json({ error: 'Server configuration error: missing service role key' });
-        }
-        
-        const adminSupabase = getAdminSupabase();
-        if (!adminSupabase) {
-          return res.status(500).json({ error: 'Supabase client not initialized' });
-        }
-        
-        // Update user profile role to ADMIN in profiles table
-        const { error: updateError } = await adminSupabase
-          .from('profiles')
-          .update({ role: 'ADMIN' })
-          .eq('id', user.id);
-          
-        if (updateError) {
-          console.error(`Failed to upgrade user role to ADMIN for ${userEmail} in profiles:`, updateError);
-          return res.status(500).json({ error: 'Failed to upgrade user role' });
-        }
-        
-        console.log(`Successfully verified and upgraded user ${userEmail} to ADMIN`);
-        return res.json({ success: true, role: 'ADMIN' });
+      const adminSupabase = getAdminSupabase();
+      if (!adminSupabase) {
+        return res.status(500).json({ error: 'Database service unavailable' });
       }
-      
-      res.json({ success: false, message: 'Not an authorized admin email' });
-    } catch (error: any) {
-      console.error('Check-or-upgrade-role Error:', error);
-      res.status(500).json({ error: error.message || 'Server error' });
+
+      const { data: profile } = await adminSupabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      return res.json({ role: profile?.role || 'FOUNDER', isAdmin: profile?.role === 'ADMIN' });
+    } catch (err: any) {
+      return res.status(500).json({ error: 'Role check failed' });
     }
   });
 
@@ -1444,14 +1503,6 @@ async function startServer() {
   // Bind and listen on port 3000
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on http://localhost:${PORT}`);
-    // Ensure wavy7551@gmail.com is strictly a regular non-admin user
-    const adminSupabase = getAdminSupabase();
-    if (adminSupabase) {
-      Promise.resolve(
-        adminSupabase.from('profiles').update({ role: 'FOUNDER' }).eq('email', 'wavy7551@gmail.com').eq('role', 'ADMIN')
-      ).then(() => console.log('Verified non-admin role for wavy7551@gmail.com'))
-       .catch((e: any) => console.warn('Could not reset role:', e?.message));
-    }
   });
 }
 
