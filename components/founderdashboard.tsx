@@ -417,8 +417,7 @@ const FounderDashboard: React.FC<FounderDashboardProps> = React.memo(({ userProf
                                          <IconWrapper icon={Calendar01Icon} size={18} />
                                      </div>
                                      <div>
-                                        <h3 className="text-base sm:text-lg font-display font-bold text-zinc-950 dark:text-white">Investor Schedule</h3>
-                                        <p className="text-[11px] text-zinc-400">Manage pitch calls & partner meetings</p>
+                                        <h3 className="text-base sm:text-lg font-display font-bold text-zinc-950 dark:text-white">Schedule</h3>
                                      </div>
                                  </div>
                                  <div className="flex items-center gap-2">
