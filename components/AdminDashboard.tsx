@@ -403,9 +403,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ userProfile, onN
       if (data && Array.isArray(data) && data.length > 0) {
         mappedSubs = data.map((s: any) => {
           const matchingUser = activeUsers.find(u => u.id === s.user_id || u.id === s.userId);
-          const userName = s.user_name || s.userName || matchingUser?.name || matchingUser?.email?.split('@')[0] || 'Subscriber';
+          const userName = s.user_name || s.userName || matchingUser?.name || matchingUser?.email?.split('@')[0] || (s.user_email || s.userEmail || '').split('@')[0] || 'Subscriber';
           const userEmail = s.user_email || s.userEmail || matchingUser?.email || '';
-          const userAvatar = s.user_avatar || matchingUser?.avatarUrl;
+          const userAvatar = s.user_avatar || matchingUser?.avatarUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(userName)}&backgroundColor=18181b,27272a&textColor=f4f4f5`;
           const rawCycle = (s.billing_cycle || s.billingCycle || 'monthly').toLowerCase();
           const billingCycle = rawCycle === 'trial' ? 'trial' : rawCycle === 'yearly' ? 'yearly' : 'monthly';
 
@@ -436,36 +436,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ userProfile, onN
             plan: 'pro',
             billingCycle: billingCycle as any,
             amount: Number(s.amount) || 0,
-            currency: s.currency || 'USD',
+            currency: (s.currency || 'USD').toUpperCase(),
             provider: s.provider || 'Paystack',
             status: (s.status || 'completed') as any,
             createdAt: formattedDate
           };
         });
       }
-
-      // Augment with active Pro users who may not have a transaction row yet
-      const proUsers = activeUsers.filter(u => u.plan === 'pro');
-      proUsers.forEach((u, idx) => {
-        const hasSub = mappedSubs.some(s => s.userId === u.id);
-        if (!hasSub) {
-          mappedSubs.push({
-            id: `sub_pro_${u.id.substring(0, 8)}`,
-            reference: `manual_${u.id.substring(0, 8)}`,
-            userId: u.id,
-            userName: u.name,
-            userEmail: u.email,
-            userAvatar: u.avatarUrl,
-            plan: 'pro',
-            billingCycle: (u.billingCycle || 'yearly') as any,
-            amount: u.billingCycle === 'yearly' ? 29 : 5,
-            currency: 'USD',
-            provider: 'Paystack',
-            status: 'completed',
-            createdAt: u.joinedDate || 'Recently'
-          });
-        }
-      });
 
       setSubscriptions(mappedSubs);
     } catch (err) {
@@ -829,23 +806,34 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ userProfile, onN
   const subMetrics = useMemo(() => {
     let mrr = 0;
     let totalRevenue = 0;
+    let primaryCurrency = 'USD';
+    let currencyCounts: Record<string, number> = {};
+
     subscriptions.forEach(s => {
-      const status = s.status || 'completed';
-      if (status !== 'refunded' && status !== 'cancelled') {
-        totalRevenue += s.amount;
+      const status = (s.status || 'completed').toLowerCase();
+      if (status !== 'refunded' && status !== 'cancelled' && status !== 'failed') {
+        const amt = Number(s.amount) || 0;
+        totalRevenue += amt;
+        if (s.currency) {
+          currencyCounts[s.currency] = (currencyCounts[s.currency] || 0) + 1;
+        }
         if (s.billingCycle === 'monthly') {
-          mrr += s.amount;
+          mrr += amt;
         } else if (s.billingCycle === 'yearly') {
-          mrr += s.amount / 12;
-        } else {
-          mrr += s.amount;
+          mrr += amt / 12;
         }
       }
     });
+
+    if (currencyCounts['NGN'] && currencyCounts['NGN'] > (currencyCounts['USD'] || 0)) {
+      primaryCurrency = 'NGN';
+    }
+
     return {
-      mrr: Math.round(mrr),
-      arr: Math.round(mrr * 12),
-      totalRevenue: Math.round(totalRevenue),
+      mrr: Math.round(mrr * 100) / 100,
+      arr: Math.round(mrr * 12 * 100) / 100,
+      totalRevenue: Math.round(totalRevenue * 100) / 100,
+      primaryCurrency,
       activeSubsCount: proSubscribersCount,
       totalTransactionsCount: subscriptions.length
     };
@@ -1960,13 +1948,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ userProfile, onN
                     <div className="p-3.5 border-r border-zinc-150 dark:border-zinc-800/60">
                       <span className="text-[10px] text-zinc-400 font-mono uppercase block">Total Settled</span>
                       <span className="text-base font-bold font-mono tabular-nums text-zinc-950 dark:text-white">
-                        {formatCurrency(subMetrics.totalRevenue, 'USD')}
+                        {formatCurrency(subMetrics.totalRevenue, subMetrics.primaryCurrency)}
                       </span>
                     </div>
                     <div className="p-3.5 border-r border-zinc-150 dark:border-zinc-800/60">
                       <span className="text-[10px] text-zinc-400 font-mono uppercase block">Monthly Recurring (MRR)</span>
                       <span className="text-base font-bold font-mono tabular-nums text-emerald-600 dark:text-emerald-400">
-                        {formatCurrency(subMetrics.mrr, 'USD')}
+                        {formatCurrency(subMetrics.mrr, subMetrics.primaryCurrency)}
                       </span>
                     </div>
                     <div className="p-3.5 border-r border-zinc-150 dark:border-zinc-800/60">
@@ -2386,11 +2374,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ userProfile, onN
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                   <div className="p-5 bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl shadow-xs">
                     <span className="text-xs text-zinc-500 dark:text-zinc-400 block mb-1">Total Settled</span>
-                    <span className="text-2xl font-bold font-mono tabular-nums text-zinc-950 dark:text-white">{formatCurrency(subMetrics.totalRevenue, 'USD')}</span>
+                    <span className="text-2xl font-bold font-mono tabular-nums text-zinc-950 dark:text-white">{formatCurrency(subMetrics.totalRevenue, subMetrics.primaryCurrency)}</span>
                   </div>
                   <div className="p-5 bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl shadow-xs">
                     <span className="text-xs text-zinc-500 dark:text-zinc-400 block mb-1">Monthly Recurring (MRR)</span>
-                    <span className="text-2xl font-bold font-mono tabular-nums text-emerald-600 dark:text-emerald-400">{formatCurrency(subMetrics.mrr, 'USD')}</span>
+                    <span className="text-2xl font-bold font-mono tabular-nums text-emerald-600 dark:text-emerald-400">{formatCurrency(subMetrics.mrr, subMetrics.primaryCurrency)}</span>
                   </div>
                   <div className="p-5 bg-white dark:bg-[#121215] border border-zinc-200/80 dark:border-zinc-800/80 rounded-xl shadow-xs">
                     <span className="text-xs text-zinc-500 dark:text-zinc-400 block mb-1">Recorded Transactions</span>
